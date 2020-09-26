@@ -133,10 +133,7 @@ class GoogleImagesDownload:
             print("{} Errors.".format(error))
 
 
-if __name__ == "__main__":
-    #search=input("Whose Images do you want to download?\n->")
-    search_query = "test"
-    number_of_downloads = 10
+def main(search_query,number_of_downloads):
     images=GoogleImagesDownload(search_query)
     searchUrl = images.build_SearchUrl()
     html = images.downloadPageSource(searchUrl)
