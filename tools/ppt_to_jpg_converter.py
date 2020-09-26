@@ -30,7 +30,16 @@ def ppt_to_jpg(powerpoint, inputFileName, formatType = 32):
     deck = powerpoint.Presentations.Open(inputFileName)
     deck.SaveAs(render_path + "temp\\" + '.jpg', 17)
     deck.Close()
+    move_images_to_main_folder()
+    print("Converted "+ str(image_start_index) + " images")
 
+def move_images_to_main_folder():
+    global image_start_index
+    files = os.listdir(render_path + "temp\\")
+    jpgfiles = [f for f in files if f.endswith(".JPG")]
+    for jpgfile in jpgfiles:
+        os.rename(render_path + "temp\\" + jpgfile, render_path + str(image_start_index) + '.jpg')
+        image_start_index += 1
 
 # Scan for PPT files in the folder
 def convert_files_in_folder(powerpoint, folder):
@@ -39,7 +48,8 @@ def convert_files_in_folder(powerpoint, folder):
     print("Powerpoint files Scanned", pptfiles)
     for pptfile in pptfiles:
         fullpath = os.path.join(base_path, pptfile)
-        ppt_to_jpg(powerpoint, fullpath)       
+        ppt_to_jpg(powerpoint, fullpath)
+        
 
 
 
