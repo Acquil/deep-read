@@ -67,6 +67,22 @@ class GoogleImagesDownload:
         img_links = img_links[::-1]
         return img_links
 
+    # Create Directory for saving downloaded images
+    def create_directory(self):
+        Downloads=os.path.normpath(os.path.expanduser("~/Downloads"))
+        if not os.path.exists(Downloads+"/"+self.search):
+            dir=Downloads+"/"+self.search
+            os.mkdir(dir)
+        else:
+            a=1
+            while True:
+                dir = Downloads+"/"+self.search+" "+str(a)
+                if not os.path.exists(dir):
+                    os.mkdir(dir)
+                    break
+                a+=1
+        return dir
+
 
 if __name__ == "__main__":
     #search=input("Whose Images do you want to download?\n->")
@@ -76,6 +92,7 @@ if __name__ == "__main__":
     searchUrl = images.build_SearchUrl()
     html = images.downloadPageSource(searchUrl)
     img_links = images.find_ImagesUrl(html)
+    dir = images.create_directory()
 
 
 
