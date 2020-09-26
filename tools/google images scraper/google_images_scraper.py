@@ -108,6 +108,30 @@ class GoogleImagesDownload:
         else:
             print("{} Errors.".format(error))
 
+    # Download All Images
+    def download_AllImages(self,img_links,dir):
+        print("\nDownloading All {} Images of \"{}\" for you.\n".format(len(img_links),self.search))
+        x = 0
+        error=0
+        for i in tqdm(img_links):
+            x += 1
+            path = dir + "/" + self.search + " " + str(x) + ".jpg"
+            try:
+                r = requests.get(i)
+            except Exception as e:
+                print("This Url is invalid.")
+            if b'\0' in r.content:
+                file = open(path, "wb")
+                file.write(r.content)
+                file.close()
+            else:
+                error+=1
+        print("\nDownload complete.\n")
+        if error==0 or error==1:
+            print("{} Error.".format(error))
+        else:
+            print("{} Errors.".format(error))
+
 
 if __name__ == "__main__":
     #search=input("Whose Images do you want to download?\n->")
@@ -118,4 +142,7 @@ if __name__ == "__main__":
     html = images.downloadPageSource(searchUrl)
     img_links = images.find_ImagesUrl(html)
     dir = images.create_directory()
-    images.download_Images(img_links,dir,int(number_of_downloads))
+    if int(number_of_downloads)==len(img_links):
+        images.download_AllImages(img_links,dir)
+    else:
+        images.download_Images(img_links,dir,int(number_of_downloads))
