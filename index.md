@@ -1,8 +1,4 @@
-### Deep-read
 Meeting summarization and quiz generator.
-
-## Mission
-Make the process of online learning more effective
 
 ## Features
 
@@ -22,7 +18,7 @@ Instructions on how to run containers
 ```
 
 ## Contributors
-[Akhil Hassan](https://github.com/Acquil/)
-[Ashwin Kumar](https://github.com/NAshwinKumar/)
-[Harish G](https://github.com/harish-ganesh/)
-[Sree Deepack R](https://github.com/sreedeepack/)
+ - [Akhil Hassan](https://github.com/Acquil/)
+ - [Ashwin Kumar](https://github.com/NAshwinKumar/)
+ - [Harish G](https://github.com/harish-ganesh/)
+ - [Sree Deepack R](https://github.com/sreedeepack/)
