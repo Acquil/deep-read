@@ -26,13 +26,32 @@ class GoogleImagesDownload:
         self.url = self.url[:len(self.url) - 1]
         return self.url
 
+    # Download Page Source For Downloading Images
+    def downloadPageSource(self,searchUrl,chromeDriverPath="chromedriver"):
+        try:
+            driver=webdriver.Chrome(chromeDriverPath)
+        except Exception as e:
+            print("Chromedriver path can't be located or Google Chrome browser is not installed on your machine (Exception: {})".format(e))
+            sys.exit()
 
-# Main Program which will do all job on its own
+        try:
+            driver.get(searchUrl)
+            pageSource = driver.page_source
+            return pageSource
+        except Exception as e:
+            print("Invalid Url")
+            print("No Page Source is returned")
+            sys.exit()
+
+
 if __name__ == "__main__":
     #search=input("Whose Images do you want to download?\n->")
     search_query = "test"
     number_of_downloads = 10
     images=GoogleImagesDownload(search_query)
     searchUrl = images.build_SearchUrl()
+    html = images.downloadPageSource(searchUrl)
+    
+
     
     
