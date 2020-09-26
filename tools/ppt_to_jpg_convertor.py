@@ -1,6 +1,5 @@
 """
 	The function of the tool function: export PPT into pictures in batches
-
 """
 
 

@@ -1,7 +1,12 @@
 """
 	The function of the tool function: scrape google image for a given query
-    search_query: Query to search
-    number_of_downloads: Number of images to scrape 
+    
+    Parameters
+    ----------
+    search_query: string
+            Query to search
+    number_of_downloads: int
+            Number of images required
 
 """
 
