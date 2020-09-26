@@ -1,5 +1,4 @@
-from GoogleImagesDownload import *
-
+from google_images_scraper import *
 
 if __name__ == '__main__':
     search_query = "test"
