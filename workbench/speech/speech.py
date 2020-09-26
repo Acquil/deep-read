@@ -71,7 +71,7 @@ class Recognizer:
     def get_timestamped_text(self):
         '''
         Returns:
-            timestamped_text: list of words spoken along with corresponding timestamps and conf
+            timestamped_text: list of words spoken along with corresponding timestamps and confidence
 
         '''
         return self.timestamped_text 
