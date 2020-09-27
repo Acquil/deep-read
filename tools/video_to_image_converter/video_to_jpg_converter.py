@@ -1,5 +1,16 @@
 
-#pip install opencv-python
+"""Export slides of powerpoints into images in batches
+
+Parameters
+----------
+video_path : str
+    Location of Video file
+render_path : str
+    Rendered Images of the video will be saved in this path
+offset_duration_seconds : int, optional
+    The periodic interval in which the images will be extracted from video(Default value is 10 seconds).
+"""
+
 import cv2 
 import os 
 
@@ -52,47 +63,3 @@ class Video_to_JPG_Converter:
         self.read_video()
         self.extract_and_save_images_from_video()
         self.release_resources
-
-
-# #pip install opencv-python
-# import cv2 
-# import os 
-
-# video_path = "/media/ashwin/Current/sem_9/open_source/my_work/videoplayback.mp4"
-# render_path = "./data"
-# offset_duration_seconds = 10
-# # Read the video from specified path 
-# cap = cv2.VideoCapture(video_path) 
-# fps = cap.get(cv2.CAP_PROP_FPS)
-# print(fps)
-# try: 
-      
-#     # creating a folder named data 
-#     if not os.path.exists(render_path): 
-#         os.makedirs(render_path) 
-  
-# # if not created then raise error 
-# except OSError: 
-#     print ('Error: Creating directory') 
-  
-
-# current_frame = 0
-  
-# while(True): 
-      
-#     ret, frame = cap.read()
-
-#     if ret:
-#         cv2.imwrite(render_path + '/frame' + str(current_frame) + '.jpg', frame)
-#         current_frame += (fps * offset_duration_seconds) #this advances 10 seconds
-#         cap.set(1, current_frame)
-#     else:
-#         cap.release()
-#         break
-
-#     if current_frame % (fps * 300) == 0:
-#         print("Completed extracting ", current_frame / (fps * 60), " minutes of video")
-  
-# # Release all space and windows once done 
-# cap.release() 
-# cv2.destroyAllWindows() 
