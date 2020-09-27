@@ -1,5 +1,5 @@
 
-"""Export slides of powerpoints into images in batches
+"""Extract images from video
 
 Parameters
 ----------
