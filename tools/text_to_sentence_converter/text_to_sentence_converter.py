@@ -1,3 +1,11 @@
+
+"""Extract images from video
+
+Parameters
+----------
+text : str
+    The string from which sentences are to be extracted
+"""
 import nltk
 nltk.download('punkt')
 
