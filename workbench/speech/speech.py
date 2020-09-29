@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from vosk import Model, KaldiRecognizer, SetLogLevel
 import sys
 import os
