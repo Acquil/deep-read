@@ -79,3 +79,10 @@ class Recognizer:
 
         '''
         return self.timestamped_text
+
+
+# Main
+if __name__ == "__main__":
+    r = Recognizer(wav_audio="output.wav")
+    r.transcribe()
+    print(r.transcript)
