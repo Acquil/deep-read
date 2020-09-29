@@ -4,6 +4,7 @@ import sys
 import os
 import wave
 import json
+import subprocess
 
 class Recognizer:
     '''
@@ -38,7 +39,9 @@ class Recognizer:
     def transcribe(self, frames=None):
         '''
         Transcribes the text
-
+        
+        Args:
+            frames      : Number of frames to read at a time.
         Returns:
             transcript  : Transcript of audio
         
@@ -50,9 +53,16 @@ class Recognizer:
         
         rec = KaldiRecognizer(self.model, self._wf.getframerate())
 
+        sample_rate = 16000
+        process = subprocess.Popen(['ffmpeg', '-loglevel', 'quiet', '-i',
+                            self.wav_audio,
+                            '-ar', str(sample_rate) , '-ac', '1', '-f', 's16le', '-'],
+                            stdout=subprocess.PIPE)
+        
         while True:
-            data = self._wf.readframes(frames)
-            
+            # data = self._wf.readframes(frames)
+            data = process.stdout.read(4000)
+
             if len(data) == 0:
                 break
 
@@ -84,6 +94,6 @@ class Recognizer:
 
 # Main
 if __name__ == "__main__":
-    r = Recognizer(wav_audio="output.wav")
+    r = Recognizer(wav_audio="input.wav")
     r.transcribe()
     print(r.transcript)
