@@ -56,12 +56,12 @@ class Recognizer:
         sample_rate = 16000
         process = subprocess.Popen(['ffmpeg', '-loglevel', 'quiet', '-i',
                             self.wav_audio,
-                            '-ar', str(sample_rate) , '-ac', '1', '-f', 's16le', '-'],
+                            '-ar', str(sample_rate) , '-ac', '1', '-acodec', 'pcm_s16le', '-'],
                             stdout=subprocess.PIPE)
         
         while True:
             # data = self._wf.readframes(frames)
-            data = process.stdout.read(4000)
+            data = process.stdout.read(frames)
 
             if len(data) == 0:
                 break
