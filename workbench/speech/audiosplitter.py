@@ -21,7 +21,7 @@ class SplitWavAudio():
         
     def multiple_split(self, min_per_split):
         total_mins = math.ceil(self.get_duration() / 60)
-        number_splits = None
+        number_splits = total_mins - min_per_split
         
         for i in range(0, total_mins, min_per_split):
             split_fn = str(i) + '_' + self.filename
