@@ -34,7 +34,7 @@ class Recognizer:
             raise ValueError#, ("Audio file must be WAV format mono PCM")
 
 
-    def transcribe(self, frames=4000):
+    def transcribe(self, frames=None):
         '''
         Transcribes the text
 
@@ -43,6 +43,10 @@ class Recognizer:
         
         '''
         self.is_valid_audio()
+        
+        if frames is None:
+            frames = self._wf.getnframes()
+        
         rec = KaldiRecognizer(self.model, self._wf.getframerate())
 
         while True:
