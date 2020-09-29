@@ -140,16 +140,19 @@ class Recognizer:
 
     Args:
         wav_audio    :
+        model        :
         workers      :
         min_per_split:
     '''
     def __init__(self, wav_audio, model = "model" ,workers = 4, min_per_split = 1):
+       
+        # //TODO shold 'chunks' instead have a unique name
         self.__folder       = 'chunks'
+
         self.file           = wav_audio
         self.model          = model
 
-        self.__workers      = workers
-        self.pool           = Pool(workers)
+        self.workers      = workers
         self.min_per_split  = min_per_split
         
         self.transcript = ""
@@ -158,6 +161,7 @@ class Recognizer:
 
     def __split(self, file, folder, min_per_split):
         '''
+        Split audio into chunks. Uses audiosplitter.py
         '''
         os.mkdir(folder)
         copyfile(file, f"{folder}/{file}")
@@ -167,24 +171,36 @@ class Recognizer:
         return number_of_splits
 
         
-    def __get_segments(self, number_of_splits):
+    def __get_segments(self, file, folder, number_of_splits):
         '''
+        Get the filenames of segments
         '''
         files = []
         for i in range(number_of_splits):
-            files.append(str(i)+ f"{self.__folder}/" + str(i) + f"_{file}")
+            files.append(str(i)+ f" {folder}/" + str(i) + f"_{file}")
         return files
 
 
-    def __transcribe_chunks(self, files):
+    def transcribe_chunks(self, files):
+        '''
+        Helper function to transcribe chunks of audio
+
+        Returns:
+            transcript
+        '''
         uid, filename = files.split()
         r = RecognizerSegment(wav_audio = filename)
         r.transcribe()
+        # //TODO timestamped_text
         return (uid + " : " + r.transcript)
 
 
     def transcribe(self):
         '''
+        Transcribes the text
+       
+        Returns:
+            transcript  : Transcript of audio
         '''
         # Split audio into chunks
         n_splits = self.__split(
@@ -193,16 +209,22 @@ class Recognizer:
             self.min_per_split
         )
         # Get files
-        files = self.__get_segments(n_splits)
+        files = self.__get_segments(
+            number_of_splits = n_splits,
+            folder = self.__folder,
+            file = self.file
+        )
         # Map to worker pool
-        texts = self.pool.map(self.__transcribe_chunks, files)   
-        print ("\n".join(texts))
+        p = Pool(self.workers) 
+        texts = p.map(self.transcribe_chunks, files)   
+        self.transcript = "\n".join(texts)
         
         # cleanup
-        self.pool.close()
-        self.pool.join()
+        p.close()
+        p.join()
         # remove chunks
         self._delete_temp_chunks()
+        return self.transcript
 
 
     def _delete_temp_chunks(self):
@@ -213,41 +235,8 @@ class Recognizer:
 
 
 
-
-def foo(line):
-    uid, filename = line.split()
-    r = RecognizerSegment(wav_audio = filename)
-    r.transcribe()
-    return (uid + " : " + r.transcript)      
-
 # Main
 if __name__ == "__main__":
-    # r = Recognizer(wav_audio="input.wav")
-    # r.transcribe()
-    # print(r.transcript)
-    
-    # Change
-    
-
-    folder = 'chunks'
-    file = 'input.wav'
-
-    os.mkdir(folder)
-    copyfile(file, f"{folder}/{file}")
-
-    split_wav = SplitWavAudio(folder, file)
-    split_wav.multiple_split(min_per_split = 1)
-
-    p = Pool(8)
-    files = []
-    for i in range(8):
-        files.append(str(i)+ " chunks/"+ str(i) + f"_{file}")
-
-    texts = p.map(foo, files)   
-    print ("\n".join(texts))
-    
-    # cleanup
-    p.close()
-    p.join()
-    # remove chunks
-    rmtree("chunks/")
+    r = Recognizer(wav_audio = sys.argv[1], workers=8)
+    r.transcribe()
+    print(r.transcript)
