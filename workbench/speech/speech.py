@@ -37,7 +37,7 @@ class RecognizerSegment:
         self._output_wav = self.wav_audio.split(".")[0] + "_converted.wav"
         sample_rate = 16000
         
-        os.system("ffmpeg -loglevel quiet -i {0} -acodec pcm_s16le -ac 1 -ar {1} {2}"\
+        os.system("ffmpeg  -loglevel quiet -i {0} -acodec pcm_s16le -ac 1 -ar {1} {2}"\
             .format(self.wav_audio,\
                     sample_rate, \
                     self._output_wav))
@@ -175,9 +175,13 @@ class Recognizer:
         '''
         Get the filenames of segments
         '''
+        # m = self.min_per_split
         files = []
-        for i in range(number_of_splits):
-            files.append(str(i)+ f" {folder}/" + str(i) + f"_{file}")
+        # for i in range(number_of_splits):
+            # files.append(str(i*m)+ f" {folder}/" + str(i*m) + f"_{file}")
+        files = os.listdir(folder)
+        files.remove(file)
+        files = list(map(lambda x: folder+"/"+x, files))
         return files
 
 
@@ -188,11 +192,11 @@ class Recognizer:
         Returns:
             transcript
         '''
-        uid, filename = files.split()
+        filename = files
         r = RecognizerSegment(wav_audio = filename)
         r.transcribe()
         # //TODO timestamped_text
-        return (uid + " : " + r.transcript)
+        return (" : " + r.transcript)
 
 
     def transcribe(self):
@@ -237,6 +241,6 @@ class Recognizer:
 
 # Main
 if __name__ == "__main__":
-    r = Recognizer(wav_audio = sys.argv[1], workers=8)
+    r = Recognizer(wav_audio = sys.argv[1], workers=8, min_per_split=4)
     r.transcribe()
     print(r.transcript)
