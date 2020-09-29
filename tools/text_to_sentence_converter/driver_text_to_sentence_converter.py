@@ -4,7 +4,7 @@ text = """ Read()
 
 * The syntax of the read system call is
 
-* number=read(fd, buffer, count}
+* number=read(fd, buffer}
 * fds the file descriptor returned by open
 
 * buffer is the address of a data structure in the user process that will contain
