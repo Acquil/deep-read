@@ -4,7 +4,6 @@ import sys
 import os
 import wave
 import json
-import subprocess
 
 class Recognizer:
     '''
@@ -25,7 +24,14 @@ class Recognizer:
         self.transcript = ""
         self.timestamped_text = []
 
-        self._wf = wave.open(wav_audio)    
+
+        # ffmpeg PCM conversion
+        self._output_wav = "output.wav"
+        sample_rate = 16000
+        os.system("ffmpeg -loglevel quiet -i {0} -acodec pcm_s16le -ac 1 -ar {1} {2}".format(wav_audio, sample_rate, self._output_wav))
+        
+        # open converted .wav
+        self._wf = wave.open(self._output_wav, "rb")    
         
     
     def is_valid_audio(self):
@@ -46,22 +52,15 @@ class Recognizer:
             transcript  : Transcript of audio
         
         '''
-        self.is_valid_audio()
+        # self.is_valid_audio()
         
         if frames is None:
             frames = self._wf.getnframes()
         
         rec = KaldiRecognizer(self.model, self._wf.getframerate())
 
-        sample_rate = 16000
-        process = subprocess.Popen(['ffmpeg', '-loglevel', 'quiet', '-i',
-                            self.wav_audio,
-                            '-ar', str(sample_rate) , '-ac', '1', '-acodec', 'pcm_s16le', '-'],
-                            stdout=subprocess.PIPE)
-        
         while True:
-            # data = self._wf.readframes(frames)
-            data = process.stdout.read(frames)
+            data = self._wf.readframes(frames)
 
             if len(data) == 0:
                 break
@@ -80,6 +79,9 @@ class Recognizer:
                 self.timestamped_text.append(result)     
             self.transcript += res['text'] + "."
     
+        # Delete temp audio
+        os.remove(self._output_wav)
+        # Return
         return self.transcript
 
 
