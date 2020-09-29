@@ -11,7 +11,10 @@ class ScreenClassifier:
         self.model = tf.keras.models.load_model("model_v3_xception")
         self.imagedatagen = ImageDataGenerator(rescale=1/255)
 
-	def predict(directory):
+	def predict(self,directory):
+		"""
+			returns filenames that are slides
+		"""
 		filename = os.listdir(directory)
 		dataframe = pd.DataFrame({'filename':filename})
 
