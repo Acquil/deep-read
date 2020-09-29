@@ -78,4 +78,4 @@ class Recognizer:
             timestamped_text: list of words spoken along with corresponding timestamps and confidence
 
         '''
-        return self.timestamped_text 
+        return self.timestamped_text
