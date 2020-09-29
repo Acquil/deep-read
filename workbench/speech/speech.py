@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from vosk import Model, KaldiRecognizer, SetLogLevel
+from multiprocessing import Pool
 import sys
 import os
 import wave
@@ -23,24 +24,22 @@ class Recognizer:
         
         self.transcript = ""
         self.timestamped_text = []
-
-
+        
+    
+    def to_valid_audio(self):
+        '''
+        Converts to mono PCM .wav
+        '''
+        # Audio file must be WAV format mono PCM
         # ffmpeg PCM conversion
         self._output_wav = "output.wav"
         sample_rate = 16000
-        os.system("ffmpeg -loglevel quiet -i {0} -acodec pcm_s16le -ac 1 -ar {1} {2}".format(wav_audio, sample_rate, self._output_wav))
+        os.system("ffmpeg -loglevel quiet -i {0} -acodec pcm_s16le -ac 1 -ar {1} {2}"\
+            .format(self.wav_audio, sample_rate, self._output_wav))
         
         # open converted .wav
         self._wf = wave.open(self._output_wav, "rb")    
         
-    
-    def is_valid_audio(self):
-        '''
-        Checks if  wav_audio is valid
-        '''
-        if self._wf.getnchannels() != 1 or self._wf.getsampwidth() != 2 or self._wf.getcomptype() != "NONE":
-            raise ValueError#, ("Audio file must be WAV format mono PCM")
-
 
     def transcribe(self, frames=None):
         '''
@@ -52,7 +51,7 @@ class Recognizer:
             transcript  : Transcript of audio
         
         '''
-        # self.is_valid_audio()
+        self.to_valid_audio()
         
         if frames is None:
             frames = self._wf.getnframes()
