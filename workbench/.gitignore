@@ -105,7 +105,7 @@ celerybeat.pid
 .env
 .venv
 env/
-venv/
+*venv/
 ENV/
 env.bak/
 venv.bak/
@@ -134,3 +134,7 @@ dmypy.json
 # vosk
 model/
 *.zip
+
+# audio and video
+*.wav
+*.mp4
