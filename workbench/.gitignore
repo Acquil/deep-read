@@ -138,3 +138,7 @@ model/
 # audio and video
 *.wav
 *.mp4
+*.m4a
+
+# transcript
+*.transcript
