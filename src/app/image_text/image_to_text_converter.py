@@ -18,18 +18,15 @@ class Image_to_Text_Converter:
         self.image_path = image_path
     
     def convert(self):
+        def convert(self):
         image = cv2.imread(self.image_path)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        # check to see if we should apply thresholding to preprocess the image
-
-        gray = cv2.threshold(gray, 0, 255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-        gray = cv2.medianBlur(gray, 3)
+        _,thresh = cv2.threshold(gray,240,255,cv2.THRESH_BINARY)
 
         filename = "{}.png".format(os.getpid())
-        cv2.imwrite(filename, gray)
-        
+        cv2.imwrite(filename, thresh)
         text = pytesseract.image_to_string(Image.open(filename))
         os.remove(filename)
-
-        # cv2_imshow(gray)
+        
+        #cv2_imshow(thresh)
         return text
