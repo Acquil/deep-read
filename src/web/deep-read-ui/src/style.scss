@@ -1,0 +1,215 @@
+// importing custom font
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #efefef;
+  padding: 0;
+  margin: 0;
+}
+// container
+a {
+  text-decoration: none;
+}
+
+// header
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  z-index: 10;
+  .brand-icon a {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #212121;
+  }
+  .brand-icon .icon {
+    display: inline-flex;
+    font-size: 2rem;
+    height: 48px;
+    width: 48px;
+    justify-content: center;
+    align-items: center;
+  }
+  .menu-trigger {
+    display: inline-flex;
+    flex-direction: column;
+    height: 48px;
+    width: 48px;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: transparent;
+    border: 0;
+    outline: 0;
+    position: relative;
+    padding: 10px;
+    cursor: pointer;
+    span {
+      display: inline-flex;
+      width: 30px;
+      height: 4px;
+      border-radius: 16px;
+      background-color: #212121;
+      transition: all ease 0.5s;
+    }
+  }
+  .menu-close {
+    span {
+      position: absolute;
+      background-color: #efefef;
+      &:nth-child(1) {
+        transform: rotate(45deg);
+      }
+      &:nth-child(3) {
+        transform: rotate(-45deg);
+      }
+      &:nth-child(2) {
+        opacity: 0;
+        height: 0;
+        width: 0;
+      }
+    }
+  }
+}
+
+// sidebar navigation
+
+.sidebarNavigationOverlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  display: flex;
+  background-color: transparent;
+  z-index: 8;
+}
+
+.menu-wrapper {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  display: flex;
+  z-index: 9;
+  width: 300px;
+  right: 0;
+  overflow: hidden;
+}
+
+.menu-layer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  // right: 0;
+  margin: auto;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background-color: #34495E;
+  z-index: -1;
+}
+
+.sidebarNavigation {
+  position: relative;
+  width: 300px;
+  height: 100%;
+  background-color: #2e2e2e;
+  padding-top: 50px;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.75);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  &::-webkit-scrollbar {
+    width: 0px;
+  }
+
+  .sidebar-top {
+    overflow: hidden;
+    display: flex;
+    height: calc(100% - 260px);
+  }
+  .links-wrapper {
+    overflow: hidden;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex-shrink: 0;
+    .menu-link {
+      padding: 16px;
+      display: flex;
+      color: #f7f7f7;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 500;
+      background-color: #2e2e2e;
+      width: 280px;
+      &:hover {
+        background-color: darken(#2e2e2e, 10%);
+      }
+    }
+  }
+}
+.extra-links {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+  .link-item {
+    display: inline-flex;
+    flex-direction: column;
+    margin: 8px 16px;
+    color: darken(#efefef, 30%);
+    a {
+      color: darken(#efefef, 30%);
+      &:hover {
+        color: #efefef;
+      }
+    }
+    .link-title {
+      font-weight: 700;
+      color: #efefef;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+      color: #efefef;
+    }
+
+    .social-media-links {
+      display: flex;
+      justify-content: flex-start;
+      a {
+        height: 30px;
+        width: 30px;
+        border: 1px solid;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 4px;
+        margin-right: 8px;
+        &:hover {
+          color: #212121;
+          background-color: #efefef;
+        }
+      }
+    }
+  }
+}
+
+.page {
+  padding-top: 50px;
+}
