@@ -8,7 +8,7 @@ import os
 import wave
 import json
 import uuid
-
+import pandas as pd
 
 class RecognizerSegment:
     '''
@@ -167,8 +167,8 @@ class Recognizer:
         '''
         os.mkdir(folder)
         copyfile(file, f"{folder}/{file}")
-
         split_wav = SplitWavAudio(folder, file)
+        # //TODO audio files should not be split in the middle of a word. See split_silence(min_per_split)
         number_of_splits = split_wav.multiple_split(min_per_split)
         return number_of_splits
 
@@ -177,10 +177,7 @@ class Recognizer:
         '''
         Get the filenames of segments
         '''
-        # m = self.min_per_split
         files = []
-        # for i in range(number_of_splits):
-            # files.append(str(i*m)+ f" {folder}/" + str(i*m) + f"_{file}")
         files = os.listdir(folder)
         files.remove(file)
         files = list(map(lambda x: folder+"/"+x, files))
@@ -197,7 +194,6 @@ class Recognizer:
         filename = files
         r = RecognizerSegment(wav_audio = filename)
         r.transcribe()
-        # //TODO timestamped_text
         return (r.transcript, r.get_timestamped_text())
 
 
@@ -225,10 +221,11 @@ class Recognizer:
             p = Pool(self.workers) 
             result = p.map(self.transcribe_chunks, files)   
             
-            # //TODO result[][0] = transcript, result[][1] = timestamp
-            self.transcript = result[0]
-            self.timestamped_text = result[1]
-
+            df = pd.DataFrame(result)
+            self.transcript = df[0].tolist()
+            # Flatten list of list of dicts to list of dicts
+            self.timestamped_text = [item for sublist in df[1].tolist() for item in sublist]
+            self.timestamped_text = json.dumps(self.timestamped_text)
             # cleanup
             p.close()
             p.join()
@@ -258,12 +255,12 @@ if __name__ == "__main__":
         model = 'model-indian'
         )
     r.transcribe()
-    print(r.transcript)
 
     with open('transcript.txt', 'w') as f:
-        f.write(r.transcript)
+        for item in r.transcript:
+            f.write(f"{item}\n")
     
-    with open('results.json', 'w') as f:
-        for item in r.timestamped_text:
-            f.write("%s\n" % item)
-    
+    with open('transcript.json', 'w') as f:
+        f.write(r.timestamped_text)
+
+    sys.exit(0)
