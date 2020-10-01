@@ -7,6 +7,8 @@ import sys
 import os
 import wave
 import json
+import uuid
+
 
 class RecognizerSegment:
     '''
@@ -19,7 +21,7 @@ class RecognizerSegment:
                       Compatible models from https://alphacephei.com/vosk/models
     '''
 
-    def __init__(self, wav_audio, model="model"):
+    def __init__(self, wav_audio, model="model-indian"):
         
         self.model = Model(model)
         self.wav_audio = wav_audio
@@ -107,7 +109,7 @@ class RecognizerSegment:
                 timestamped_text.append(result)     
             transcript += res['text']
 
-        return transcript, timestamped_text
+        return (transcript, timestamped_text)
 
 
     def get_timestamped_text(self):
@@ -139,15 +141,15 @@ class Recognizer:
     Use RecognizerSegment for very small audio files (less than 1 min duration)
 
     Args:
-        wav_audio    :
-        model        :
-        workers      :
-        min_per_split:
+        wav_audio       : Audio file to be transcribed
+        model           : Model to be used.
+                          Available models=[model-indian, model-generic]
+        workers         : Number of subprocesses to spawn
+        min_per_split   : Number of minutes to split the audio by.
     '''
-    def __init__(self, wav_audio, model = "model" ,workers = 4, min_per_split = 1):
+    def __init__(self, wav_audio, model = "model-indian" ,workers = 4, min_per_split = 3):
        
-        # //TODO shold 'chunks' instead have a unique name
-        self.__folder       = 'chunks'
+        self.__folder       = 'chunks_' + str(uuid.uuid4())
 
         self.file           = wav_audio
         self.model          = model
@@ -196,7 +198,7 @@ class Recognizer:
         r = RecognizerSegment(wav_audio = filename)
         r.transcribe()
         # //TODO timestamped_text
-        return (" : " + r.transcript)
+        return (r.transcript, r.get_timestamped_text())
 
 
     def transcribe(self):
@@ -206,29 +208,37 @@ class Recognizer:
         Returns:
             transcript  : Transcript of audio
         '''
-        # Split audio into chunks
-        n_splits = self.__split(
-            self.file,
-            self.__folder,
-            self.min_per_split
-        )
-        # Get files
-        files = self.__get_segments(
-            number_of_splits = n_splits,
-            folder = self.__folder,
-            file = self.file
-        )
-        # Map to worker pool
-        p = Pool(self.workers) 
-        texts = p.map(self.transcribe_chunks, files)   
-        self.transcript = "\n".join(texts)
-        
-        # cleanup
-        p.close()
-        p.join()
-        # remove chunks
-        self._delete_temp_chunks()
-        return self.transcript
+        try:
+            # Split audio into chunks
+            n_splits = self.__split(
+                self.file,
+                self.__folder,
+                self.min_per_split
+            )
+            # Get files
+            files = self.__get_segments(
+                number_of_splits = n_splits,
+                folder = self.__folder,
+                file = self.file
+            )
+            # Map to worker pool
+            p = Pool(self.workers) 
+            result = p.map(self.transcribe_chunks, files)   
+            
+            # //TODO result[][0] = transcript, result[][1] = timestamp
+            self.transcript = result[0]
+            self.timestamped_text = result[1]
+
+            # cleanup
+            p.close()
+            p.join()
+    
+            return self.transcript
+
+        finally:
+            # remove chunks
+            self._delete_temp_chunks()
+    
 
 
     def _delete_temp_chunks(self):
@@ -241,6 +251,19 @@ class Recognizer:
 
 # Main
 if __name__ == "__main__":
-    r = Recognizer(wav_audio = sys.argv[1], workers=8, min_per_split=4)
+    r = Recognizer(
+        wav_audio = sys.argv[1], 
+        workers=8, 
+        min_per_split=4,
+        model = 'model-indian'
+        )
     r.transcribe()
     print(r.transcript)
+
+    with open('transcript.txt', 'w') as f:
+        f.write(r.transcript)
+    
+    with open('results.json', 'w') as f:
+        for item in r.timestamped_text:
+            f.write("%s\n" % item)
+    
