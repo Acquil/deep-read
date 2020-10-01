@@ -1,2 +1,3 @@
 vosk
 pydub
+pandas

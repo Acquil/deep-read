@@ -142,4 +142,4 @@ model*/
 *.m4a
 
 # transcript
-*.transcript
+transcript.*
