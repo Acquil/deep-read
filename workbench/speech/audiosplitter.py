@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from pydub import AudioSegment
+from pydub.silence import split_on_silence
 import math
 
 class SplitWavAudio():
@@ -32,3 +33,41 @@ class SplitWavAudio():
                 number_splits = i
         
         return number_splits
+
+    def split_silence(self, min_per_split):
+        '''
+        Splits audio without abruptly cutting words.
+
+        Args:
+            min_per_split : Number of minutes per split
+        '''
+        dBFS = self.audio.dBFS
+        chunks = split_on_silence(
+            self.audio, 
+            min_silence_len = 500, # atleast 0.5 seconds
+            silence_thresh = dBFS-16,
+            keep_silence = 250 #optional
+        )
+        #setting minimum length of each chunk
+        target_length = min_per_split * 60 * 1000 
+
+        output_chunks = [chunks[0]]
+        
+        for chunk in chunks[1:]:
+            if len(output_chunks[-1]) < target_length:
+                # add to last segment if smaller than target length
+                output_chunks[-1] += chunk
+            else:
+                # if the last output chunk is longer than the target length,
+                # we can start a new one
+                output_chunks.append(chunk)
+                
+        i=0
+        for c in output_chunks:
+            chunk_filename = str(i) + '_' + self.filename
+            c.export(self.folder + '/' + chunk_filename, format="wav")
+            i += 1
+
+        print(f"Number of chunks = {len(output_chunks)}")
+        print("Done")
+        return len(output_chunks)
