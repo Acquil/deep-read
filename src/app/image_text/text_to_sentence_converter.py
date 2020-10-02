@@ -59,11 +59,6 @@ class Text_to_Sentence_Converter:
         for i in range(len(self.sentences)):
             self.sentences[i] = re.sub(r'[^\w\s]', '', self.sentences[i]) 
         
-    
-    def remove_new_line_characters(self):
-        for i in range(len(self.sentences)):
-            self.sentences[i] = " ".join(self.sentences[i].split())
-        
 
     def convert(self):
         nltk_extracted_sentences = self.extract_sentences_using_nltk()
