@@ -18,7 +18,6 @@ class Image_to_Text_Converter:
         self.image_path = image_path
     
     def convert(self):
-        def convert(self):
         image = cv2.imread(self.image_path)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         _,thresh = cv2.threshold(gray,240,255,cv2.THRESH_BINARY)
