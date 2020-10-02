@@ -18,4 +18,4 @@ sentences = text_to_sentence_converter.convert()
 
 for i in range(0,len(sentences)):
     print("Sentence",i)
-    print("    "," ".join(sentences[i].split()))
+    print("    ",sentences[i])

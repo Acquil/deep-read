@@ -16,6 +16,8 @@ from nltk.tokenize import word_tokenize
 
 class Text_to_Sentence_Converter:
 
+    sentences = []
+
     def __init__(self, text):
         self.text = text
 
@@ -32,7 +34,6 @@ class Text_to_Sentence_Converter:
 
     #This function has been designed specifically to extract sentences from text generated using OCR for powerpoint slides
     def extract_sentences_powerpoint_text(self, nltk_extracted_sentences):
-        sentences = []
         for sentence in nltk_extracted_sentences:
             lines = sentence.split("\n")
             is_new_sentence = True
@@ -42,27 +43,27 @@ class Text_to_Sentence_Converter:
                     if self.word_count(tokens) < 4: #This constraint is added to ignore headings in powerpoint slides
                         continue
                     else:
-                        sentences.append(line)
+                        self.sentences.append(line)
                         is_new_sentence = False
                 else:
                     if len(tokens)==0: #blank line
                         is_new_sentence = True
                     else:
                         if len(tokens[0]) == 1 and tokens[0] != "I": #Assumed to be a bulleted point
-                            sentences.append(line)
+                            self.sentences.append(line)
                         else:
-                            sentences[len(sentences)-1] += " " + line
-        return sentences
-    
-    def remove_punctuations(self, sentences):
-        for i in range(len(sentences)):
-            sentences[i] = re.sub(r'[^\w\s]', '', sentences[i]) 
+                            self.sentences[len(self.sentences)-1] += " " + line
         
-        return sentences
+    
+    def remove_punctuations(self):
+        for i in range(len(self.sentences)):
+            self.sentences[i] = re.sub(r'[^\w\s]', '', self.sentences[i]) 
+        
 
     def convert(self):
         nltk_extracted_sentences = self.extract_sentences_using_nltk()
-        sentences = self.extract_sentences_powerpoint_text(nltk_extracted_sentences)
-        return self.remove_punctuations(sentences)
+        self.extract_sentences_powerpoint_text(nltk_extracted_sentences)
+        self.remove_punctuations()
+        return self.sentences 
 
         
