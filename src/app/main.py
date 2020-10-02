@@ -1,8 +1,9 @@
 from screen_classifier.screenclassifier import ScreenClassifier
-from image_to_text_converter import Image_to_Text_Converter
-from text_to_sentence_converter import Text_to_Sentence_Converter
+from image_text.image_to_text_converter import Image_to_Text_Converter
+from image_text.text_to_sentence_converter import Text_to_Sentence_Converter
 
 classifier = ScreenClassifier()
+
 
 def get_text(directory):
 	filenames = classifier.predict(directory)
@@ -17,3 +18,6 @@ def get_text(directory):
 	  data.extend(sentences)
 
 	return data
+
+directory = ''
+get_text(directory)
