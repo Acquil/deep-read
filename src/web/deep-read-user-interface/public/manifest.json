@@ -1,6 +1,6 @@
 {
-  "short_name": "deep read ui",
-  "name": "deep read ui",
+  "short_name": "Deep Read User Interface",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",
@@ -13,7 +13,7 @@
       "sizes": "192x192"
     },
     {
-      "src": "writing.png",
+      "src": "logo512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
