@@ -1,4 +1,4 @@
-import { Grid, makeStyles, Paper } from '@material-ui/core';
+import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import { red, green, blue, grey} from '@material-ui/core/colors';
 import React from 'react';
@@ -8,65 +8,62 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexGrow: 1
   },
-  paper:{
+  paper: {
+    maxWidth: 400,
     background: '#eeeeee',
-    paddingBottom:"10px"
+    margin: `${theme.spacing(1)}px auto`,
+    padding: theme.spacing(2),
   },
   fontSize20:{
     fontSize:"20px"
   },
   spacing20: {
     paddingTop:'20px',
-    paddingLeft: '20px',
+    paddingLeft: '50px',
     paddingRight:'20px',
     paddingBottom:'20px'
   },
   spacing10: {
-    paddingTop:'10px',
-    paddingLeft: '20px',
-    paddingRight:'20px',
+    paddingTop:'60px',
+    paddingLeft: '250px',
     paddingBottom:'20px'
   },
   topSpacing10:{
-   position:"fixed",
-   top:"50%",
-   left:"50%",
-
+    paddingTop:"45px"
   },
   red: {
-    color: theme.palette.getContrastText(red[900]),
-    backgroundColor: red[900],
-    width: theme.spacing(10),
-    height: theme.spacing(10)
+    color: theme.palette.getContrastText(grey[600]),
+    backgroundColor: grey[600],
+    width: theme.spacing(8),
+    height: theme.spacing(8)
     
   },
   green: {
-    color: theme.palette.getContrastText(green[900]),
-    backgroundColor: green[900],
-    width: theme.spacing(10),
-    height: theme.spacing(10)
+    color: theme.palette.getContrastText(grey[700]),
+    backgroundColor: grey[700],
+    width: theme.spacing(8),
+    height: theme.spacing(8)
   },
   blue: {
-    color: theme.palette.getContrastText(blue[900]),
-    backgroundColor: blue[900],
-    width: theme.spacing(10),
-    height: theme.spacing(10)
+    color: theme.palette.getContrastText(grey[800]),
+    backgroundColor: grey[800],
+    width: theme.spacing(8),
+    height: theme.spacing(8)
   },
   grey: {
     color: theme.palette.getContrastText(grey[900]),
     backgroundColor: grey[900],
-    width: theme.spacing(10),
-    height: theme.spacing(10)
+    width: theme.spacing(8),
+    height: theme.spacing(8)
   },
   centreSpacing:{
     paddingTop: "5%",
     paddingLeft: "39%"
   },
   bigLabel:{
-    fontSize:"45px"
+    fontSize:"35px"
   },
   bigText:{
-    paddingTop:"10px",
     textAlign: 'center',
     fontSize:"25px",
     fontWeight:"bold"
@@ -79,76 +76,96 @@ const useStyles = makeStyles((theme) => ({
     // position:"absolute",
     // left:"350px",
     // top:"25px"
-    background:"green",
+    width:"100%"
     
   },
   parentClass:{
-      background:"yellow",
       height:"100%",
-      textAlign:"centre"
   }
 }));
 
 function AboutUs() {
   const classes = useStyles();
-
+  const message = "Hello there!";
   return (
     <div className={classes.parentClass}>
       <div><h1><strong>About us</strong></h1></div>
-      <div className={classes.centrePosition}>
-          <Grid container spacing={3}>
-            <Grid item xs={3}>
-              <Paper className={classes.paper} >
-               <div className={classes.centreSpacing}>
-                <Avatar className={classes.red}>
-                  <label className={classes.bigLabel}>A</label>
-                </Avatar>   
-               </div>
-               <div className={classes.bigText}>Akhil Hassan V S</div>
-               <div className={classes.smallText}>16PW05</div>
-               <div className={classes.smallText}>MSc Software Systems</div>
-              </Paper>
-            </Grid>
-            <Grid item xs={3}>
-              <Paper className={classes.paper}>
-               <div className={classes.centreSpacing}>
-                <Avatar className={classes.green}>
-                  <label className={classes.bigLabel}>A</label>
-                </Avatar>   
-               </div>
-               <div className={classes.bigText}>Ashwin Kumar N</div>
-               <div className={classes.smallText}>16PW07</div>
-               <div className={classes.smallText}>MSc Software Systems</div>
-              </Paper>
-            </Grid>            
+      <div className={classes.topSpacing10}>
+        <Grid container spacing={3}>
+          <Grid item xs={6} sm={3}>
+            <Paper className={classes.paper}>
+              <Grid container wrap="nowrap" spacing={2}>
+                <Grid item className={classes.topSpacing10}>
+                  <div>
+                    <Avatar className={classes.red}>
+                      <label className={classes.bigLabel}>A</label>
+                    </Avatar>
+                  </div>
+                </Grid>
+                <Grid item >
+                  <div className={classes.bigText}>Akhil Hassan V S</div>
+                  <div className={classes.smallText}>16PW05</div>
+                  <div className={classes.smallText}>MSc Software Systems</div>
+                </Grid>
+              </Grid>
+            </Paper>
           </Grid>
-          <Grid container spacing={3}>
-            <Grid item xs={3}>
-                <Paper className={classes.paper}>
-                <div className={classes.centreSpacing}>
-                  <Avatar className={classes.blue}>
-                    <label className={classes.bigLabel}>H</label>
-                  </Avatar>   
-                </div>
-                <div className={classes.bigText}>Harish G</div>
-                <div className={classes.smallText}>16PW13</div>
-                <div className={classes.smallText}>MSc Software Systems</div>
-                </Paper>
+          <Grid item xs={6} sm={3}>
+            <Paper className={classes.paper}>
+              <Grid container wrap="nowrap" spacing={2}>
+                  <Grid item className={classes.topSpacing10}>
+                    <div>
+                      <Avatar className={classes.green}>
+                        <label className={classes.bigLabel}>A</label>
+                      </Avatar>
+                    </div>
+                  </Grid>
+                  <Grid item >
+                    <div className={classes.bigText}>Ashwin Kumar N</div>
+                    <div className={classes.smallText}>16PW07</div>
+                    <div className={classes.smallText}>MSc Software Systems</div>
+                  </Grid>
+                </Grid>
+            </Paper>
+          </Grid>
+          <Grid item xs={6} sm={3}>
+            <Paper className={classes.paper}>
+              <Grid container wrap="nowrap" spacing={2}>
+                <Grid item className={classes.topSpacing10}>
+                  <div>
+                    <Avatar className={classes.blue}>
+                      <label className={classes.bigLabel}>H</label>
+                    </Avatar>
+                  </div>
+                </Grid>
+                <Grid item >
+                  <div className={classes.bigText}>Harish G</div>
+                  <div className={classes.smallText}>16PW13</div>
+                  <div className={classes.smallText}>MSc Software Systems</div>
+                </Grid>
               </Grid>
-              <Grid item xs={3} >
-                <Paper className={classes.paper}>
-                <div className={classes.centreSpacing}>
-                  <Avatar className={classes.grey}>
-                    <label className={classes.bigLabel}>S</label>
-                  </Avatar>   
-                </div>
-                <div className={classes.bigText}>Sree Deepack R</div>
-                <div className={classes.smallText}>16PW35</div>
-                <div className={classes.smallText}>MSc Software Systems</div>
-                </Paper>
+            </Paper>
+          </Grid>
+          <Grid item xs={6} sm={3}>
+            <Paper className={classes.paper}>
+             <Grid container wrap="nowrap" spacing={2}>
+                <Grid item className={classes.topSpacing10}>
+                  <div>
+                    <Avatar className={classes.grey}>
+                      <label className={classes.bigLabel}>S</label>
+                    </Avatar>
+                  </div>
+                </Grid>
+                <Grid item >
+                  <div className={classes.bigText}>Sree Deepack R</div>
+                  <div className={classes.smallText}>16PW35</div>
+                  <div className={classes.smallText}>MSc Software Systems</div>
+                </Grid>
               </Grid>
-            </Grid>
-      </div>
+            </Paper>
+          </Grid>
+        </Grid>
+    </div>       
     </div>
   );
 }
