@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeStyles, Paper } from '@material-ui/core';
+import GitHubIcon from '@material-ui/icons/GitHub';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,6 +57,16 @@ function Home() {
             <p><em><span className={classes.fontSize20}> &nbsp; &nbsp; &nbsp; &nbsp; This will help students to easily find a particular clip in the video.</span></em></p>
           </div>          
         </Paper>     
+        <br/>
+        <Paper className={classes.paper}>
+          <div className={classes.spacing10}></div>
+          {/* Link to github */}
+          <div className={classes.spacing20}>
+            <a href="https://github.com/Acquil/deep-read">
+              <h1>Follow this project on GitHub <GitHubIcon/></h1>        
+            </a>
+          </div>
+        </Paper>
       </div>      
     </div>
   );
