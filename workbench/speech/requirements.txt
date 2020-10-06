@@ -3,4 +3,5 @@ pydub
 pandas
 flask
 flask-restx
-
+gdown
+filetype

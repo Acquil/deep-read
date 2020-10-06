@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from vosk import Model, KaldiRecognizer, SetLogLevel
-from audiosplitter import SplitWavAudio
+from core.audiosplitter import SplitWavAudio
 from multiprocessing import Pool, Process
 from shutil import copyfile, rmtree
 import sys
@@ -166,7 +166,9 @@ class Recognizer:
         Split audio into chunks. Uses audiosplitter.py
         '''
         os.mkdir(folder)
-        copyfile(file, f"{folder}/{file}")
+        # copy file to directory but without folder prefixes
+        copyfile(file, f"{folder}/{file.split('/')[-1]}")
+        file = file.split('/')[-1]
         split_wav = SplitWavAudio(folder, file)
         # //TODO audio files should not be split in the middle of a word. See split_silence(min_per_split)
         number_of_splits = split_wav.multiple_split(min_per_split)
@@ -215,12 +217,12 @@ class Recognizer:
             files = self.__get_segments(
                 number_of_splits = n_splits,
                 folder = self.__folder,
-                file = self.file
+                file = self.file.split("/")[-1]
             )
             # Map to worker pool
             p = Pool(self.workers) 
             result = p.map(self.transcribe_chunks, files)   
-            
+            # //TODO sort all timestamps. Take care of segments
             df = pd.DataFrame(result)
             self.transcript = df[0].tolist()
             # Flatten list of list of dicts to list of dicts
