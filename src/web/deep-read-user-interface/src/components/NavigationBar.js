@@ -22,6 +22,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import DraftsSharpIcon from '@material-ui/icons/DraftsSharp';
 import PeopleAltSharpIcon from '@material-ui/icons/PeopleAltSharp';
 import HomeSharpIcon from '@material-ui/icons/HomeSharp';
+import KeyboardArrowRightSharpIcon from '@material-ui/icons/KeyboardArrowRightSharp';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 
@@ -180,7 +181,7 @@ export default function NavigationBar() {
               <Link to="/startdeepread" className={classes.linkWithoutStyle} >
                 <ListItem button>
                   <ListItemIcon>
-                    <DraftsSharpIcon />
+                    <KeyboardArrowRightSharpIcon />
                   </ListItemIcon>
                   <div className={classes.textElementSmall}>
                     Start deep-read
