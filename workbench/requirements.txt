@@ -1,3 +1,6 @@
 vosk
 pydub
 pandas
+flask
+flask-restx
+
