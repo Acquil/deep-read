@@ -17,13 +17,13 @@ echo -e "\n---------------------------------------------------------------------
 echo "Checking for speech-venv"
 echo -e "---------------------------------------------------------------------"
 
-DIRECTORY="../speech-venv"
+DIRECTORY="speech-venv"
 if [ ! -d "$DIRECTORY" ]; then
 # Control will enter here if $DIRECTORY doesn't exist.
     echo "Setting up venv"
-    python3 -m venv ../speech-venv
-    source ../speech-venv/bin/activate
-    pip install -r ../requirements.txt
+    python3 -m venv ./speech-venv
+    source ./speech-venv/bin/activate
+    pip install -r ./requirements.txt
 fi
 
 echo -e "\n---------------------------------------------------------------------"
@@ -36,22 +36,24 @@ if [ ! -d "$DIRECTORY_GENERIC" ]; then
     wget http://alphacephei.com/vosk/models/vosk-model-small-en-us-0.3.zip
     unzip vosk-model-small-en-us-0.3.zip
     mv vosk-model-small-en-us-0.3 model-generic
+    rm vosk-model-small-en-us-0.3.zip
 fi
 if [ ! -d "$DIRECTORY_INDIAN" ]; then
     echo "Retrieving Indian Lightweight Model"
     wget https://alphacephei.com/vosk/models/vosk-model-small-en-in-0.4.zip
     unzip vosk-model-small-en-in-0.4.zip
     mv vosk-model-small-en-in-0.4 model-indian
+    rm vosk-model-small-en-in-0.4.zip
 fi
 
 echo -e "\n---------------------------------------------------------------------\n"
 
-echo "Checking for sample test audio: input.wav"
-if [ ! -f input.wav ]; then
-    echo "File not found! Downloading..."
-    chmod +x sample_audio.sh
-    ./sample_audio.sh
-fi
+# echo "Checking for sample test audio: input.wav"
+# if [ ! -f input.wav ]; then
+#     echo "File not found! Downloading..."
+#     chmod +x sample_audio.sh
+#     ./sample_audio.sh
+# fi
 
 
 
@@ -62,3 +64,12 @@ echo -e "---------------------------------------------------------------------"
 echo "Run source ../speech-venv/bin/activate"
 echo "and run ./speech.py [your_audio.wav]"
 echo "Audio file must be in '/speech' directory"
+
+echo -e "---------------------------------------------------------------------"
+chmod +x app.py
+read -p "Run flask application? (Y/N)" yn
+case $yn in
+        [Yy]* ) ./app.py; break;;
+        [Nn]* ) exit;;
+        * ) echo "Assuming that's a no...exiting";;
+esac
