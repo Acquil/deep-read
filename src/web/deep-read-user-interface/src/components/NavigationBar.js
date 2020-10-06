@@ -1,11 +1,10 @@
 import React from 'react';
 import '../App.css';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import AboutUs from '../pages/AboutUs';
 import Home from '../pages/Home';
 import StartDeepRead from '../pages/StartDeepRead'
-import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -20,20 +19,12 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import ListItemText from '@material-ui/core/ListItemText';
-import MailIcon from '@material-ui/icons/Mail';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from '@material-ui/core/Collapse';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SendIcon from '@material-ui/icons/Send';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import StarBorder from '@material-ui/icons/StarBorder';
 import DraftsSharpIcon from '@material-ui/icons/DraftsSharp';
 import PeopleAltSharpIcon from '@material-ui/icons/PeopleAltSharp';
 import HomeSharpIcon from '@material-ui/icons/HomeSharp';
+import KeyboardArrowRightSharpIcon from '@material-ui/icons/KeyboardArrowRightSharp';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+
 
 
 
@@ -85,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: -drawerWidth,
+    marginLeft: -drawerWidth
   },
   contentShift: {
     transition: theme.transitions.create('margin', {
@@ -94,19 +85,23 @@ const useStyles = makeStyles((theme) => ({
     }),
     marginLeft: 0,
   },
-  rightFloatElement:{
-    position:"absolute",
-    right:"10px"
+  rightFloatElement: {
+    position: "absolute",
+    right: "10px"
   },
-  textElementBig:{
+  textElementBig: {
     position: "absolute",
     left: "20px",
-    fontSize:"20px",
-    fontWeight:"bold"
+    fontSize: "20px",
+    fontWeight: "bold"
   },
-  textElementSmall:{
-    fontSize:"15px",
-    fontWeight:"bold"
+  textElementSmall: {
+    fontSize: "15px",
+    fontWeight: "bold"
+  },
+  linkWithoutStyle: {
+    color: 'inherit',
+    textDecoration: 'inherit'
   }
 }));
 
@@ -123,24 +118,21 @@ export default function NavigationBar() {
     setOpen(false);
   };
 
-  function ListItemLink(props) {
-    return <ListItem button component="a" {...props} />;
-  }
-
-
   return (
-      <>
+    <>
       <Router>
-          <div className={classes.root}>
-            <CssBaseline />
-            <AppBar
-              color="primary"
-              position="fixed"
-              className={clsx(classes.appBar, {
-                [classes.appBarShift]: open,
-              })}
-            >
-              <Toolbar >
+        <div className={classes.root}>
+          <CssBaseline />
+          <AppBar
+            color="primary"
+            position="fixed"
+            className={clsx(classes.appBar, {
+              [classes.appBarShift]: open,
+            })}
+          >
+
+            <Toolbar >
+              <ClickAwayListener onClickAway={handleDrawerClose}>
                 <IconButton
                   color="inherit"
                   aria-label="open drawer"
@@ -150,70 +142,79 @@ export default function NavigationBar() {
                 >
                   <MenuIcon />
                 </IconButton>
-                  <div className={classes.rightFloatElement}>
-                    <h1>deep-read</h1>
-                  </div>
-              </Toolbar>
-            </AppBar>
-            <Drawer
-              className={classes.drawer}
-              variant="persistent"
-              anchor="left"
-              open={open}
-              classes={{
-                paper: classes.drawerPaper,
-              }}
-            >
-              <div className={classes.drawerHeader}>
-                <div className={classes.textElementBig}>
-                  Menu
-                </div>
-                <IconButton onClick={handleDrawerClose}>
-                  {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                </IconButton>
+              </ClickAwayListener>
+              <div className={classes.rightFloatElement}>
+                <a href="/" className={classes.linkWithoutStyle}><h1>deep-read</h1></a>                
               </div>
-              <Divider />
-               <List component="nav" aria-label="main mailbox folders">
-               <ListItemLink href="/">
+            </Toolbar>
+
+          </AppBar>
+          <Drawer
+            className={classes.drawer}
+            variant="persistent"
+            anchor="left"
+            open={open}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+          >
+            <div className={classes.drawerHeader}>
+              <div className={classes.textElementBig}>
+                Menu
+                </div>
+              <IconButton onClick={handleDrawerClose}>
+                {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+              </IconButton>
+            </div>
+            <Divider />
+            <List component="nav" aria-label="main mailbox folders">
+              <Link to="/" className={classes.linkWithoutStyle} >
+                <ListItem button>
                   <ListItemIcon>
                     <HomeSharpIcon />
                   </ListItemIcon>
                   <div className={classes.textElementSmall}>
                     Home
-                  </div>
-                </ListItemLink>
-                <ListItemLink href="/startdeepread">
+                    </div>
+                </ListItem>
+              </Link>
+              <Link to="/startdeepread" className={classes.linkWithoutStyle} >
+                <ListItem button>
                   <ListItemIcon>
-                    <DraftsSharpIcon />
+                    <KeyboardArrowRightSharpIcon />
                   </ListItemIcon>
                   <div className={classes.textElementSmall}>
                     Start deep-read
                   </div>
-                </ListItemLink>
-                <ListItemLink href="/aboutus">
+                </ListItem>
+              </Link>
+              <Link to="/aboutus" className={classes.linkWithoutStyle} >
+                <ListItem button>
                   <ListItemIcon>
                     <PeopleAltSharpIcon />
                   </ListItemIcon>
                   <div className={classes.textElementSmall}>
-                    About Us
-                  </div>
-                </ListItemLink>
-              </List>
-            </Drawer>
-            <main
-              className={clsx(classes.content, {
-                [classes.contentShift]: open,
-              })}
-            >
-              <div className={classes.drawerHeader} />
-              <Switch>
+                    About us
+                    </div>
+                </ListItem>
+              </Link>
+            </List>
+          </Drawer>
+
+          <main
+            className={clsx(classes.content, {
+              [classes.contentShift]: open,
+            })}
+          >
+            <div className={classes.drawerHeader} />
+            <Switch>
               <Route path='/' exact component={Home} />
               <Route path='/startdeepread' exact component={StartDeepRead} />
               <Route path='/aboutus' component={AboutUs} />
             </Switch>
-            </main>
-          </div>
-    </Router>
-</>
+          </main>
+        </div>
+      </Router>
+    </>
   );
 }
