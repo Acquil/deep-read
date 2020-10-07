@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
   },
   rightFloatElement: {
     position: "absolute",
-    right: "10px"
+    right: "10px",
   },
   textElementBig: {
     position: "absolute",
