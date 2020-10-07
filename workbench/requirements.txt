@@ -1,3 +1,0 @@
-vosk
-wave
-json

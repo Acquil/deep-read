@@ -105,10 +105,11 @@ celerybeat.pid
 .env
 .venv
 env/
-*venv/
+venv/
 ENV/
 env.bak/
 venv.bak/
+venv-01/
 
 # Spyder project settings
 .spyderproject
@@ -140,6 +141,9 @@ model*/
 *.wav
 *.mp4
 *.m4a
+*.avi
+*.mp3
 
 # transcript
-transcript.*
+core/temp/.*
+core/temp/*json
