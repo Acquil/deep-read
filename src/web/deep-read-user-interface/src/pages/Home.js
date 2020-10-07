@@ -27,6 +27,15 @@ const useStyles = makeStyles((theme) => ({
   },
   paper:{
     background: '#eeeeee'
+  },
+  linkWithoutStyle: {
+    color: 'inherit',
+    textDecoration: 'inherit'
+  },
+  rightBottom:{
+    position:"absolute",
+    paddingRight:"24px",
+    right:"0"
   }
 }));
 
@@ -58,16 +67,12 @@ function Home() {
           </div>          
         </Paper>     
         <br/>
-        <Paper className={classes.paper}>
-          <div className={classes.spacing10}></div>
-          {/* Link to github */}
-          <div className={classes.spacing20}>
-            <a href="https://github.com/Acquil/deep-read">
-              <h1>Follow this project on GitHub <GitHubIcon/></h1>        
-            </a>
-          </div>
-        </Paper>
-      </div>      
+      </div>  
+      <div className={classes.rightBottom}>
+          <a href="https://github.com/Acquil/deep-read" className={classes.linkWithoutStyle}>
+          <GitHubIcon />
+          </a>
+      </div>    
     </div>
   );
 }
