@@ -130,3 +130,18 @@ dmypy.json
 
 # vscode
 .vscode/
+
+# vosk
+model/
+model*/
+*.zip
+
+# audio and video
+*.wav
+*.mp4
+*.m4a
+*.avi
+*.mp3
+
+# transcript
+core/temp/
