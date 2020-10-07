@@ -29,7 +29,7 @@ class RecognizerSegment:
         self.transcript = ""
         self.timestamped_text = []
         # Remove logging
-        SetLogLevel(0)
+        SetLogLevel(-1)
     
     def to_valid_audio(self):
         '''
