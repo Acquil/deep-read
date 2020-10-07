@@ -92,7 +92,7 @@ function AboutUs() {
       <div><h1><strong>About us</strong></h1></div>
       <div className={classes.topSpacing10}>
         <Grid container spacing={3}>
-          <Grid item xs={6} sm={3}>
+          {/* <Grid item xs>
             <Paper className={classes.paper}>
               <Grid container wrap="nowrap" spacing={2}>
                 <Grid item className={classes.topSpacing10}>
@@ -102,15 +102,33 @@ function AboutUs() {
                     </Avatar>
                   </div>
                 </Grid>
-                <Grid item >
+                <Grid>
                   <div className={classes.bigText}>Akhil Hassan V S</div>
                   <div className={classes.smallText}>16PW05</div>
                   <div className={classes.smallText}>MSc Software Systems</div>
                 </Grid>
               </Grid>
             </Paper>
+          </Grid> */}
+          <Grid item xs>
+            <Paper className={classes.paper}>
+              <Grid container wrap="nowrap" spacing={2}>
+                  <Grid item className={classes.topSpacing10}>
+                    <div>
+                      <Avatar className={classes.red}>
+                        <label className={classes.bigLabel}>A</label>
+                      </Avatar>
+                    </div>
+                  </Grid>
+                  <Grid item>
+                    <div className={classes.bigText}>Akhil Hassan V S</div>
+                    <div className={classes.smallText}>16PW05</div>
+                    <div className={classes.smallText}>MSc Software Systems</div>
+                  </Grid>
+                </Grid>
+            </Paper>
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs>
             <Paper className={classes.paper}>
               <Grid container wrap="nowrap" spacing={2}>
                   <Grid item className={classes.topSpacing10}>
@@ -120,7 +138,7 @@ function AboutUs() {
                       </Avatar>
                     </div>
                   </Grid>
-                  <Grid item >
+                  <Grid item>
                     <div className={classes.bigText}>Ashwin Kumar N</div>
                     <div className={classes.smallText}>16PW07</div>
                     <div className={classes.smallText}>MSc Software Systems</div>
@@ -128,7 +146,7 @@ function AboutUs() {
                 </Grid>
             </Paper>
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs>
             <Paper className={classes.paper}>
               <Grid container wrap="nowrap" spacing={2}>
                 <Grid item className={classes.topSpacing10}>
@@ -138,7 +156,7 @@ function AboutUs() {
                     </Avatar>
                   </div>
                 </Grid>
-                <Grid item >
+                <Grid item>
                   <div className={classes.bigText}>Harish G</div>
                   <div className={classes.smallText}>16PW13</div>
                   <div className={classes.smallText}>MSc Software Systems</div>
@@ -146,7 +164,7 @@ function AboutUs() {
               </Grid>
             </Paper>
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs>
             <Paper className={classes.paper}>
              <Grid container wrap="nowrap" spacing={2}>
                 <Grid item className={classes.topSpacing10}>
@@ -156,7 +174,7 @@ function AboutUs() {
                     </Avatar>
                   </div>
                 </Grid>
-                <Grid item >
+                <Grid item>
                   <div className={classes.bigText}>Sree Deepack R</div>
                   <div className={classes.smallText}>16PW35</div>
                   <div className={classes.smallText}>MSc Software Systems</div>
