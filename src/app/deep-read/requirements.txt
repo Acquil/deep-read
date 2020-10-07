@@ -1,0 +1,9 @@
+vosk
+pydub
+pandas
+pymongo
+dnspython
+flask
+flask-restx
+gdown
+filetype
