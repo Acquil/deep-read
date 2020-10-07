@@ -1,9 +1,23 @@
 from flask import Flask, jsonify
 from flask_restx import Resource, Namespace, fields #https://flask-restx.readthedocs.io/en/latest/quickstart.html
 from core.speech import Recognizer
+import pymongo
 import os
 import json
 
+from db import DRVideoNotFound, DRVideo
+from db.factory import create_repository
+from settings import REPOSITORY_NAME, REPOSITORY_SETTINGS
+
+repository = create_repository(REPOSITORY_NAME, REPOSITORY_SETTINGS)
+
+
+# MongoDB
+# client = pymongo.MongoClient("mongodb+srv://user01:bl4ck4dd3r@cluster0-kooqx.mongodb.net/test?retryWrites=true&w=majority")
+# db = client.sample_training
+# collection = db.zips
+
+# Namespace
 api = Namespace('speech', description='Speech transcription related operations')
 
 transcribe = api.model('Transcript', {
@@ -11,6 +25,8 @@ transcribe = api.model('Transcript', {
     'transcript_times': fields.String(required=True, description= 'Transcript with words and timestamps'),
 })
 
+
+@api.errorhandler(DRVideoNotFound)
 @api.route('/post/<path:file>&<model>&<int:minutes_per_split>')
 @api.param('model','Model to be used for speech')
 @api.param('minutes_per_split','Number of minutes per split')
@@ -18,12 +34,15 @@ transcribe = api.model('Transcript', {
 class SpeechTranscript(Resource):
     
     # @api.marshal_with(transcribe, envelope = 'resource')
-    def post(self, minutes_per_split, model, file):
+    def post(self, minutes_per_split, model, file):        
+        gid = file
         # check if file exists else
         file = f"core/temp/{file}.wav"
         if not os.path.isfile(file):
             api.abort(404)
         
+        doc = DRVideo(gid=gid, transcript="", status='In Process')
+        repository.upload_one(doc)
         
         # return {'transcript_id':'1', 'file_id':'12'}
         # Transcribe
@@ -39,21 +58,37 @@ class SpeechTranscript(Resource):
             'transcript': r.transcript,
             'transcript_times': json.loads(r.timestamped_text)
             }
+        
+        # doc = {
+        #         'gid': gid,
+        #         'transcript': output,
+        #         'images':None,
+        #         'duration':None
+        #     }
+        doc = DRVideo(gid=gid, transcript=output, status='Success')
+        # collection.insert_one(output)
         #//TODO replace with async/celery tasks and db
-        with open(f'{file}.json', 'w') as f:
-            f.write(output)
+        # with open(f'{file}.json', 'w') as f:
+            # f.write(output)
+
+        repository.update(dr_key = gid, field= 'transcript', data=output)
+        repository.update(dr_key = gid, field= 'status', data="Success")
         return output
 
 
+@api.errorhandler(DRVideoNotFound)
 @api.route('/get/<file_id>')
 @api.param('file_id','File ID')
 class SpeechTranscriptResponse(Resource):
 
-    # @api.marshal_with(transcribe, envelope='resource')
     def get(self, file_id):
-        file = f"core/temp/{file_id}.wav.json"
-        if not os.path.isfile(file):
-            api.abort(404)
 
-        data = json.load(open(file))
+        # file = f"core/temp/{file_id}.wav.json"
+        # if not os.path.isfile(file):
+        #     api.abort(404)
+
+        # data = json.load(open(file))
+
+        data = repository.get_transcript(file_id)
+
         return jsonify(data)
