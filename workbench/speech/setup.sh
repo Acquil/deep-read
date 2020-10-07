@@ -14,19 +14,6 @@ if [ "" = "$PKG_OK" ]; then
 fi
 
 echo -e "\n---------------------------------------------------------------------"
-echo "Checking for venv"
-echo -e "---------------------------------------------------------------------"
-
-DIRECTORY="venv"
-if [ ! -d "$DIRECTORY" ]; then
-# Control will enter here if $DIRECTORY doesn't exist.
-    echo "Setting up venv"
-    python3 -m venv ./venv
-    source ./venv/bin/activate
-    pip install -r ./requirements.txt
-fi
-
-echo -e "\n---------------------------------------------------------------------"
 echo "Checking for VOSK models"
 echo -e "---------------------------------------------------------------------"
 
@@ -45,6 +32,21 @@ if [ ! -d "$DIRECTORY_INDIAN" ]; then
     mv vosk-model-small-en-in-0.4 model-indian
     rm vosk-model-small-en-in-0.4.zip
 fi
+
+
+echo -e "\n---------------------------------------------------------------------"
+echo "Checking for venv"
+echo -e "---------------------------------------------------------------------"
+
+DIRECTORY="venv-01"
+if [ ! -d "$DIRECTORY" ]; then
+# Control will enter here if $DIRECTORY doesn't exist.
+    echo "Setting up venv"
+    python3 -m venv ./venv-01
+    source ./venv-01/bin/activate
+    pip install -r ./requirements.txt
+fi
+
 
 # echo -e "\n---------------------------------------------------------------------\n"
 # Other dependencies go here

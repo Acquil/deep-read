@@ -11,13 +11,13 @@ file = api.model('File ID', {
 })
 
 
-@api.route('/g-drive/<path:id>')
-@api.param('id', 'Google drive link')
+@api.route('/g-drive/<path:link>')
+@api.param('link', 'Google drive link')
 class Url(Resource):
     @api.marshal_with(file)
-    def post(self, id):
+    def post(self, link):
         # Get id of file
-        id = id.split("/")[-2]
+        id = link.split("/")[-2]
         url = 'https://drive.google.com/uc?id={}'.format(id)
         output = f"core/temp/{id}"
         gdown.download(url, output, quiet=True)

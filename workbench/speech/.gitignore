@@ -144,4 +144,5 @@ model*/
 *.mp3
 
 # transcript
-core/temp/*
+core/temp/.*
+core/temp/*json

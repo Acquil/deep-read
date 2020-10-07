@@ -1,9 +1,9 @@
 vosk
 pydub
 pandas
+pymongo
+dnspython
 flask
 flask-restx
 gdown
 filetype
-pymongo==3.10.1
-bson==0.5.8
