@@ -42,8 +42,8 @@ DIRECTORY="venv-01"
 if [ ! -d "$DIRECTORY" ]; then
 # Control will enter here if $DIRECTORY doesn't exist.
     echo "Setting up venv"
-    python3 -m venv ./venv-01
-    source ./venv-01/bin/activate
+    python3 -m venv ./venv
+    source ./venv/bin/activate
     pip install -r ./requirements.txt
 fi
 
