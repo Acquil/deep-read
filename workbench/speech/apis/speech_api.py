@@ -44,7 +44,6 @@ class SpeechTranscript(Resource):
         doc = DRVideo(gid=gid, transcript="", status='In Process')
         repository.upload_one(doc)
         
-        # return {'transcript_id':'1', 'file_id':'12'}
         # Transcribe
         r = Recognizer(
             wav_audio = file, 
@@ -53,24 +52,16 @@ class SpeechTranscript(Resource):
             model = model
         )
         r.transcribe()
+        
         # load again to prevent double-encoding
         output = {
             'transcript': r.transcript,
             'transcript_times': json.loads(r.timestamped_text)
             }
         
-        # doc = {
-        #         'gid': gid,
-        #         'transcript': output,
-        #         'images':None,
-        #         'duration':None
-        #     }
-        doc = DRVideo(gid=gid, transcript=output, status='Success')
-        # collection.insert_one(output)
         #//TODO replace with async/celery tasks and db
-        # with open(f'{file}.json', 'w') as f:
-            # f.write(output)
-
+        
+        # //TODO more efficient way?
         repository.update(dr_key = gid, field= 'transcript', data=output)
         repository.update(dr_key = gid, field= 'status', data="Success")
         return output
@@ -83,12 +74,5 @@ class SpeechTranscriptResponse(Resource):
 
     def get(self, file_id):
 
-        # file = f"core/temp/{file_id}.wav.json"
-        # if not os.path.isfile(file):
-        #     api.abort(404)
-
-        # data = json.load(open(file))
-
         data = repository.get_transcript(file_id)
-
         return jsonify(data)
