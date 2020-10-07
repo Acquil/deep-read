@@ -13,7 +13,8 @@ REPOSITORY_NAME = environ.get('REPOSITORY_NAME', 'memory')
 if REPOSITORY_NAME == 'mongodb':
     REPOSITORY_SETTINGS = {
         'MONGODB_HOST': environ.get('MONGODB_HOST', None),
-        'MONGODB_DATABASE': environ.get('MONGODB_DATABASE', 'deep_read'),
+        'MONGODB_DATABASE': environ.get('MONGODB_DATABASE', 'test'),
+        'MONGODB_COLLECTION': environ.get('MONGODV_COLLECTION', 'videos')
     }
 elif REPOSITORY_NAME == 'memory':
     REPOSITORY_SETTINGS = {}
