@@ -28,7 +28,8 @@ class RecognizerSegment:
         
         self.transcript = ""
         self.timestamped_text = []
-        
+        # Remove logging
+        SetLogLevel(0)
     
     def to_valid_audio(self):
         '''
@@ -180,10 +181,13 @@ class Recognizer:
         Get the filenames of segments
         '''
         files = []
-        files = os.listdir(folder)
+        files = sorted(os.listdir(folder))
         files.remove(file)
-        files = list(map(lambda x: folder+"/"+x, files))
-        return files
+        # files = list(map(lambda x: folder+"/"+x, files))
+        temp = []
+        for i in range(len(files)):
+            temp.append(str(i)+ " "+ folder+"/"+files[i])
+        return temp
 
 
     def transcribe_chunks(self, files):
@@ -193,10 +197,10 @@ class Recognizer:
         Returns:
             transcript
         '''
-        filename = files
+        uid, filename = files.split()
         r = RecognizerSegment(wav_audio = filename)
         r.transcribe()
-        return (r.transcript, r.get_timestamped_text())
+        return (uid, r.transcript, r.get_timestamped_text())
 
 
     def transcribe(self):
@@ -222,11 +226,24 @@ class Recognizer:
             # Map to worker pool
             p = Pool(self.workers) 
             result = p.map(self.transcribe_chunks, files)   
-            # //TODO sort all timestamps. Take care of segments
+            
             df = pd.DataFrame(result)
-            self.transcript = df[0].tolist()
+            
+            def add_time(i,ld):
+                for d in ld:
+                    d['start'] = d['start']+60*int(i)
+                    d['end'] = d['end']+60*int(i)
+
+                return ld
+
+            df[2] = df.apply(lambda x: add_time(x[0],x[2]), axis=1)
+            df = df.set_index(0)
+            df = df.sort_index()
+            # Finish sorting
+
+            self.transcript = df[1].tolist()
             # Flatten list of list of dicts to list of dicts
-            self.timestamped_text = [item for sublist in df[1].tolist() for item in sublist]
+            self.timestamped_text = [item for sublist in df[2].tolist() for item in sublist]
             self.timestamped_text = json.dumps(self.timestamped_text)
             # cleanup
             p.close()
