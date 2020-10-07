@@ -14,15 +14,15 @@ if [ "" = "$PKG_OK" ]; then
 fi
 
 echo -e "\n---------------------------------------------------------------------"
-echo "Checking for speech-venv"
+echo "Checking for venv"
 echo -e "---------------------------------------------------------------------"
 
-DIRECTORY="speech-venv"
+DIRECTORY="venv"
 if [ ! -d "$DIRECTORY" ]; then
 # Control will enter here if $DIRECTORY doesn't exist.
     echo "Setting up venv"
-    python3 -m venv ./speech-venv
-    source ./speech-venv/bin/activate
+    python3 -m venv ./venv
+    source ./venv/bin/activate
     pip install -r ./requirements.txt
 fi
 
@@ -46,26 +46,15 @@ if [ ! -d "$DIRECTORY_INDIAN" ]; then
     rm vosk-model-small-en-in-0.4.zip
 fi
 
-echo -e "\n---------------------------------------------------------------------\n"
-
-# echo "Checking for sample test audio: input.wav"
-# if [ ! -f input.wav ]; then
-#     echo "File not found! Downloading..."
-#     chmod +x sample_audio.sh
-#     ./sample_audio.sh
-# fi
-
+# echo -e "\n---------------------------------------------------------------------\n"
+# Other dependencies go here
+# echo -e "\n---------------------------------------------------------------------\n"
 
 
 echo -e "\n---------------------------------------------------------------------"
 echo "Done"
 echo -e "---------------------------------------------------------------------"
 
-echo "Run source ../speech-venv/bin/activate"
-echo "and run ./speech.py [your_audio.wav]"
-echo "Audio file must be in '/speech' directory"
-
-echo -e "---------------------------------------------------------------------"
 chmod +x app.py
 read -p "Run flask application? (Y/N)" yn
 case $yn in
