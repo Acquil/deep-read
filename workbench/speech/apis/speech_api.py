@@ -35,16 +35,25 @@ class SpeechTranscript(Resource):
         )
         r.transcribe()
         # load again to prevent double-encoding
-        return {
+        output = {
             'transcript': r.transcript,
             'transcript_times': json.loads(r.timestamped_text)
             }
+        #//TODO replace with async/celery tasks and db
+        with open(f'{file}.json', 'w') as f:
+            f.write(output)
+        return output
 
 
 @api.route('/get/<file_id>')
 @api.param('file_id','File ID')
 class SpeechTranscriptResponse(Resource):
 
-    @api.marshal_with(transcribe, envelope='resource')
+    # @api.marshal_with(transcribe, envelope='resource')
     def get(self, file_id):
-        return {'transcript_id':'1', 'file_id':'12'}
+        file = f"core/temp/{file_id}.wav.json"
+        if not os.path.isfile(file):
+            api.abort(404)
+
+        data = json.load(open(file))
+        return jsonify(data)
