@@ -4,8 +4,8 @@ from .speech_api import api as ns2
 
 api = Api(
     version="0.1.1",
-    title="G-Drive and Transcription APIs",
-    description="For uploading files and text transcription."
+    title="Deep Speech APIs",
+    description="APIs For uploading files, text transcription, summarization and MCQ generation."
 )
 
 api.add_namespace(ns1)
