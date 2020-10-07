@@ -91,25 +91,7 @@ function AboutUs() {
     <div className={classes.parentClass}>
       <div><h1><strong>About us</strong></h1></div>
       <div className={classes.topSpacing10}>
-        <Grid container spacing={3}>
-          {/* <Grid item xs>
-            <Paper className={classes.paper}>
-              <Grid container wrap="nowrap" spacing={2}>
-                <Grid item className={classes.topSpacing10}>
-                  <div>
-                    <Avatar className={classes.red}>
-                      <label className={classes.bigLabel}>A</label>
-                    </Avatar>
-                  </div>
-                </Grid>
-                <Grid>
-                  <div className={classes.bigText}>Akhil Hassan V S</div>
-                  <div className={classes.smallText}>16PW05</div>
-                  <div className={classes.smallText}>MSc Software Systems</div>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid> */}
+        <Grid container spacing={3}>         
           <Grid item xs>
             <Paper className={classes.paper}>
               <Grid container wrap="nowrap" spacing={2}>
