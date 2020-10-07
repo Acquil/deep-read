@@ -1,22 +1,18 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, Response
 from flask_restx import Resource, Namespace, fields #https://flask-restx.readthedocs.io/en/latest/quickstart.html
 from core.speech import Recognizer
 import pymongo
 import os
 import json
 
+from threading import Thread
+
 from db import DRVideoNotFound, DRVideo
 from db.factory import create_repository
 from settings import REPOSITORY_NAME, REPOSITORY_SETTINGS
 
+# DB
 repository = create_repository(REPOSITORY_NAME, REPOSITORY_SETTINGS)
-
-
-# MongoDB
-# client = pymongo.MongoClient("mongodb+srv://user01:bl4ck4dd3r@cluster0-kooqx.mongodb.net/test?retryWrites=true&w=majority")
-# db = client.sample_training
-# collection = db.zips
-
 # Namespace
 api = Namespace('speech', description='Speech transcription related operations')
 
@@ -33,7 +29,7 @@ transcribe = api.model('Transcript', {
 @api.param('file','File to be transcribed')
 class SpeechTranscript(Resource):
     
-    # @api.marshal_with(transcribe, envelope = 'resource')
+
     def post(self, minutes_per_split, model, file):        
         gid = file
         # check if file exists else
@@ -44,6 +40,13 @@ class SpeechTranscript(Resource):
         doc = DRVideo(gid=gid, transcript="", status='In Process')
         repository.upload_one(doc)
         
+        Thread(target = self.transcribe_task, args=(file, minutes_per_split, model, gid)).start()
+        return {
+            'status':'running'
+        }
+
+    # Thread to spawn more processes and transcribe in background
+    def transcribe_task(self, file, minutes_per_split, model, gid):
         # Transcribe
         r = Recognizer(
             wav_audio = file, 
@@ -59,12 +62,10 @@ class SpeechTranscript(Resource):
             'transcript_times': json.loads(r.timestamped_text)
             }
         
-        #//TODO replace with async/celery tasks and db
-        
         # //TODO more efficient way?
         repository.update(dr_key = gid, field= 'transcript', data=output)
         repository.update(dr_key = gid, field= 'status', data="Success")
-        return output
+        print('Transcribed')
 
 
 @api.errorhandler(DRVideoNotFound)
@@ -73,6 +74,5 @@ class SpeechTranscript(Resource):
 class SpeechTranscriptResponse(Resource):
 
     def get(self, file_id):
-
         data = repository.get_transcript(file_id)
         return jsonify(data)

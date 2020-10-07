@@ -1,4 +1,6 @@
 from flask_restx import Namespace, Resource, fields
+from flask import Response
+import time
 import gdown
 import filetype
 import os
@@ -22,3 +24,16 @@ class Url(Resource):
             'msg': 'Hello',
             'type': 'GET'
         }
+
+        
+    def put(self,id):
+        def generate():
+            print('request started')
+            api.logger.info('request started')
+            for i in range(5):
+                time.sleep(1)
+                yield str(i)
+            print('request finished')
+            api.logger.info('request finished')
+            yield ''
+        return Response(generate(), mimetype='text/plain')
