@@ -169,7 +169,7 @@ export default function NavigationBar() {
                 Menu
                 </div>
               <IconButton onClick={handleDrawerClose}>
-                {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                {theme.direction === 'ltr' ? <ChevronLeftIcon color="primary" /> : <ChevronRightIcon color="primary" />}
               </IconButton>
             </div>
             {/* <Divider /> */}

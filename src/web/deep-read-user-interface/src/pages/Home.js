@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop:'20px'
   },
   paper:{
-    background: '#ffccbc'
+    background: '#f5f5f5'
   },
   linkWithoutStyle: {
     color: 'inherit',
