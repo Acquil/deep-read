@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     width: '25ch',
   },
   paper: {
-    background: '#eeeeee',
+    background: '#f5f5f5',
     margin: `${theme.spacing(1)}px auto`,
     padding: theme.spacing(2),
 
@@ -117,7 +117,7 @@ function StartDeepRead() {
       return( <Grid item xs>
         <Paper className={classes.paper}>
           <div><TextField className={classes.fullWidthElement} id="outlined-basic" label="Google Drive Link" variant="outlined" onChange={updateGDriveTextBox} /></div>
-          <div className={classes.topSpacing10}><Button className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon />} variant="outlined"  label="Process" onClick={sendGDriveLinkAPI}>Process</Button></div>
+          <div className={classes.topSpacing10}><Button color="primary" className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon />}   label="Process" onClick={sendGDriveLinkAPI}>Process</Button></div>
         </Paper>
       </Grid>)
     // }
