@@ -22,7 +22,7 @@
 }
 
 .App-header {
-    background-color: #282c34;
+    background-color:  #4169E1;;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -46,7 +46,7 @@
 }
 
 .navbar-toggle {
-    background-color: #000000;
+    background-color:  #4169E1;
     width: 100%;
     height: 80px;
     display: flex;
@@ -65,7 +65,7 @@
 }
 
 .nav-menu {
-    background-color: #000000;
+    background-color: #4169E1;
     width: 250px;
     height: 100vh;
     display: flex;
@@ -74,4 +74,8 @@
     top: 0;
     left: -100%;
     transition: 850ms;
+}
+
+.MuiDrawer-paper{
+    background-color: brown;
 }

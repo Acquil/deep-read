@@ -26,8 +26,6 @@ import KeyboardArrowRightSharpIcon from '@material-ui/icons/KeyboardArrowRightSh
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 
-
-
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -39,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+    backgroundColor:"white"
   },
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
@@ -60,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     width: drawerWidth,
+    // backgroundColor:"#e64a19"
   },
   drawerHeader: {
     display: 'flex',
@@ -88,20 +88,28 @@ const useStyles = makeStyles((theme) => ({
   rightFloatElement: {
     position: "absolute",
     right: "10px",
+    color:"#e64a19"
   },
   textElementBig: {
     position: "absolute",
     left: "20px",
     fontSize: "20px",
-    fontWeight: "bold"
+    fontWeight: "bold",
+  },
+  whiteText:{
+    color:"white"
   },
   textElementSmall: {
     fontSize: "15px",
-    fontWeight: "bold"
+    fontWeight: "bold",
+    color:"black"
   },
   linkWithoutStyle: {
     color: 'inherit',
     textDecoration: 'inherit'
+  },
+  whiteBackground:{
+    color:"#e64a19"
   }
 }));
 
@@ -124,17 +132,15 @@ export default function NavigationBar() {
         <div className={classes.root}>
           <CssBaseline />
           <AppBar
-            color="primary"
             position="fixed"
             className={clsx(classes.appBar, {
               [classes.appBarShift]: open,
             })}
           >
-
             <Toolbar >
               <ClickAwayListener onClickAway={handleDrawerClose}>
                 <IconButton
-                  color="inherit"
+                  color="primary"
                   aria-label="open drawer"
                   onClick={handleDrawerOpen}
                   edge="start"
@@ -166,12 +172,12 @@ export default function NavigationBar() {
                 {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </IconButton>
             </div>
-            <Divider />
+            {/* <Divider /> */}
             <List component="nav" aria-label="main mailbox folders">
               <Link to="/" className={classes.linkWithoutStyle} >
                 <ListItem button>
                   <ListItemIcon>
-                    <HomeSharpIcon />
+                    <HomeSharpIcon color="primary"></HomeSharpIcon>
                   </ListItemIcon>
                   <div className={classes.textElementSmall}>
                     Home
@@ -179,10 +185,10 @@ export default function NavigationBar() {
                 </ListItem>
               </Link>
               <Link to="/startdeepread" className={classes.linkWithoutStyle} >
-                <ListItem button>
-                  <ListItemIcon>
-                    <KeyboardArrowRightSharpIcon />
-                  </ListItemIcon>
+                <ListItem button className="whiteAll">
+                  <ListItemIcon >
+                    <KeyboardArrowRightSharpIcon color="primary"/>
+                  </ListItemIcon >
                   <div className={classes.textElementSmall}>
                     Start deep-read
                   </div>
@@ -191,7 +197,7 @@ export default function NavigationBar() {
               <Link to="/aboutus" className={classes.linkWithoutStyle} >
                 <ListItem button>
                   <ListItemIcon>
-                    <PeopleAltSharpIcon />
+                    <PeopleAltSharpIcon color="primary" />
                   </ListItemIcon>
                   <div className={classes.textElementSmall}>
                     About us
