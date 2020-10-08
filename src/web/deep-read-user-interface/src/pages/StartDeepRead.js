@@ -139,13 +139,13 @@ function StartDeepRead() {
       return null;
     }
     else{
-      axios.post('http://127.0.0.1:5000/files/g-drive/', {
-        link: 'https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/view?usp=sharing'
-      }).then((responseData) => {
-        console.log(responseData)
-      }).catch(error=> {
-        console.log(error)
-      })
+      // axios.post('http://127.0.0.1:5000/files/g-drive/', {
+      //   link: 'https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/view?usp=sharing'
+      // }).then((responseData) => {
+      //   console.log(responseData)
+      // }).catch(error=> {
+      //   console.log(error)
+      // });
       return( <Grid item xs>
         <Paper className={classes.paper}>Transcripts</Paper>
       </Grid>)
