@@ -4,12 +4,14 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { createMuiTheme , ThemeProvider} from '@material-ui/core/styles';
-import grey from '@material-ui/core/colors/grey';
+import deepOrange from '@material-ui/core/colors/deepOrange';
+import indigo from '@material-ui/core/colors/indigo';
+
 
 const theme_1 = createMuiTheme({
   palette: {
     primary: {
-      main: grey[900]
+      main: deepOrange[700]
     }
   },
 });
