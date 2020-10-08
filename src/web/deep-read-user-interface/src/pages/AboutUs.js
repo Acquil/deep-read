@@ -1,6 +1,6 @@
 import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
-import { red, green, blue, grey} from '@material-ui/core/colors';
+import { red, green, blue, grey, deepOrange} from '@material-ui/core/colors';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     maxWidth: 400,
-    background: '#eeeeee',
+    background: '#f5f5f5',
     margin: `${theme.spacing(1)}px auto`,
     padding: theme.spacing(2),
   },
@@ -33,26 +33,26 @@ const useStyles = makeStyles((theme) => ({
   },
   red: {
     color: theme.palette.getContrastText(grey[600]),
-    backgroundColor: grey[600],
+    backgroundColor: deepOrange[200],
     width: theme.spacing(8),
     height: theme.spacing(8)
     
   },
   green: {
     color: theme.palette.getContrastText(grey[700]),
-    backgroundColor: grey[700],
+    backgroundColor: deepOrange[300],
     width: theme.spacing(8),
     height: theme.spacing(8)
   },
   blue: {
     color: theme.palette.getContrastText(grey[800]),
-    backgroundColor: grey[800],
+    backgroundColor: deepOrange[400],
     width: theme.spacing(8),
     height: theme.spacing(8)
   },
   grey: {
     color: theme.palette.getContrastText(grey[900]),
-    backgroundColor: grey[900],
+    backgroundColor: deepOrange[500],
     width: theme.spacing(8),
     height: theme.spacing(8)
   },
