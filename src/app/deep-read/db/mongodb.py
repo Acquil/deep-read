@@ -9,7 +9,17 @@ from . import DRVideo, DRVideoNotFound
 
 def _dr_from_doc(doc):
     """Creates a DR object from the MongoDB DR document."""
-    return DRVideo(str(doc['_id']), doc['id'], doc['transcript'], doc['duration'], doc['images'], doc['status'])
+    return DRVideo(
+        key = str(doc['_id']), 
+        id= doc['id'], 
+        transcript = doc['transcript'], 
+        duration = doc['duration'], 
+        images = doc['images'],
+        image_text = doc['image_text'],
+        summary = doc['summary'],
+        mcqs = doc['mcqs'],
+        status = doc['status'])
+    
 
 def _image_from_doc(doc):
     return None
