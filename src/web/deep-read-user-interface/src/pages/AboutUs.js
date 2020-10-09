@@ -1,6 +1,6 @@
 import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
-import { red, green, blue, grey, deepOrange} from '@material-ui/core/colors';
+import { red, green, blue, grey, deepOrange } from '@material-ui/core/colors';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -14,29 +14,29 @@ const useStyles = makeStyles((theme) => ({
     margin: `${theme.spacing(1)}px auto`,
     padding: theme.spacing(2),
   },
-  fontSize20:{
-    fontSize:"20px"
+  fontSize20: {
+    fontSize: "20px"
   },
   spacing20: {
-    paddingTop:'20px',
+    paddingTop: '20px',
     paddingLeft: '50px',
-    paddingRight:'20px',
-    paddingBottom:'20px'
+    paddingRight: '20px',
+    paddingBottom: '20px'
   },
   spacing10: {
-    paddingTop:'60px',
+    paddingTop: '60px',
     paddingLeft: '250px',
-    paddingBottom:'20px'
+    paddingBottom: '20px'
   },
-  topSpacing10:{
-    paddingTop:"45px"
+  topSpacing10: {
+    paddingTop: "45px"
   },
   red: {
     color: theme.palette.getContrastText(grey[600]),
     backgroundColor: deepOrange[200],
     width: theme.spacing(8),
     height: theme.spacing(8)
-    
+
   },
   green: {
     color: theme.palette.getContrastText(grey[700]),
@@ -56,31 +56,31 @@ const useStyles = makeStyles((theme) => ({
     width: theme.spacing(8),
     height: theme.spacing(8)
   },
-  centreSpacing:{
+  centreSpacing: {
     paddingTop: "5%",
     paddingLeft: "39%"
   },
-  bigLabel:{
-    fontSize:"35px"
+  bigLabel: {
+    fontSize: "35px"
   },
-  bigText:{
+  bigText: {
     textAlign: 'center',
-    fontSize:"25px",
-    fontWeight:"bold"
+    fontSize: "25px",
+    fontWeight: "bold"
   },
-  smallText:{
+  smallText: {
     textAlign: 'center',
-    fontSize:"20px",
+    fontSize: "20px",
   },
-  centrePosition:{
+  centrePosition: {
     // position:"absolute",
     // left:"350px",
     // top:"25px"
-    width:"100%"
-    
+    width: "100%"
+
   },
-  parentClass:{
-      height:"100%",
+  parentClass: {
+    height: "100%",
   }
 }));
 
@@ -91,41 +91,41 @@ function AboutUs() {
     <div className={classes.parentClass}>
       <div><h1><strong>About us</strong></h1></div>
       <div className={classes.topSpacing10}>
-        <Grid container spacing={3}>         
+        <Grid container spacing={3}>
           <Grid item xs>
             <Paper className={classes.paper}>
               <Grid container wrap="nowrap" spacing={2}>
-                  <Grid item className={classes.topSpacing10}>
-                    <div>
-                      <Avatar className={classes.red}>
-                        <label className={classes.bigLabel}>A</label>
-                      </Avatar>
-                    </div>
-                  </Grid>
-                  <Grid item>
-                    <div className={classes.bigText}>Akhil Hassan V S</div>
-                    <div className={classes.smallText}>16PW05</div>
-                    <div className={classes.smallText}>MSc Software Systems</div>
-                  </Grid>
+                <Grid item className={classes.topSpacing10}>
+                  <div>
+                    <Avatar className={classes.red}>
+                      <label className={classes.bigLabel}>A</label>
+                    </Avatar>
+                  </div>
                 </Grid>
+                <Grid item>
+                  <div className={classes.bigText}>Akhil Hassan V S</div>
+                  <div className={classes.smallText}>16PW05</div>
+                  <div className={classes.smallText}>MSc Software Systems</div>
+                </Grid>
+              </Grid>
             </Paper>
           </Grid>
           <Grid item xs>
             <Paper className={classes.paper}>
               <Grid container wrap="nowrap" spacing={2}>
-                  <Grid item className={classes.topSpacing10}>
-                    <div>
-                      <Avatar className={classes.green}>
-                        <label className={classes.bigLabel}>A</label>
-                      </Avatar>
-                    </div>
-                  </Grid>
-                  <Grid item>
-                    <div className={classes.bigText}>Ashwin Kumar N</div>
-                    <div className={classes.smallText}>16PW07</div>
-                    <div className={classes.smallText}>MSc Software Systems</div>
-                  </Grid>
+                <Grid item className={classes.topSpacing10}>
+                  <div>
+                    <Avatar className={classes.green}>
+                      <label className={classes.bigLabel}>A</label>
+                    </Avatar>
+                  </div>
                 </Grid>
+                <Grid item>
+                  <div className={classes.bigText}>Ashwin Kumar N</div>
+                  <div className={classes.smallText}>16PW07</div>
+                  <div className={classes.smallText}>MSc Software Systems</div>
+                </Grid>
+              </Grid>
             </Paper>
           </Grid>
           <Grid item xs>
@@ -148,7 +148,7 @@ function AboutUs() {
           </Grid>
           <Grid item xs>
             <Paper className={classes.paper}>
-             <Grid container wrap="nowrap" spacing={2}>
+              <Grid container wrap="nowrap" spacing={2}>
                 <Grid item className={classes.topSpacing10}>
                   <div>
                     <Avatar className={classes.grey}>
@@ -165,7 +165,7 @@ function AboutUs() {
             </Paper>
           </Grid>
         </Grid>
-    </div>       
+      </div>
     </div>
   );
 }

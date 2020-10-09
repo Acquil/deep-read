@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    backgroundColor:"white"
+    backgroundColor: "white"
   },
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
   rightFloatElement: {
     position: "absolute",
     right: "10px",
-    color:"#e64a19"
+    color: "#e64a19"
   },
   textElementBig: {
     position: "absolute",
@@ -96,20 +96,20 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "20px",
     fontWeight: "bold",
   },
-  whiteText:{
-    color:"white"
+  whiteText: {
+    color: "white"
   },
   textElementSmall: {
     fontSize: "15px",
     fontWeight: "bold",
-    color:"black"
+    color: "black"
   },
   linkWithoutStyle: {
     color: 'inherit',
     textDecoration: 'inherit'
   },
-  whiteBackground:{
-    color:"#e64a19"
+  whiteBackground: {
+    color: "#e64a19"
   }
 }));
 
@@ -150,7 +150,7 @@ export default function NavigationBar() {
                 </IconButton>
               </ClickAwayListener>
               <div className={classes.rightFloatElement}>
-                <a href="/" className={classes.linkWithoutStyle}><h1>deep-read</h1></a>                
+                <a href="/" className={classes.linkWithoutStyle}><h1>deep-read</h1></a>
               </div>
             </Toolbar>
 
@@ -187,7 +187,7 @@ export default function NavigationBar() {
               <Link to="/startdeepread" className={classes.linkWithoutStyle} >
                 <ListItem button className="whiteAll">
                   <ListItemIcon >
-                    <KeyboardArrowRightSharpIcon color="primary"/>
+                    <KeyboardArrowRightSharpIcon color="primary" />
                   </ListItemIcon >
                   <div className={classes.textElementSmall}>
                     Start deep-read
