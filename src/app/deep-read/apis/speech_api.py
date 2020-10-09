@@ -1,9 +1,11 @@
 from flask import Flask, jsonify, Response
 from flask_restx import Resource, Namespace, fields #https://flask-restx.readthedocs.io/en/latest/quickstart.html
 from core.speech import Recognizer
+from math import ceil
 import pymongo
 import os
 import json
+import soundfile
 
 from threading import Thread
 
@@ -22,27 +24,31 @@ transcribe = api.model('Transcript', {
 })
 
 
-@api.route('/post/<path:file>&<model>&<int:minutes_per_split>')
+@api.route('/post/<path:file>&<model>')
 @api.param('model','Model to be used for speech')
-@api.param('minutes_per_split','Number of minutes per split')
 @api.param('file','File to be transcribed')
 class SpeechTranscript(Resource):
     
 
-    def post(self, minutes_per_split, model, file):        
+    def post(self, model, file):        
         id = file
         # check if file exists else
         file = f"core/temp/{file}.wav"
         if not os.path.isfile(file):
             api.abort(404, "file does not exist", custom="file should be uploaded first")
-        
-        doc = DRVideo(id=id, transcript="", status='In Process')
+
+        f = soundfile.SoundFile(file)
+        duration = len(f)//f.samplerate
+        # Determine minutes per split //TODO
+        minutes_per_split = ceil(duration/(TRANSCRIPTION_WORKERS*60))
+        doc = DRVideo(id=id, transcript="", duration=duration, status='In Process')
         repository.upload_one(doc)
-        
+
         Thread(target = self.transcribe_task, args=(file, minutes_per_split, model, id)).start()
         return {
             'id': id,
-            'status': 'running'
+            'length':duration,
+            'status': 'In Process'
         }
 
     # Thread to spawn more processes and transcribe in background
@@ -71,10 +77,18 @@ class SpeechTranscript(Resource):
 @api.route('/get/<file_id>')
 @api.param('file_id','File ID')
 class SpeechTranscriptResponse(Resource):
-
+    '''
+    Poll for transcript
+    '''
     def get(self, file_id):
-        data = repository.get_transcript(file_id)
-        return jsonify(data)
+        data = repository.get_one(file_id)
+        # if data.status == "In Process":
+        return ({
+            "transcript": data.transcript,
+            "status": data.status
+
+        })
+        # return jsonify(data.transcript)
 
 
 @api.errorhandler(DRVideoNotFound)
