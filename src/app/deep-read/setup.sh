@@ -60,7 +60,7 @@ echo -e "---------------------------------------------------------------------"
 chmod +x app.py
 read -p "Run flask application? (Y/N)" yn
 case $yn in
-        [Yy]* ) ./app.py; break;;
+        [Yy]* ) ./app.py;;
         [Nn]* ) exit;;
         * ) echo "Assuming that's a no...exiting";;
 esac
