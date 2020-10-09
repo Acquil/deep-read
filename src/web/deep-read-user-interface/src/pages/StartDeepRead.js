@@ -13,6 +13,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
+import Request from 'axios-request-handler';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -91,33 +93,37 @@ function StartDeepRead() {
     setModel(event.target.value);
   };
 
-  const sendGDriveLinkAPI = () => {
-     
-    if ((gDriveLinkVar !== null) && model!=='') {      
+  const call_POST_files_gdrive = () => {
+    console.log("call_POST_files_gdrive Reached")
+    if ((gDriveLinkVar !== null)) {     
+      console.log("call_POST_files_gdrive Called") 
       axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
       }).then((responseData) => {
         console.log(responseData)
         if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
           setVideoNameFromAPI(responseData.data.filename);
           setFileIDFromAPI(responseData.data.id);
+          // console.log("Filename:"+videoNameFromAPI)
+          // console.log("ID_1:"+fileIDFromAPI)
+          // console.log("id in fun1:"+responseData.data.id)
+          call_POST_speech_post(responseData.data.id);
+          poll_call_GET_speech_get(responseData.data.id);
         }
       }).catch(error => {
         console.log(error)
       });
+    }
 
-      if (fileIDFromAPI !== null) {
-        axios.post(baseURL + 'speech/post/' + fileIDFromAPI + '&' + model, {
-        }).then((responseData) => {
-          console.log(responseData)        
-        }).catch(error => {
-          console.log(error)
-        });
-  
-      }
-    }    
+  }
 
-    if (fileIDFromAPI !== null) {
-      axios.get(baseURL + 'speech/get/' + fileIDFromAPI, {
+  const call_POST_speech_post = (id) => {
+    // console.log("id in fun1:"+id)
+    console.log("call_POST_speech_post Reached")
+    // console.log("ID_2:"+fileIDFromAPI)
+    // console.log("model:"+model)
+    if ((id !== null) && (model !== '')) {
+      console.log("call_POST_speech_post called")
+      axios.post(baseURL + 'speech/post/' + id + '&' + model, {
       }).then((responseData) => {
         console.log(responseData)        
       }).catch(error => {
@@ -125,9 +131,27 @@ function StartDeepRead() {
       });
 
     }
+  }
+   
+  const poll_call_GET_speech_get = (id) => {
+    console.log("poll_call_GET_speech_get reached")
+    const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
+    api_call_GET_speech_get.poll(3000).get((response) => {
+      console.log("poll_call_GET_speech_get started")
+      console.log(response.data);
+      if(response.data.status === "Success"){
+        return false;
+      }
+      // you can cancel polling by returning false
+    });
 
+  }
+
+  const sendGDriveLinkAPI = () => {
+     
+    call_POST_files_gdrive();
     showVideoInformation();
-    showTranscripts();
+    //showTranscripts();
 
   }
 
@@ -307,7 +331,7 @@ function StartDeepRead() {
   const showTranscripts = () => {
     setAllFalse();
     showSummary();
-    setTranscriptFlag(true)
+    setTranscriptFlag(true)       
   }
 
   const showSummary = () => {
