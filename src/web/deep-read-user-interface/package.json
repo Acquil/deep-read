@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^7.2.1",
     "@trendmicro/react-sidenav": "^0.5.0",
     "axios": "^0.20.0",
+    "axios-request-handler": "^1.0.4",
     "bootstrap": "^4.5.2",
     "clsx": "^1.1.1",
     "react": "^16.13.1",
