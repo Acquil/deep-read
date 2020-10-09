@@ -48,7 +48,8 @@ const useStyles = makeStyles((theme) => ({
   bottom:{
     position:"fixed",
     bottom:"0",
-    width:"100%"
+    width:"100%",
+    background:'#f5f5f5'
   },
   bottomPadding:{
     paddingBottom:"50px",
@@ -103,6 +104,13 @@ function StartDeepRead() {
     // else{
       return( <Grid item xs>
         <Paper className={classes.paper}>
+           <div>
+              <h1><strong>
+              Enter
+
+              </strong>
+              </h1>
+            </div>
           <div><TextField className={classes.fullWidthElement} id="outlined-basic" label="Google Drive Link" variant="outlined" onChange={updateGDriveTextBox} /></div>
           <div className={classes.topSpacing10}><Button color="primary" className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon />}   label="Process" onClick={sendGDriveLinkAPI}>Process</Button></div>
         </Paper>
@@ -117,11 +125,17 @@ function StartDeepRead() {
     if(videoNameFromAPI !== null){
       return(      
         <Grid item xs>
-          <Paper className={classes.paper}>Video information
+          <Paper className={classes.paper}>
+            <div>
+              <h1><strong>
+              Video Information
+              </strong>
+              </h1>
+            </div>
             <Grid container spacing={2}>
               <Grid item>
                 <div>
-                  Video Name: {videoNameFromAPI}
+                  <b>Video Name:</b> {videoNameFromAPI}
                 </div>
               </Grid>             
             </Grid>
@@ -137,7 +151,13 @@ function StartDeepRead() {
     }
     else{
       return( <Grid item xs>
-        <Paper className={classes.paper}>Transcript</Paper>
+        <Paper className={classes.paper}>
+          <div>
+              <h1><strong>
+              Transcript
+              </strong>
+              </h1>
+            </div></Paper>
       </Grid>)
     }
   }
@@ -148,7 +168,13 @@ function StartDeepRead() {
     }
     else{
       return( <Grid item xs>
-        <Paper className={classes.paper}>Summary</Paper>
+        <Paper className={classes.paper}>
+          <div>
+              <h1><strong>
+              Summary
+              </strong>
+              </h1>
+            </div></Paper>
       </Grid>)
     }
 
@@ -160,7 +186,13 @@ function StartDeepRead() {
     }
     else{
       return( <Grid item xs>
-        <Paper className={classes.paper}>MCQs</Paper>
+        <Paper className={classes.paper}>
+          <div>
+              <h1><strong>
+              MCQs
+              </strong>
+              </h1>
+            </div></Paper>
       </Grid>)
     }    
   }
@@ -171,7 +203,14 @@ function StartDeepRead() {
     }
     else{
       return( <Grid item xs>
-        <Paper className={classes.paper}>IR</Paper>
+        <Paper className={classes.paper}>
+          <div>
+              <h1><strong>IR</strong></h1>
+          </div>
+          <div>
+            Test
+          </div>
+        </Paper>
       </Grid>)
     }
   }
@@ -182,7 +221,13 @@ function StartDeepRead() {
     }
     else{
       return( <Grid item xs>
-        <Paper className={classes.paper}>Gallery</Paper>
+        <Paper className={classes.paper}>
+          <div>
+              <h1><strong>
+              Gallery
+              </strong>
+              </h1>
+            </div></Paper>
       </Grid>)
     }
   }
