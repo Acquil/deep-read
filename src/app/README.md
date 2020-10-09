@@ -9,5 +9,5 @@
     - `MONGODB_DATABASE` and `MONGODB_COLLECTION` can also be set accordingly.
     
 ## For using MongoDB    
-    - `export REPOSITORY_NAME="mongodb"`
-    - `export MONGODB_HOST="<connection_string>"`
+     export REPOSITORY_NAME="mongodb"
+     export MONGODB_HOST="<connection_string>"
