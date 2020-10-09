@@ -25,28 +25,17 @@ const useStyles = makeStyles((theme) => ({
   topSpacing10: {
     paddingTop: '20px'
   },
-<<<<<<< HEAD
   paper: {
-=======
-  paper:{
->>>>>>> b325c79b0bd997505955905fedc0bd241df700ed
     background: '#f5f5f5'
   },
   linkWithoutStyle: {
     color: 'inherit',
     textDecoration: 'inherit'
   },
-<<<<<<< HEAD
-  rightBottom: {
-    position: "absolute",
-    paddingRight: "24px",
-    right: "0"
-=======
   rightBottom:{
     position:"absolute",
     paddingRight:"24px",
     right:"0"
->>>>>>> b325c79b0bd997505955905fedc0bd241df700ed
   }
 }));
 
@@ -75,17 +64,6 @@ function Home() {
             <p><span className={classes.fontSize20}><em> &nbsp; &nbsp; &nbsp; &nbsp; This will help both the faculties and students to evaluate the understanding of the online lecture.</em></span></p>
             <p><span className={classes.fontSize20}>&nbsp; &nbsp; Supply reverse search capability to search for a term from the video</span></p>
             <p><em><span className={classes.fontSize20}> &nbsp; &nbsp; &nbsp; &nbsp; This will help students to easily find a particular clip in the video.</span></em></p>
-<<<<<<< HEAD
-          </div>
-        </Paper>
-        <br />
-      </div>
-      <div className={classes.rightBottom}>
-        <a href="https://github.com/Acquil/deep-read" className={classes.linkWithoutStyle}>
-          <GitHubIcon />
-        </a>
-      </div>
-=======
           </div>          
         </Paper>     
         <br/>
@@ -95,7 +73,6 @@ function Home() {
           <GitHubIcon />
           </a>
       </div>    
->>>>>>> b325c79b0bd997505955905fedc0bd241df700ed
     </div>
   );
 }

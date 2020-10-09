@@ -37,11 +37,7 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-<<<<<<< HEAD
-    backgroundColor: "white"
-=======
     backgroundColor:"white"
->>>>>>> b325c79b0bd997505955905fedc0bd241df700ed
   },
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
@@ -92,11 +88,8 @@ const useStyles = makeStyles((theme) => ({
   rightFloatElement: {
     position: "absolute",
     right: "10px",
-<<<<<<< HEAD
-    color: "#e64a19"
-=======
+
     color:"#e64a19"
->>>>>>> b325c79b0bd997505955905fedc0bd241df700ed
   },
   textElementBig: {
     position: "absolute",
@@ -104,34 +97,19 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "20px",
     fontWeight: "bold",
   },
-<<<<<<< HEAD
-  whiteText: {
-    color: "white"
-=======
   whiteText:{
     color:"white"
->>>>>>> b325c79b0bd997505955905fedc0bd241df700ed
   },
   textElementSmall: {
     fontSize: "15px",
     fontWeight: "bold",
-<<<<<<< HEAD
-    color: "black"
-=======
     color:"black"
->>>>>>> b325c79b0bd997505955905fedc0bd241df700ed
   },
   linkWithoutStyle: {
     color: 'inherit',
     textDecoration: 'inherit'
   },
-<<<<<<< HEAD
-  whiteBackground: {
-    color: "#e64a19"
-=======
   whiteBackground:{
-    color:"#e64a19"
->>>>>>> b325c79b0bd997505955905fedc0bd241df700ed
   }
 }));
 
@@ -209,11 +187,7 @@ export default function NavigationBar() {
               <Link to="/startdeepread" className={classes.linkWithoutStyle} >
                 <ListItem button className="whiteAll">
                   <ListItemIcon >
-<<<<<<< HEAD
-                    <KeyboardArrowRightSharpIcon color="primary" />
-=======
                     <KeyboardArrowRightSharpIcon color="primary"/>
->>>>>>> b325c79b0bd997505955905fedc0bd241df700ed
                   </ListItemIcon >
                   <div className={classes.textElementSmall}>
                     Start deep-read
