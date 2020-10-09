@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from uuid import uuid4
-import gdown
+# import gdown
+from core.gdown import download
 import filetype
 import os
 
@@ -9,6 +10,8 @@ api = Namespace('files', description='Video/Audio file related operations')
 file = api.model('File ID', {
     'id': fields.String(required=True, description='File Identifier'),
     'gid': fields.String(required=True, description='Google Drive file ID'),
+    'filename': fields.String(required=True, description='Google Drive filename'),
+    'size': fields.String(required=True, description='Size of file in MB')
 })
 
 
@@ -23,9 +26,9 @@ class Url(Resource):
         id = f"{gid}_{str(uuid4())}"
         output = f"core/temp/{id}"
 
-        md5 = 'fa837a88f0c40c513d975104edf3da17'
-        # gdown.download(url, output, quiet=True)
-        gdown.cached_download(url, output, md5=md5, postprocess=gdown.extractall, quiet=True)
+        # modified gdown.download
+        file = download(url, output, quiet=True, use_cookies=False)
+        filename = file['filename']
 
         # check filetype
         kind = filetype.guess(output).mime
@@ -36,9 +39,16 @@ class Url(Resource):
             audio_output = f"{output}.wav"
 
             os.rename(output, video_output)
+            
             os.system(f"ffmpeg -loglevel quiet -i {video_output} -vn {audio_output}")
-            # Return same id of file in google drive //TODO change to something more secure
-            return {'id':id, 'gid':gid}
+            size = os.stat(f"{video_output}").st_size/(1024*1024)
+            
+            return {
+                'id'    :id, 
+                'gid'   :gid,
+                'filename': filename,
+                'size'  : f"{str(size)[:5]} MB"
+                }
         
-        api.abort(404, 'No video found. Either the link does not exist or file is not a video')
+        api.abort(404, 'No video found. Either the link does not exist or file is not a video.')
         
