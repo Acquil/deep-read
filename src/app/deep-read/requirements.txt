@@ -1,7 +1,9 @@
 vosk
 pydub
+soundfile
 pandas
 pymongo
+bson
 dnspython
 flask
 flask-restx

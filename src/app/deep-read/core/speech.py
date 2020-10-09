@@ -29,7 +29,7 @@ class RecognizerSegment:
         self.transcript = ""
         self.timestamped_text = []
         # Remove logging
-        SetLogLevel(0)
+        SetLogLevel(-1)
     
     def to_valid_audio(self):
         '''
@@ -241,7 +241,9 @@ class Recognizer:
             df = df.sort_index()
             # Finish sorting
 
-            self.transcript = df[1].tolist()
+            # Flatten list of lists to single list
+            for item in df[1].tolist():
+                self.transcript += item
             # Flatten list of list of dicts to list of dicts
             self.timestamped_text = [item for sublist in df[2].tolist() for item in sublist]
             self.timestamped_text = json.dumps(self.timestamped_text)
