@@ -5,5 +5,6 @@ pymongo
 dnspython
 flask
 flask-restx
+flask-cors
 gdown
 filetype
