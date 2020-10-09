@@ -7,10 +7,10 @@ import json
 
 class DRVideo(object):
     """A transcript object for use in db/repository"""
-    def __init__(self, key="", gid="", transcript="", duration=None, images=None, status="In Process"):
+    def __init__(self, key="", id="", transcript="", duration=None, images=None, status="In Process"):
         """Initializes the Transcript Collection"""
         self.key = key
-        self.gid = gid
+        self.id = id
         self.transcript = transcript
         self.images = images
         self.duration = duration
@@ -21,7 +21,7 @@ class DRVideo(object):
         Converts object to python dictionary
         """
         obj = {
-            'gid': self.gid,
+            'id': self.id,
             'transcript': self.transcript,
             'images':self.images,
             'duration':self.duration,

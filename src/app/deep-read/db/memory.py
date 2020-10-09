@@ -40,6 +40,6 @@ class Repository(object):
     def upload_one(self, obj):
         """Adds a dr-video object to the repository."""
         try:
-            self.index[str(obj.gid)] = obj
+            self.index[str(obj.id)] = obj
         except:
             raise DRVideoNotFound()

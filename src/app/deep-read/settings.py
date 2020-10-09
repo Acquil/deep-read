@@ -20,3 +20,6 @@ elif REPOSITORY_NAME == 'memory':
     REPOSITORY_SETTINGS = {}
 else:
     raise ValueError('Unknown repository.')
+
+# Number of processes to spawn for transcription
+TRANSCRIPTION_WORKERS = 4

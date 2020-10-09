@@ -9,7 +9,7 @@ from . import DRVideo, DRVideoNotFound
 
 def _dr_from_doc(doc):
     """Creates a DR object from the MongoDB DR document."""
-    return DRVideo(str(doc['_id'], doc['gid'], doc['transcript'], doc['duration'], doc['images']), doc['status'])
+    return DRVideo(str(doc['_id']), doc['id'], doc['transcript'], doc['duration'], doc['images'], doc['status'])
 
 def _image_from_doc(doc):
     return None
@@ -38,7 +38,7 @@ class Repository(object):
     def get_one(self, dr_key):
         """Returns a dr object from the repository."""
         try:
-            doc = self.collection.find_one({"gid": dr_key})
+            doc = self.collection.find_one({"id": dr_key})
             if doc is None:
                 raise DRVideoNotFound()
 
@@ -54,7 +54,7 @@ class Repository(object):
         """Returns a dr object from the repository."""
         try:
             #//TODO change _id
-            doc = self.collection.find_one({"gid": dr_key})
+            doc = self.collection.find_one({"id": dr_key})
             if doc is None:
                 raise DRVideoNotFound()
             dr = _dr_from_doc(doc)
@@ -70,7 +70,7 @@ class Repository(object):
             self.collection.update(
                 {
                     # "_id": ObjectId(dr_key),
-                    "gid": dr_key,
+                    "id": dr_key,
                 },
                 {
                     "$set": { str(field): data}
