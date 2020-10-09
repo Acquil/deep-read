@@ -9,6 +9,10 @@ import QuestionAnswerSharpIcon from '@material-ui/icons/QuestionAnswerSharp';
 import SearchSharpIcon from '@material-ui/icons/SearchSharp';
 import PhotoLibrarySharpIcon from '@material-ui/icons/PhotoLibrarySharp';
 import axios from 'axios'
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,21 +46,25 @@ const useStyles = makeStyles((theme) => ({
   fullWidthElement: {
     width: '100%'
   },
-  labelWidth:{
-    fontSize:"70px"
+  labelWidth: {
+    fontSize: "70px"
   },
-  bottom:{
-    position:"fixed",
-    bottom:"0",
-    width:"100%",
-    background:'#f5f5f5'
+  bottom: {
+    position: "fixed",
+    bottom: "0",
+    width: "100%",
+    background: '#f5f5f5'
   },
-  bottomPadding:{
-    paddingBottom:"50px",
-  }
+  bottomPadding: {
+    paddingBottom: "50px",
+  },
+  formControl: {
+
+  },
 }));
 
 function StartDeepRead() {
+
   const classes = useStyles();
   const [gDriveLinkVar, setGDriveLinkVar] = React.useState(null);
   const [dataForGDriveLinkVar, setdataForGDriveLinkVar] = React.useState(false);
@@ -71,64 +79,108 @@ function StartDeepRead() {
   const [galleryFlag, setGalleryFlag] = React.useState(false);
   const [videoNameFromAPI, setVideoNameFromAPI] = React.useState(null);
   const [fileIDFromAPI, setFileIDFromAPI] = React.useState(null);
+  const [model, setModel] = React.useState('');
   const baseURL = "http://127.0.0.1:5000/"
+
 
   const updateGDriveTextBox = (e) => {
     setGDriveLinkVar(e.target.value)
   }
 
+  const handleModelChange = (event) => {
+    setModel(event.target.value);
+  };
+
   const sendGDriveLinkAPI = () => {
-    //window.alert(gDriveLink)
-    //API call
-    // console.log(gDriveLinkVar)
-    if(gDriveLinkVar !== null){
-      axios.post(baseURL+'files/g-drive/'+gDriveLinkVar, {          
+     
+    if ((gDriveLinkVar !== null) && model!=='') {      
+      axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
       }).then((responseData) => {
         console.log(responseData)
-        if((responseData.data.filename !== null) && (responseData.data.id !== null)){
+        if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
           setVideoNameFromAPI(responseData.data.filename);
           setFileIDFromAPI(responseData.data.id);
-          showVideoInformation();
         }
-      }).catch(error=> {
+      }).catch(error => {
         console.log(error)
       });
-    }  
-    // setdataForGDriveLinkVar("Data returned from API")
+
+      if (fileIDFromAPI !== null) {
+        axios.post(baseURL + 'speech/post/' + fileIDFromAPI + '&' + model + '&' + '2', {
+        }).then((responseData) => {
+          console.log(responseData)        
+        }).catch(error => {
+          console.log(error)
+        });
+  
+      }
+    }    
+
+    if (fileIDFromAPI !== null) {
+      axios.get(baseURL + 'speech/get/' + fileIDFromAPI, {
+      }).then((responseData) => {
+        console.log(responseData)        
+      }).catch(error => {
+        console.log(error)
+      });
+
+    }
+
+    showVideoInformation();
+    showTranscripts();
+
   }
 
-  const displayGDrivebox = () =>{
+  const displayGDrivebox = () => {
     // if(!GDriveBoxFlag){
     //   return null;
     // }
     // else{
-      return( <Grid item xs>
-        <Paper className={classes.paper}>
-           <div>
-              <h1><strong>
-              Enter
-
-              </strong>
-              </h1>
+    return (<Grid item xs>
+      <Paper className={classes.paper}>
+        <Grid container spacing={2}>
+          <Grid item xs={8}>
+            <div>
+              <TextField className={classes.fullWidthElement} id="outlined-basic" label="Google Drive Link" variant="outlined" onChange={updateGDriveTextBox} />
             </div>
-          <div><TextField className={classes.fullWidthElement} id="outlined-basic" label="Google Drive Link" variant="outlined" onChange={updateGDriveTextBox} /></div>
-          <div className={classes.topSpacing10}><Button color="primary" className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon />}   label="Process" onClick={sendGDriveLinkAPI}>Process</Button></div>
-        </Paper>
-      </Grid>)
+          </Grid>
+          <Grid item xs={4}>
+            <div>
+              <FormControl variant="outlined" className={classes.fullWidthElement}>
+                <InputLabel id="model-label">Language</InputLabel>
+                <Select
+                  labelId="model-label"
+                  id="model-select"
+                  value={model}
+                  onChange={handleModelChange}
+                  label="Language"
+                  className={classes.fullWidthElement}
+                >
+                  <MenuItem value={"model-generic"}>American English</MenuItem>
+                  <MenuItem value={"model-indian"}>Indian English</MenuItem>
+                </Select>
+
+              </FormControl>
+            </div>
+          </Grid>
+        </Grid>
+        <div className={classes.topSpacing10}><Button color="primary" className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon />} label="Process" onClick={sendGDriveLinkAPI}>Process</Button></div>
+      </Paper>
+    </Grid>)
     // }
   }
 
-  const displayVideoInformation = () =>{
-    if(videoInformationFlag === null){
+  const displayVideoInformation = () => {
+    if (videoInformationFlag === null) {
       return null;
     }
-    if(videoNameFromAPI !== null){
-      return(      
+    if (videoNameFromAPI !== null) {
+      return (
         <Grid item xs>
           <Paper className={classes.paper}>
             <div>
               <h1><strong>
-              Video Information
+                Video Information
               </strong>
               </h1>
             </div>
@@ -137,75 +189,75 @@ function StartDeepRead() {
                 <div>
                   <b>Video Name:</b> {videoNameFromAPI}
                 </div>
-              </Grid>             
+              </Grid>
             </Grid>
           </Paper>
         </Grid>
-    )     
-    }   
+      )
+    }
   }
 
-  const displayTranscripts = () =>{
-    if(!transcriptFlag){
+  const displayTranscripts = () => {
+    if (!transcriptFlag) {
       return null;
     }
-    else{
-      return( <Grid item xs>
+    else {
+      return (<Grid item xs>
         <Paper className={classes.paper}>
           <div>
-              <h1><strong>
+            <h1><strong>
               Transcript
               </strong>
-              </h1>
-            </div></Paper>
+            </h1>
+          </div></Paper>
       </Grid>)
     }
   }
 
-  const displaySummary = () =>{
-    if(!summaryFlag){
+  const displaySummary = () => {
+    if (!summaryFlag) {
       return null;
     }
-    else{
-      return( <Grid item xs>
+    else {
+      return (<Grid item xs>
         <Paper className={classes.paper}>
           <div>
-              <h1><strong>
+            <h1><strong>
               Summary
               </strong>
-              </h1>
-            </div></Paper>
+            </h1>
+          </div></Paper>
       </Grid>)
     }
 
   }
 
-  const displayMCQS = () =>{
-    if(!mcqFlag){
+  const displayMCQS = () => {
+    if (!mcqFlag) {
       return null;
     }
-    else{
-      return( <Grid item xs>
+    else {
+      return (<Grid item xs>
         <Paper className={classes.paper}>
           <div>
-              <h1><strong>
+            <h1><strong>
               MCQs
               </strong>
-              </h1>
-            </div></Paper>
+            </h1>
+          </div></Paper>
       </Grid>)
-    }    
+    }
   }
 
-  const displayIR = () =>{
-    if(!irFlag){
+  const displayIR = () => {
+    if (!irFlag) {
       return null;
     }
-    else{
-      return( <Grid item xs>
+    else {
+      return (<Grid item xs>
         <Paper className={classes.paper}>
           <div>
-              <h1><strong>IR</strong></h1>
+            <h1><strong>IR</strong></h1>
           </div>
           <div>
             Test
@@ -215,19 +267,19 @@ function StartDeepRead() {
     }
   }
 
-  const displayGallery = () =>{
-    if(!galleryFlag){
+  const displayGallery = () => {
+    if (!galleryFlag) {
       return null;
     }
-    else{
-      return( <Grid item xs>
+    else {
+      return (<Grid item xs>
         <Paper className={classes.paper}>
           <div>
-              <h1><strong>
+            <h1><strong>
               Gallery
               </strong>
-              </h1>
-            </div></Paper>
+            </h1>
+          </div></Paper>
       </Grid>)
     }
   }
@@ -242,50 +294,41 @@ function StartDeepRead() {
     setGalleryFlag(false);
   }
 
-  const showGDriveBox = ()=>{
+  const showGDriveBox = () => {
     setAllFalse();
     setGDriveBoxFlag(true);
-   }
+  }
 
-  const showVideoInformation = ()=>{
+  const showVideoInformation = () => {
     setAllFalse();
     setVideoInformationFlag(true);
   }
 
-  const showTranscripts = ()=>{
-    if(fileIDFromAPI !== null){
-      axios.get(baseURL+'speech/get/'+fileIDFromAPI, {       
-      }).then((responseData) => {
-        console.log(responseData)
-        setAllFalse();
-        showSummary();
-        setTranscriptFlag(true) 
-      }).catch(error=> {
-        console.log(error)
-      });
-      
-    }    
-   }
+  const showTranscripts = () => {
+    setAllFalse();
+    showSummary();
+    setTranscriptFlag(true)
+  }
 
-   const showSummary = ()=>{
+  const showSummary = () => {
     setAllFalse();
     setSummaryFlag(true);
-   }
+  }
 
-   const showMCQ = ()=>{
+  const showMCQ = () => {
     setAllFalse();
     setMCQFlag(true);
-   }
+  }
 
-   const showIR = ()=>{
+  const showIR = () => {
     setAllFalse();
     setIRFlag(true);
-   }
+  }
 
-   const showGallery = ()=>{
+  const showGallery = () => {
     setAllFalse();
     setGalleryFlag(true);
-   }
+  }
 
   return (
     <div>
@@ -293,29 +336,29 @@ function StartDeepRead() {
       </div>
 
       <div className={classes.topSpacing30}>
-        <Grid container spacing={3}>     
+        <Grid container spacing={3}>
           {displayGDrivebox()}
-          {displayVideoInformation()}          
+          {displayVideoInformation()}
         </Grid>
       </div>
 
       <div className={classes.bottomPadding}>
-        <Grid container spacing={3}>          
-            {displayTranscripts()}        
-            {displaySummary()}
-            {displayMCQS()}
-            {displayIR()}        
-            {displayGallery()}                                              
-        </Grid> 
+        <Grid container spacing={3}>
+          {displayTranscripts()}
+          {displaySummary()}
+          {displayMCQS()}
+          {displayIR()}
+          {displayGallery()}
+        </Grid>
       </div>
-      
+
       <div >
         <Grid
           container
           spacing={0}
           direction="column"
           alignItems="center"
-          justify="center"  
+          justify="center"
         >
           <Grid item className={classes.bottom}>
             <BottomNavigation
@@ -326,16 +369,16 @@ function StartDeepRead() {
               showLabels
               className={classes.root}
             >
-              <BottomNavigationAction label="Notes" icon={<ReceiptSharpIcon/>}  onClick={showTranscripts} />
-              <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ}/>
-              <BottomNavigationAction label="IR" icon={<SearchSharpIcon />} onClick={showIR}/>
-              <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery}/>
+              <BottomNavigationAction label="Notes" icon={<ReceiptSharpIcon />} onClick={showTranscripts} />
+              <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ} />
+              <BottomNavigationAction label="IR" icon={<SearchSharpIcon />} onClick={showIR} />
+              <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery} />
             </BottomNavigation>
-          </Grid>   
+          </Grid>
 
-        </Grid>         
+        </Grid>
       </div>
-  
+
     </div>
   );
 }
