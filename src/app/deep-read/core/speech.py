@@ -148,7 +148,7 @@ class Recognizer:
         workers         : Number of subprocesses to spawn
         min_per_split   : Number of minutes to split the audio by.
     '''
-    def __init__(self, wav_audio, model = "model-generic" ,workers = 4, min_per_split = 3):
+    def __init__(self, wav_audio, model = "model-indian" ,workers = 4, min_per_split = 3):
        
         self.__folder       = 'core/chunks_' + str(uuid.uuid4())
 
@@ -198,7 +198,7 @@ class Recognizer:
             transcript
         '''
         uid, filename = files.split()
-        r = RecognizerSegment(wav_audio = filename)
+        r = RecognizerSegment(wav_audio = filename, model=self.model)
         r.transcribe()
         return (uid, r.transcript, r.get_timestamped_text())
 
