@@ -9,7 +9,7 @@ from threading import Thread
 
 from db import DRVideoNotFound, DRVideo
 from db.factory import create_repository
-from settings import REPOSITORY_NAME, REPOSITORY_SETTINGS
+from settings import REPOSITORY_NAME, REPOSITORY_SETTINGS, TRANSCRIPTION_WORKERS
 
 # DB
 repository = create_repository(REPOSITORY_NAME, REPOSITORY_SETTINGS)
@@ -22,7 +22,6 @@ transcribe = api.model('Transcript', {
 })
 
 
-@api.errorhandler(DRVideoNotFound)
 @api.route('/post/<path:file>&<model>&<int:minutes_per_split>')
 @api.param('model','Model to be used for speech')
 @api.param('minutes_per_split','Number of minutes per split')
@@ -31,26 +30,27 @@ class SpeechTranscript(Resource):
     
 
     def post(self, minutes_per_split, model, file):        
-        gid = file
+        id = file
         # check if file exists else
         file = f"core/temp/{file}.wav"
         if not os.path.isfile(file):
-            api.abort(404)
+            api.abort(404, "file does not exist", custom="file should be uploaded first")
         
-        doc = DRVideo(gid=gid, transcript="", status='In Process')
+        doc = DRVideo(id=id, transcript="", status='In Process')
         repository.upload_one(doc)
         
-        Thread(target = self.transcribe_task, args=(file, minutes_per_split, model, gid)).start()
+        Thread(target = self.transcribe_task, args=(file, minutes_per_split, model, id)).start()
         return {
-            'status':'running'
+            'id': id,
+            'status': 'running'
         }
 
     # Thread to spawn more processes and transcribe in background
-    def transcribe_task(self, file, minutes_per_split, model, gid):
+    def transcribe_task(self, file, minutes_per_split, model, id):
         # Transcribe
         r = Recognizer(
             wav_audio = file, 
-            workers=4, 
+            workers=TRANSCRIPTION_WORKERS, 
             min_per_split= int(minutes_per_split),
             model = model
         )
@@ -63,12 +63,11 @@ class SpeechTranscript(Resource):
             }
         
         # //TODO more efficient way?
-        repository.update(dr_key = gid, field= 'transcript', data=output)
-        repository.update(dr_key = gid, field= 'status', data="Success")
+        repository.update(dr_key = id, field= 'transcript', data=output)
+        repository.update(dr_key = id, field= 'status', data="Success")
         print('Transcribed')
 
 
-@api.errorhandler(DRVideoNotFound)
 @api.route('/get/<file_id>')
 @api.param('file_id','File ID')
 class SpeechTranscriptResponse(Resource):
@@ -76,3 +75,9 @@ class SpeechTranscriptResponse(Resource):
     def get(self, file_id):
         data = repository.get_transcript(file_id)
         return jsonify(data)
+
+
+@api.errorhandler(DRVideoNotFound)
+def video_no_found(error):
+    '''no such video exists'''
+    return {'message': 'video does not exist'}, 404
