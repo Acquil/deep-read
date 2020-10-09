@@ -3,11 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-<<<<<<< HEAD
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-=======
-import { createMuiTheme , ThemeProvider} from '@material-ui/core/styles';
->>>>>>> b325c79b0bd997505955905fedc0bd241df700ed
 import deepOrange from '@material-ui/core/colors/deepOrange';
 import indigo from '@material-ui/core/colors/indigo';
 
