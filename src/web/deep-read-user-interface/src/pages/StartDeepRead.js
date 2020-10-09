@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 function StartDeepRead() {
   const classes = useStyles();
-  const [gDriveLinkVar, setGDriveLinkVar] = React.useState(false);
+  const [gDriveLinkVar, setGDriveLinkVar] = React.useState(null);
   const [dataForGDriveLinkVar, setdataForGDriveLinkVar] = React.useState(false);
   const [bottomNavValue, setBottomNavValue] = React.useState(false);
   const [processFlag, setProcessFlag] = React.useState(false);
@@ -68,6 +68,9 @@ function StartDeepRead() {
   const [irFlag, setIRFlag] = React.useState(false);
   const [GDriveBoxFlag, setGDriveBoxFlag] = React.useState(false);
   const [galleryFlag, setGalleryFlag] = React.useState(false);
+  const [videoNameFromAPI, setVideoNameFromAPI] = React.useState(null);
+  const [fileIDFromAPI, setFileIDFromAPI] = React.useState(null);
+  const baseURL = "http://127.0.0.1:5000/"
 
   const updateGDriveTextBox = (e) => {
     setGDriveLinkVar(e.target.value)
@@ -77,36 +80,20 @@ function StartDeepRead() {
     //window.alert(gDriveLink)
     //API call
     // console.log(gDriveLinkVar)
-    setdataForGDriveLinkVar("Data returned from API")
-    showVideoInformation();
-  }
-
-  const displayDataForGDriveLink = () => {
-    if (!false) {
-      return null
-    }
-    else {
-      return (
-        <div>
-          <Grid container alignItems="center" spacing={3}>
-            <Grid item xs={6}>
-              <Paper className={classes.paper}>Transcript</Paper>
-            </Grid>
-            <Grid item xs={6}>
-              <Paper className={classes.paper}>Summary</Paper>
-            </Grid>
-          </Grid>
-          <Grid container spacing={3}>
-            <Grid item xs={6}>
-              <Paper className={classes.paper}>MCQs</Paper>
-            </Grid>
-            <Grid item xs={6}>
-              <Paper className={classes.paper}>IR</Paper>
-            </Grid>
-          </Grid>
-        </div>
-      );
-    }
+    if(gDriveLinkVar !== null){
+      axios.post(baseURL+'files/g-drive/'+gDriveLinkVar, {          
+      }).then((responseData) => {
+        console.log(responseData)
+        if((responseData.data.filename !== null) && (responseData.data.id !== null)){
+          setVideoNameFromAPI(responseData.data.filename);
+          setFileIDFromAPI(responseData.data.id);
+          showVideoInformation();
+        }
+      }).catch(error=> {
+        console.log(error)
+      });
+    }  
+    // setdataForGDriveLinkVar("Data returned from API")
   }
 
   const displayGDrivebox = () =>{
@@ -124,14 +111,24 @@ function StartDeepRead() {
   }
 
   const displayVideoInformation = () =>{
-    if(!videoInformationFlag){
+    if(videoInformationFlag === null){
       return null;
     }
-    return(     
-          <Grid item xs>
-            <Paper className={classes.paper}>Video information</Paper>
-          </Grid>
-      )     
+    if(videoNameFromAPI !== null){
+      return(      
+        <Grid item xs>
+          <Paper className={classes.paper}>Video information
+            <Grid container spacing={2}>
+              <Grid item>
+                <div>
+                  Video Name: {videoNameFromAPI}
+                </div>
+              </Grid>             
+            </Grid>
+          </Paper>
+        </Grid>
+    )     
+    }   
   }
 
   const displayTranscripts = () =>{
@@ -139,15 +136,8 @@ function StartDeepRead() {
       return null;
     }
     else{
-      // axios.post('http://127.0.0.1:5000/files/g-drive/', {
-      //   link: 'https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/view?usp=sharing'
-      // }).then((responseData) => {
-      //   console.log(responseData)
-      // }).catch(error=> {
-      //   console.log(error)
-      // });
       return( <Grid item xs>
-        <Paper className={classes.paper}>Transcripts</Paper>
+        <Paper className={classes.paper}>Transcript</Paper>
       </Grid>)
     }
   }
@@ -218,10 +208,18 @@ function StartDeepRead() {
   }
 
   const showTranscripts = ()=>{
-  
-    setAllFalse();
-    showSummary();
-    setTranscriptFlag(true)   
+    if(fileIDFromAPI !== null){
+      axios.get(baseURL+'speech/get/'+fileIDFromAPI, {       
+      }).then((responseData) => {
+        console.log(responseData)
+        setAllFalse();
+        showSummary();
+        setTranscriptFlag(true) 
+      }).catch(error=> {
+        console.log(error)
+      });
+      
+    }    
    }
 
    const showSummary = ()=>{
