@@ -89,17 +89,14 @@ function StartDeepRead() {
   const [videoSizeFromAPI, setVideoSizeFromAPI] = React.useState(null);
   const [fileIDFromAPI, setFileIDFromAPI] = React.useState(null);
   const [transcriptFromAPI, setTranscriptFromAPI] = React.useState(null);
-  //var transcriptFromAPI = "hi";
   const [model, setModel] = React.useState('');
-  const bnaTranscript = React.useRef(null);
   const [alertFlag, setAlertFlag] = React.useState(null);
   const [alertMSG, setAlertMSG] = React.useState('');
+  const [openAlert, setOpenAlert] = React.useState(true);
+  const [transcriptTimeFromAPI, setTranscriptTimeFromAPI] = React.useState(null);
+
 
   const baseURL = "http://127.0.0.1:5000/"
-
-  const [openAlert, setOpenAlert] = React.useState(true);
-
-
 
   const updateGDriveTextBox = (e) => {
     setGDriveLinkVar(e.target.value)
@@ -110,75 +107,83 @@ function StartDeepRead() {
   };
 
   const call_POST_files_gdrive = () => {
-    // console.log("call_POST_files_gdrive Reached")
-    // if ((gDriveLinkVar !== '')) {     
-    //   console.log("call_POST_files_gdrive Called") 
-    //   axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
-    //   }).then((responseData) => {
-    //     console.log(responseData)
-    //     if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
-    //       setVideoNameFromAPI(responseData.data.filename);
-    //       setVideoSizeFromAPI(responseData.data.size);
-    //       showVideoInformation();
-    //       setFileIDFromAPI(responseData.data.id);
-    //       // console.log("Filename:"+videoNameFromAPI)
-    //       // console.log("ID_1:"+fileIDFromAPI)
-    //       // console.log("id in fun1:"+responseData.data.id)
-    //       call_POST_speech_post(responseData.data.id);          
-    //     }
-    //   }).catch(error => {
-    //     console.log(error)
-    //   });
-    // }
+    console.log("call_POST_files_gdrive Reached")
+    if ((gDriveLinkVar !== '')) {     
+      console.log("call_POST_files_gdrive Called") 
+      axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
+      }).then((responseData) => {
+        console.log(responseData)
+        if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
+          setVideoNameFromAPI(responseData.data.filename);
+          setVideoSizeFromAPI(responseData.data.size);
+          showVideoInformation();
+          setFileIDFromAPI(responseData.data.id);
+          // console.log("Filename:"+videoNameFromAPI)
+          // console.log("ID_1:"+fileIDFromAPI)
+          // console.log("id in fun1:"+responseData.data.id)
+          call_POST_speech_post(responseData.data.id);          
+        }
+      }).catch(error => {
+        console.log(error)
+      });
+    }
 
     //TEST
-    setVideoNameFromAPI("Video 1");
-    setVideoSizeFromAPI("60 MB");
-    showVideoInformation();
-    call_POST_speech_post("abc"); 
+    // setVideoNameFromAPI("Video 1");
+    // setVideoSizeFromAPI("60 MB");
+    // showVideoInformation();
+    // call_POST_speech_post("abc"); 
 
   }
 
   const call_POST_speech_post = (id) => {
-    // console.log("id in fun1:"+id)
-    // console.log("call_POST_speech_post Reached")
-    // // console.log("ID_2:"+fileIDFromAPI)
-    // // console.log("model:"+model)
-    // if ((id !== null) && (model !== '')) {
-    //   console.log("call_POST_speech_post called")
-    //   axios.post(baseURL + 'speech/post/' + id + '&' + model, {
-    //   }).then((responseData) => {
-    //     console.log(responseData)       
-    //     poll_call_GET_speech_get(responseData.data.id); 
-    //   }).catch(error => {
-    //     console.log(error)
-    //   });
+    console.log("id in fun1:"+id)
+    console.log("call_POST_speech_post Reached")
+    // console.log("ID_2:"+fileIDFromAPI)
+    // console.log("model:"+model)
+    if ((id !== null) && (model !== '')) {
+      console.log("call_POST_speech_post called")
+      axios.post(baseURL + 'speech/post/' + id + '&' + model, {
+      }).then((responseData) => {
+        console.log(responseData)       
+        poll_call_GET_speech_get(responseData.data.id); 
+      }).catch(error => {
+        console.log(error)
+      });
 
-    // }
+    }
 
     //TEST
-    poll_call_GET_speech_get("abc"); 
+    //poll_call_GET_speech_get("abc"); 
 
   }
    
   const poll_call_GET_speech_get = (id) => {
-    // console.log("poll_call_GET_speech_get reached")
-    // const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
-    // api_call_GET_speech_get.poll(3000).get((response) => {
-    //   console.log("poll_call_GET_speech_get started")
-    //   console.log(response.data);
+    var transcriptTime = null;
+    console.log("poll_call_GET_speech_get reached")
+    const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
+    api_call_GET_speech_get.poll(3000).get((response) => {
+      console.log("poll_call_GET_speech_get started")
+      console.log(response.data);
       
-    //   if(response.data.status === "Success"){
-    //     setTranscriptFromAPI(response.data.transcript.transcript);
-    //     //transcriptFromAPI = response.data.transcript.transcript;
-    //     console.log("Transcript before setting var: "+response.data.transcript.transcript)
-    //     console.log("Transcript from API: "+transcriptFromAPI)
-    //     //showTranscripts();
-    //     return false;
-    //   }
-    //   // you can cancel polling by returning false
-    // });
-    setTranscriptFromAPI("ABCDEF");
+      if(response.data.status === "Success"){
+        setTranscriptFromAPI(response.data.transcript.transcript);
+        // transcriptTime = JSON.parse(response.data.transcript.transcript_times);
+        setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
+        //transcriptFromAPI = response.data.transcript.transcript;
+        // console.log("Transcript before setting var: "+response.data.transcript.transcript)
+        // console.log("Transcript from API: "+transcriptFromAPI)
+        //showTranscripts();
+        return false;
+      }
+
+      // for (var i = 0, emp; i < result.employees.length; i++) {
+      //   emp = result.employees[i];
+      //   employees[ emp.id ] = emp;
+      // }
+      // you can cancel polling by returning false
+    });
+    //setTranscriptFromAPI("ABCDEF");
 
   }
 
@@ -200,7 +205,6 @@ function StartDeepRead() {
       return;
     }
     call_POST_files_gdrive();
-    //showTranscripts();
 
   }
 
@@ -298,9 +302,8 @@ function StartDeepRead() {
                 </Grid>
                 <Grid item className={classes.topSpacing10}>
                   {/* <iframe title="Video" src="https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/preview?t=45" width="1280" height="720"></iframe> */}
-                  {/* https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/view?usp=sharing */}
-                  
-                  <iframe title="Video" src={gDriveLinkVar.replace("/view?usp=sharing","/preview")} width="1280" height="720"></iframe>
+                  {/* https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/view?usp=sharing */}                  
+                  <iframe title="Video" src={gDriveLinkVar.replace("/view?usp=sharing","/preview")} width="1400" height="720"></iframe>
                 </Grid>
               </Grid>
             </Paper>
@@ -417,10 +420,10 @@ function StartDeepRead() {
   const showVideoInformation = () => {
     setAllFalse();
     setVideoInformationFlag(true);
-    //console.log("VIDEO URL:"+gDriveLinkVar.replace("/view?usp=sharing","/preview"))
   }
 
   const showTranscripts = () => {
+    console.log(transcriptTimeFromAPI[5].word)
     setAllFalse();
     showSummary();
     setTranscriptFlag(true)       
