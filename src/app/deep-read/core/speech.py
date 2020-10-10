@@ -242,11 +242,18 @@ class Recognizer:
             # Finish sorting
 
             # Flatten list of lists to single list
-            for item in df[1].tolist():
-                self.transcript += item
+            # for item in df[1].tolist():
+                # self.transcript += item
             # Flatten list of list of dicts to list of dicts
             self.timestamped_text = [item for sublist in df[2].tolist() for item in sublist]
             self.timestamped_text = json.dumps(self.timestamped_text)
+            # //TODO adding punctutations
+            df = pd.DataFrame(self.timestamped_text)
+            df['next_start'] = df['start'].shift(-1)
+            df['interval'] = df.apply(lambda row:float(row['next_start'])-float(row['end']), axis=1)
+            # //TODO change interval
+            df.loc[df['interval']>0.5, 'word'] = df['word'].apply(lambda x:x+".")
+            self.transcript = ' '.join(df['word'].to_list()) + "."
             # cleanup
             p.close()
             p.join()
