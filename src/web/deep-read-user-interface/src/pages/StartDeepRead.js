@@ -14,6 +14,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import Request from 'axios-request-handler';
+import Alert from '@material-ui/lab/Alert';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
+import Collapse from '@material-ui/core/Collapse';
+
 
 
 
@@ -60,15 +65,16 @@ const useStyles = makeStyles((theme) => ({
   bottomPadding: {
     paddingBottom: "50px",
   },
-  formControl: {
-
-  },
+  AlertMSG:{
+    position:"fixed",
+    top:"20px"
+  }
 }));
 
 function StartDeepRead() {
 
   const classes = useStyles();
-  const [gDriveLinkVar, setGDriveLinkVar] = React.useState(null);
+  const [gDriveLinkVar, setGDriveLinkVar] = React.useState('');
   const [dataForGDriveLinkVar, setdataForGDriveLinkVar] = React.useState(false);
   const [bottomNavValue, setBottomNavValue] = React.useState(false);
   const [processFlag, setProcessFlag] = React.useState(false);
@@ -82,11 +88,17 @@ function StartDeepRead() {
   const [videoNameFromAPI, setVideoNameFromAPI] = React.useState(null);
   const [videoSizeFromAPI, setVideoSizeFromAPI] = React.useState(null);
   const [fileIDFromAPI, setFileIDFromAPI] = React.useState(null);
-  //const [transcriptFromAPI, setTranscriptFromAPI] = React.useState(null);
-  var transcriptFromAPI = null;
+  const [transcriptFromAPI, setTranscriptFromAPI] = React.useState(null);
+  //var transcriptFromAPI = "hi";
   const [model, setModel] = React.useState('');
   const bnaTranscript = React.useRef(null);
+  const [alertFlag, setAlertFlag] = React.useState(null);
+  const [alertMSG, setAlertMSG] = React.useState('');
+
   const baseURL = "http://127.0.0.1:5000/"
+
+  const [openAlert, setOpenAlert] = React.useState(true);
+
 
 
   const updateGDriveTextBox = (e) => {
@@ -98,73 +110,128 @@ function StartDeepRead() {
   };
 
   const call_POST_files_gdrive = () => {
-    console.log("call_POST_files_gdrive Reached")
-    if ((gDriveLinkVar !== null)) {     
-      console.log("call_POST_files_gdrive Called") 
-      axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
-      }).then((responseData) => {
-        console.log(responseData)
-        if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
-          setVideoNameFromAPI(responseData.data.filename);
-          setVideoSizeFromAPI(responseData.data.size);
-          showVideoInformation();
-          setFileIDFromAPI(responseData.data.id);
-          // console.log("Filename:"+videoNameFromAPI)
-          // console.log("ID_1:"+fileIDFromAPI)
-          // console.log("id in fun1:"+responseData.data.id)
-          call_POST_speech_post(responseData.data.id);
-          poll_call_GET_speech_get(responseData.data.id);
-          
-        }
-      }).catch(error => {
-        console.log(error)
-      });
-    }
+    // console.log("call_POST_files_gdrive Reached")
+    // if ((gDriveLinkVar !== '')) {     
+    //   console.log("call_POST_files_gdrive Called") 
+    //   axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
+    //   }).then((responseData) => {
+    //     console.log(responseData)
+    //     if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
+    //       setVideoNameFromAPI(responseData.data.filename);
+    //       setVideoSizeFromAPI(responseData.data.size);
+    //       showVideoInformation();
+    //       setFileIDFromAPI(responseData.data.id);
+    //       // console.log("Filename:"+videoNameFromAPI)
+    //       // console.log("ID_1:"+fileIDFromAPI)
+    //       // console.log("id in fun1:"+responseData.data.id)
+    //       call_POST_speech_post(responseData.data.id);          
+    //     }
+    //   }).catch(error => {
+    //     console.log(error)
+    //   });
+    // }
+
+    //TEST
+    setVideoNameFromAPI("Video 1");
+    setVideoSizeFromAPI("60 MB");
+    showVideoInformation();
+    call_POST_speech_post("abc"); 
 
   }
 
   const call_POST_speech_post = (id) => {
     // console.log("id in fun1:"+id)
-    console.log("call_POST_speech_post Reached")
-    // console.log("ID_2:"+fileIDFromAPI)
-    // console.log("model:"+model)
-    if ((id !== null) && (model !== '')) {
-      console.log("call_POST_speech_post called")
-      axios.post(baseURL + 'speech/post/' + id + '&' + model, {
-      }).then((responseData) => {
-        console.log(responseData)        
-      }).catch(error => {
-        console.log(error)
-      });
+    // console.log("call_POST_speech_post Reached")
+    // // console.log("ID_2:"+fileIDFromAPI)
+    // // console.log("model:"+model)
+    // if ((id !== null) && (model !== '')) {
+    //   console.log("call_POST_speech_post called")
+    //   axios.post(baseURL + 'speech/post/' + id + '&' + model, {
+    //   }).then((responseData) => {
+    //     console.log(responseData)       
+    //     poll_call_GET_speech_get(responseData.data.id); 
+    //   }).catch(error => {
+    //     console.log(error)
+    //   });
 
-    }
+    // }
+
+    //TEST
+    poll_call_GET_speech_get("abc"); 
+
   }
    
   const poll_call_GET_speech_get = (id) => {
-    console.log("poll_call_GET_speech_get reached")
-    const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
-    api_call_GET_speech_get.poll(3000).get((response) => {
-      console.log("poll_call_GET_speech_get started")
-      console.log(response.data);
+    // console.log("poll_call_GET_speech_get reached")
+    // const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
+    // api_call_GET_speech_get.poll(3000).get((response) => {
+    //   console.log("poll_call_GET_speech_get started")
+    //   console.log(response.data);
       
-      if(response.data.status === "Success"){
-        //setTranscriptFromAPI(response.data.transcript);
-        transcriptFromAPI = response.transcript.transcript;
-        console.log("Transcript before setting var: "+response.transcript.transcript)
-        console.log("Transcript from API: "+transcriptFromAPI)
-        showTranscripts();
-        return false;
-      }
-      // you can cancel polling by returning false
-    });
+    //   if(response.data.status === "Success"){
+    //     setTranscriptFromAPI(response.data.transcript.transcript);
+    //     //transcriptFromAPI = response.data.transcript.transcript;
+    //     console.log("Transcript before setting var: "+response.data.transcript.transcript)
+    //     console.log("Transcript from API: "+transcriptFromAPI)
+    //     //showTranscripts();
+    //     return false;
+    //   }
+    //   // you can cancel polling by returning false
+    // });
+    setTranscriptFromAPI("ABCDEF");
 
   }
 
   const sendGDriveLinkAPI = () => {
-     
+    if(gDriveLinkVar === ''){
+      setAlertMSG("Please enter Google Drive Link!");
+      setAlert();
+      return;
+    }
+    var urlValid = gDriveLinkVar.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+    if(urlValid == null){
+      setAlertMSG("Please enter a VALID Google Drive Link!");
+      setAlert();
+      return;
+    }
+    if(model === ''){
+      setAlertMSG("Please select a language!");
+      setAlert();
+      return;
+    }
     call_POST_files_gdrive();
     //showTranscripts();
 
+  }
+
+  const displayAlert = () =>{
+    if(alertFlag === null){
+      return null
+    }
+    else{
+    return (
+      <Collapse in={openAlert}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpenAlert(false);
+                setAlertFlag(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          {alertMSG}
+      </Alert>
+    </Collapse>
+    ) 
+    }
   }
 
   const displayGDrivebox = () => {
@@ -191,6 +258,7 @@ function StartDeepRead() {
                   onChange={handleModelChange}
                   label="Language"
                   className={classes.fullWidthElement}
+                  required={true}
                 >
                   <MenuItem value={"model-generic"}>American English</MenuItem>
                   <MenuItem value={"model-indian"}>Indian English</MenuItem>
@@ -212,29 +280,32 @@ function StartDeepRead() {
     }
     if (videoNameFromAPI !== null) {
       return (
-        <Grid item xs>
-          <Paper className={classes.paper}>
-            <Grid container spacing={2}>
-              <Grid item className={classes.topSpacing10}>
-              <div>
-              <strong>
-                Video Information
-              </strong>              
-              </div>
-              </Grid>
-              <Grid item className={classes.topSpacing10}>
+          <Grid item xs>
+            <Paper className={classes.paper}>
+              <Grid container spacing={2}>
+                <Grid item className={classes.topSpacing10}>
                 <div>
-                  <b>Video Name:</b> {videoNameFromAPI}
+                <strong>
+                  Video Information
+                </strong>              
                 </div>
-              </Grid>
-              <Grid item className={classes.topSpacing10}> 
+                <div className={classes.topSpacing10}>
+                    Video Name: {videoNameFromAPI}
+                  </div>
                 <div>
-                  <b>Video Size:</b> {videoSizeFromAPI}
+                  Video Size: {videoSizeFromAPI}
                 </div>
+                </Grid>
+                <Grid item className={classes.topSpacing10}>
+                  {/* <iframe title="Video" src="https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/preview?t=45" width="1280" height="720"></iframe> */}
+                  {/* https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/view?usp=sharing */}
+                  
+                  <iframe title="Video" src={gDriveLinkVar.replace("/view?usp=sharing","/preview")} width="1280" height="720"></iframe>
+                </Grid>
               </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
+            </Paper>
+          </Grid>        
+        
       )
     }
   }
@@ -252,7 +323,7 @@ function StartDeepRead() {
               </strong>            
           </div>
           <div className={classes.topSpacing10}>
-            From API: {transcriptFromAPI}
+            {transcriptFromAPI}
           </div>
           </Paper>
       </Grid>)
@@ -346,6 +417,7 @@ function StartDeepRead() {
   const showVideoInformation = () => {
     setAllFalse();
     setVideoInformationFlag(true);
+    //console.log("VIDEO URL:"+gDriveLinkVar.replace("/view?usp=sharing","/preview"))
   }
 
   const showTranscripts = () => {
@@ -374,14 +446,30 @@ function StartDeepRead() {
     setGalleryFlag(true);
   }
 
+  const setAlert = () =>{
+    setAlertFlag(true);
+    setOpenAlert(true);
+  }
+
   return (
+    
     <div>
+      
+      <div>
+        {displayAlert()}       
+      </div>
+
       <div><h1><strong>Start deep-read</strong></h1>
       </div>
 
       <div className={classes.topSpacing30}>
         <Grid container spacing={3}>
           {displayGDrivebox()}
+        </Grid>
+      </div>
+
+      <div className={classes.bottomPadding}>
+        <Grid container spacing={3}>
           {displayVideoInformation()}
         </Grid>
       </div>
@@ -422,7 +510,7 @@ function StartDeepRead() {
 
         </Grid>
       </div>
-
+   
     </div>
   );
 }
