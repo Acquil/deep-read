@@ -21,6 +21,8 @@ import Collapse from '@material-ui/core/Collapse';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox";
+import Quiz from '../components/QuizMain';
+
 
 
 
@@ -109,47 +111,6 @@ function StartDeepRead() {
     { title: '12 Angry Men', year: 1957 }
   ];
   
-  // const questions = [
-  //   {
-  //     questionText: 'What is the capital of France?',
-  //     answerOptions: [
-  //       { answerText: 'New York', isCorrect: false },
-  //       { answerText: 'London', isCorrect: false },
-  //       { answerText: 'Paris', isCorrect: true },
-  //       { answerText: 'Dublin', isCorrect: false },
-  //     ],
-  //   },
-  //   {
-  //     questionText: 'Who is CEO of Tesla?',
-  //     answerOptions: [
-  //       { answerText: 'Jeff Bezos', isCorrect: false },
-  //       { answerText: 'Elon Musk', isCorrect: true },
-  //       { answerText: 'Bill Gates', isCorrect: false },
-  //       { answerText: 'Tony Stark', isCorrect: false },
-  //     ],
-  //   },
-  //   {
-  //     questionText: 'The iPhone was created by which company?',
-  //     answerOptions: [
-  //       { answerText: 'Apple', isCorrect: true },
-  //       { answerText: 'Intel', isCorrect: false },
-  //       { answerText: 'Amazon', isCorrect: false },
-  //       { answerText: 'Microsoft', isCorrect: false },
-  //     ],
-  //   },
-  //   {
-  //     questionText: 'How many Harry Potter books are there?',
-  //     answerOptions: [
-  //       { answerText: '1', isCorrect: false },
-  //       { answerText: '4', isCorrect: false },
-  //       { answerText: '6', isCorrect: false },
-  //       { answerText: '7', isCorrect: true },
-  //     ],
-  //   },
-  // ];
-  // const [currentQuestion, setCurrentQuestion] = React.useState(0);
-	// const [showScore, setShowScore] = React.useState(false);
-  // const [score, setScore] = React.useState(0);
   const baseURL = "http://127.0.0.1:5000/"
   const images = [
     {
@@ -166,18 +127,6 @@ function StartDeepRead() {
     },
   ];
 
-  // const handleAnswerOptionClick = (isCorrect) => {
-	// 	if (isCorrect) {
-	// 		setScore(score + 1);
-	// 	}
-
-	// 	const nextQuestion = currentQuestion + 1;
-	// 	if (nextQuestion < questions.length) {
-	// 		setCurrentQuestion(nextQuestion);
-	// 	} else {
-	// 		setShowScore(true);
-	// 	}
-  // };
   
 
   const updateGDriveTextBox = (e) => {
@@ -190,85 +139,85 @@ function StartDeepRead() {
 
   const call_POST_files_gdrive = () => {
     console.log("call_POST_files_gdrive Reached")
-    // if ((gDriveLinkVar !== '')) {     
-    //   console.log("call_POST_files_gdrive Called") 
-    //   axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
-    //   }).then((responseData) => {
-    //     console.log(responseData)
-    //     if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
-    //       setVideoNameFromAPI(responseData.data.filename);
-    //       setVideoSizeFromAPI(responseData.data.size);
-    //       
-    //       setFileIDFromAPI(responseData.data.id);
-    //       // console.log("Filename:"+videoNameFromAPI)
-    //       // console.log("ID_1:"+fileIDFromAPI)
-    //       // console.log("id in fun1:"+responseData.data.id)
-    //       call_POST_speech_post(responseData.data.id);          
-    //     }
-    //   }).catch(error => {
-    //     console.log(error)
-    //   });
-    // }
+    if ((gDriveLinkVar !== '')) {     
+      console.log("call_POST_files_gdrive Called") 
+      axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
+      }).then((responseData) => {
+        console.log(responseData)
+        if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
+          setVideoNameFromAPI(responseData.data.filename);
+          setVideoSizeFromAPI(responseData.data.size);
+          
+          setFileIDFromAPI(responseData.data.id);
+          // console.log("Filename:"+videoNameFromAPI)
+          // console.log("ID_1:"+fileIDFromAPI)
+          // console.log("id in fun1:"+responseData.data.id)
+          call_POST_speech_post(responseData.data.id);          
+        }
+      }).catch(error => {
+        console.log(error)
+      });
+    }
 
     //TEST
-    setVideoNameFromAPI("Video 1");
-    setVideoSizeFromAPI("60 MB");
-    call_POST_speech_post("abc"); 
+    // setVideoNameFromAPI("Video 1");
+    // setVideoSizeFromAPI("60 MB");
+    // call_POST_speech_post("abc"); 
 
   }
 
   const call_POST_speech_post = (id) => {
-    // console.log("id in fun1:"+id)
-    // console.log("call_POST_speech_post Reached")
-    // // console.log("ID_2:"+fileIDFromAPI)
-    // // console.log("model:"+model)import Lightbox from 'react-lightbox-component';
+    console.log("id in fun1:"+id)
+    console.log("call_POST_speech_post Reached")
+    // console.log("ID_2:"+fileIDFromAPI)
+    // console.log("model:"+model)import Lightbox from 'react-lightbox-component';
 
-    // if ((id !== null) && (model !== '')) {
-    //   console.log("call_POST_speech_post called")
-    //   axios.post(baseURL + 'speech/post/' + id + '&' + model, {
-    //   }).then((responseData) => {
-    //     console.log(responseData)       
-    //     poll_call_GET_speech_get(responseData.data.id); 
-    //   }).catch(error => {
-    //     console.log(error)
-    //   });
+    if ((id !== null) && (model !== '')) {
+      console.log("call_POST_speech_post called")
+      axios.post(baseURL + 'speech/post/' + id + '&' + model, {
+      }).then((responseData) => {
+        console.log(responseData)       
+        poll_call_GET_speech_get(responseData.data.id); 
+      }).catch(error => {
+        console.log(error)
+      });
 
-    // }
+    }
 
     //TEST
-    poll_call_GET_speech_get("abc"); 
+    // poll_call_GET_speech_get("abc"); 
 
   }
    
   const poll_call_GET_speech_get = (id) => {
-    // console.log("poll_call_GET_speech_get reached")
-    // const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
-    // api_call_GET_speech_get.poll(3000).get((response) => {
-    //   console.log("poll_call_GET_speech_get started")
-    //   console.log(response.data);
+    console.log("poll_call_GET_speech_get reached")
+    const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
+    api_call_GET_speech_get.poll(3000).get((response) => {
+      console.log("poll_call_GET_speech_get started")
+      console.log(response.data);
       
-    //   if(response.data.status === "Success"){
-    //     setTranscriptFromAPI(response.data.transcript.transcript);
-    //     // transcriptTime = JSON.parse(response.data.transcript.transcript_times);
-    //     setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
-    //     //transcriptFromAPI = response.data.transcript.transcript;
-    //     // console.log("Transcript before setting var: "+response.data.transcript.transcript)
-    //     // console.log("Transcript from API: "+transcriptFromAPI)
-    //     //showTranscripts();
-    //     setDataSuccessRecievedFromAPI(true);
-    //     
-    //     return false;
-    //   }
+      if(response.data.status === "Success"){
+        setTranscriptFromAPI(response.data.transcript.transcript);
+        // transcriptTime = JSON.parse(response.data.transcript.transcript_times);
+        setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
+        //transcriptFromAPI = response.data.transcript.transcript;
+        // console.log("Transcript before setting var: "+response.data.transcript.transcript)
+        // console.log("Transcript from API: "+transcriptFromAPI)
+        //showTranscripts();
+        setDataSuccessRecievedFromAPI(true);
+        
+        return false;
+      }
 
-    //   // for (var i = 0, emp; i < result.employees.length; i++) {
-    //   //   emp = result.employees[i];
-    //   //   employees[ emp.id ] = emp;
-    //   // }
-    //   // you can cancel polling by returning false
-    // });
+      // for (var i = 0, emp; i < result.employees.length; i++) {
+      //   emp = result.employees[i];
+      //   employees[ emp.id ] = emp;
+      // }
+      // you can cancel polling by returning false
+    });
     //TEST
-    setTranscriptFromAPI("ABCDEF");
-    setDataSuccessRecievedFromAPI(true);
+    // setTranscriptFromAPI("ABCDEF");
+    // setDataSuccessRecievedFromAPI(true);
 
   }
 
@@ -448,6 +397,9 @@ function StartDeepRead() {
             <strong>
               MCQs
             </strong>            
+          </div>
+          <div>
+            <Quiz />
           </div>
           {/* <div>
             {showScore ? (
