@@ -19,6 +19,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import SimpleReactLightbox from "simple-react-lightbox";
+import { SRLWrapper } from "simple-react-lightbox";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -103,10 +106,79 @@ function StartDeepRead() {
     { title: 'The Godfather', year: 1972 },
     { title: 'The Godfather: Part II', year: 1974 },
     { title: 'The Dark Knight', year: 2008 },
-    { title: '12 Angry Men', year: 1957 }]
-
-
+    { title: '12 Angry Men', year: 1957 }
+  ];
+  
+  // const questions = [
+  //   {
+  //     questionText: 'What is the capital of France?',
+  //     answerOptions: [
+  //       { answerText: 'New York', isCorrect: false },
+  //       { answerText: 'London', isCorrect: false },
+  //       { answerText: 'Paris', isCorrect: true },
+  //       { answerText: 'Dublin', isCorrect: false },
+  //     ],
+  //   },
+  //   {
+  //     questionText: 'Who is CEO of Tesla?',
+  //     answerOptions: [
+  //       { answerText: 'Jeff Bezos', isCorrect: false },
+  //       { answerText: 'Elon Musk', isCorrect: true },
+  //       { answerText: 'Bill Gates', isCorrect: false },
+  //       { answerText: 'Tony Stark', isCorrect: false },
+  //     ],
+  //   },
+  //   {
+  //     questionText: 'The iPhone was created by which company?',
+  //     answerOptions: [
+  //       { answerText: 'Apple', isCorrect: true },
+  //       { answerText: 'Intel', isCorrect: false },
+  //       { answerText: 'Amazon', isCorrect: false },
+  //       { answerText: 'Microsoft', isCorrect: false },
+  //     ],
+  //   },
+  //   {
+  //     questionText: 'How many Harry Potter books are there?',
+  //     answerOptions: [
+  //       { answerText: '1', isCorrect: false },
+  //       { answerText: '4', isCorrect: false },
+  //       { answerText: '6', isCorrect: false },
+  //       { answerText: '7', isCorrect: true },
+  //     ],
+  //   },
+  // ];
+  // const [currentQuestion, setCurrentQuestion] = React.useState(0);
+	// const [showScore, setShowScore] = React.useState(false);
+  // const [score, setScore] = React.useState(0);
   const baseURL = "http://127.0.0.1:5000/"
+  const images = [
+    {
+      original: 'https://picsum.photos/id/1018/1000/600/',
+      thumbnail: 'https://picsum.photos/id/1018/250/150/',
+    },
+    {
+      original: 'https://picsum.photos/id/1015/1000/600/',
+      thumbnail: 'https://picsum.photos/id/1015/250/150/',
+    },
+    {
+      original: 'https://picsum.photos/id/1019/1000/600/',
+      thumbnail: 'https://picsum.photos/id/1019/250/150/',
+    },
+  ];
+
+  // const handleAnswerOptionClick = (isCorrect) => {
+	// 	if (isCorrect) {
+	// 		setScore(score + 1);
+	// 	}
+
+	// 	const nextQuestion = currentQuestion + 1;
+	// 	if (nextQuestion < questions.length) {
+	// 		setCurrentQuestion(nextQuestion);
+	// 	} else {
+	// 		setShowScore(true);
+	// 	}
+  // };
+  
 
   const updateGDriveTextBox = (e) => {
     setGDriveLinkVar(e.target.value)
@@ -149,7 +221,8 @@ function StartDeepRead() {
     // console.log("id in fun1:"+id)
     // console.log("call_POST_speech_post Reached")
     // // console.log("ID_2:"+fileIDFromAPI)
-    // // console.log("model:"+model)
+    // // console.log("model:"+model)import Lightbox from 'react-lightbox-component';
+
     // if ((id !== null) && (model !== '')) {
     //   console.log("call_POST_speech_post called")
     //   axios.post(baseURL + 'speech/post/' + id + '&' + model, {
@@ -374,9 +447,30 @@ function StartDeepRead() {
           <div>
             <strong>
               MCQs
-              </strong>
-            
-          </div></Paper>
+            </strong>            
+          </div>
+          {/* <div>
+            {showScore ? (
+              <div className='score-section'>
+                You scored {score} out of {questions.length}
+              </div>
+            ) : (
+              <>
+                <div className='question-section'>
+                  <div className='question-count'>
+                    <span>Question {currentQuestion + 1}</span>/{questions.length}
+                  </div>
+                  <div className='question-text'>{questions[currentQuestion].questionText}</div>
+                </div>
+                <div className='answer-section'>
+                  {questions[currentQuestion].answerOptions.map((answerOption) => (
+                    <button onClick={() => handleAnswerOptionClick(answerOption.isCorrect)}>{answerOption.answerText}</button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div> */}
+        </Paper>
       </Grid>)
     }
   }
@@ -409,9 +503,19 @@ function StartDeepRead() {
           <div>
             <strong>
               Gallery
-              </strong>
-            
-          </div></Paper>
+            </strong>            
+          </div>
+          <div className={classes.fullWidthElement}>
+            <SimpleReactLightbox>
+              <SRLWrapper>
+                <img src='https://upload.wikimedia.org/wikipedia/commons/8/89/Ropy_pahoehoe.jpg' alt="Caption" width="640" height="280"/>
+                <img src='https://upload.wikimedia.org/wikipedia/commons/7/73/Pyroclastic_flows_at_Mayon_Volcano.jpg' width="640" height="280" alt="Another Caption" />
+                <img src='https://upload.wikimedia.org/wikipedia/commons/f/f3/Okataina.jpg'alt="Final Caption" width="640" height="280"/>
+              </SRLWrapper>
+            </SimpleReactLightbox>
+          </div>
+          {/* <ImageGallery items={images} />; */}
+        </Paper>
       </Grid>)
     }
   }
