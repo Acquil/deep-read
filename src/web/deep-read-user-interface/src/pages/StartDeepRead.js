@@ -80,8 +80,12 @@ function StartDeepRead() {
   const [GDriveBoxFlag, setGDriveBoxFlag] = React.useState(false);
   const [galleryFlag, setGalleryFlag] = React.useState(false);
   const [videoNameFromAPI, setVideoNameFromAPI] = React.useState(null);
+  const [videoSizeFromAPI, setVideoSizeFromAPI] = React.useState(null);
   const [fileIDFromAPI, setFileIDFromAPI] = React.useState(null);
+  //const [transcriptFromAPI, setTranscriptFromAPI] = React.useState(null);
+  var transcriptFromAPI = null;
   const [model, setModel] = React.useState('');
+  const bnaTranscript = React.useRef(null);
   const baseURL = "http://127.0.0.1:5000/"
 
 
@@ -102,12 +106,15 @@ function StartDeepRead() {
         console.log(responseData)
         if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
           setVideoNameFromAPI(responseData.data.filename);
+          setVideoSizeFromAPI(responseData.data.size);
+          showVideoInformation();
           setFileIDFromAPI(responseData.data.id);
           // console.log("Filename:"+videoNameFromAPI)
           // console.log("ID_1:"+fileIDFromAPI)
           // console.log("id in fun1:"+responseData.data.id)
           call_POST_speech_post(responseData.data.id);
           poll_call_GET_speech_get(responseData.data.id);
+          
         }
       }).catch(error => {
         console.log(error)
@@ -139,7 +146,13 @@ function StartDeepRead() {
     api_call_GET_speech_get.poll(3000).get((response) => {
       console.log("poll_call_GET_speech_get started")
       console.log(response.data);
+      
       if(response.data.status === "Success"){
+        //setTranscriptFromAPI(response.data.transcript);
+        transcriptFromAPI = response.transcript.transcript;
+        console.log("Transcript before setting var: "+response.transcript.transcript)
+        console.log("Transcript from API: "+transcriptFromAPI)
+        showTranscripts();
         return false;
       }
       // you can cancel polling by returning false
@@ -150,7 +163,6 @@ function StartDeepRead() {
   const sendGDriveLinkAPI = () => {
      
     call_POST_files_gdrive();
-    showVideoInformation();
     //showTranscripts();
 
   }
@@ -202,16 +214,22 @@ function StartDeepRead() {
       return (
         <Grid item xs>
           <Paper className={classes.paper}>
-            <div>
-              <h1><strong>
-                Video Information
-              </strong>
-              </h1>
-            </div>
             <Grid container spacing={2}>
-              <Grid item>
+              <Grid item className={classes.topSpacing10}>
+              <div>
+              <strong>
+                Video Information
+              </strong>              
+              </div>
+              </Grid>
+              <Grid item className={classes.topSpacing10}>
                 <div>
                   <b>Video Name:</b> {videoNameFromAPI}
+                </div>
+              </Grid>
+              <Grid item className={classes.topSpacing10}> 
+                <div>
+                  <b>Video Size:</b> {videoSizeFromAPI}
                 </div>
               </Grid>
             </Grid>
@@ -229,11 +247,14 @@ function StartDeepRead() {
       return (<Grid item xs>
         <Paper className={classes.paper}>
           <div>
-            <h1><strong>
+            <strong>
               Transcript
-              </strong>
-            </h1>
-          </div></Paper>
+              </strong>            
+          </div>
+          <div className={classes.topSpacing10}>
+            From API: {transcriptFromAPI}
+          </div>
+          </Paper>
       </Grid>)
     }
   }
@@ -246,10 +267,9 @@ function StartDeepRead() {
       return (<Grid item xs>
         <Paper className={classes.paper}>
           <div>
-            <h1><strong>
+            <strong>
               Summary
               </strong>
-            </h1>
           </div></Paper>
       </Grid>)
     }
@@ -264,10 +284,10 @@ function StartDeepRead() {
       return (<Grid item xs>
         <Paper className={classes.paper}>
           <div>
-            <h1><strong>
+            <strong>
               MCQs
               </strong>
-            </h1>
+            
           </div></Paper>
       </Grid>)
     }
@@ -281,7 +301,7 @@ function StartDeepRead() {
       return (<Grid item xs>
         <Paper className={classes.paper}>
           <div>
-            <h1><strong>IR</strong></h1>
+            <strong>IR</strong>
           </div>
           <div>
             Test
@@ -299,10 +319,10 @@ function StartDeepRead() {
       return (<Grid item xs>
         <Paper className={classes.paper}>
           <div>
-            <h1><strong>
+            <strong>
               Gallery
               </strong>
-            </h1>
+            
           </div></Paper>
       </Grid>)
     }
@@ -393,7 +413,7 @@ function StartDeepRead() {
               showLabels
               className={classes.root}
             >
-              <BottomNavigationAction label="Notes" icon={<ReceiptSharpIcon />} onClick={showTranscripts} />
+              <BottomNavigationAction label="Notes"  icon={<ReceiptSharpIcon />} onClick={showTranscripts} />
               <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ} />
               <BottomNavigationAction label="IR" icon={<SearchSharpIcon />} onClick={showIR} />
               <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery} />
