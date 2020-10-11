@@ -28,30 +28,19 @@ class MCQGeneratorRequest(Resource):
 
     def post(self, file):        
         id = file
-        # # check if file exists else
-        # file = f"core/temp/{file}.wav"
-        # if not os.path.isfile(file):
-        #     api.abort(404, "file does not exist", custom="file should be uploaded first")
 
-        output = {
-            'status': "In Process"
-            }
-        
-        repository.update(dr_key = id, field= 'mcqs', data=output)
-
-
+        response = ""
         data = repository.get_one(id)
         if data.status == "Success":
-            Thread(target = self.mcq_generator_task, args=(id,data)).start()
+            response = self.get_response_string(id,data)
+            repository.update(dr_key = id, field= 'mcqs', data=response['mcqs'])
+
         else:
             api.abort(404, 'Call this API after transcript has been generated')
-        return {
-            'id': id,
-            'status': 'In Process'
-        }
+        return response
 
-    # Thread to spawn more processes and generate MCQs in background
-    def mcq_generator_task(self, id, data):
+    #Returns response dictionary for MCQ_Generator Post Request
+    def get_response_string(self, id, data):
         # TODO - concatenate video text with audio text and then pass it to MCQ Generator
         mcq_generator = MCQ_Generator(text = data.transcript['transcript'])
         questions, options, correct_answers = mcq_generator.generate_mcqs(5)
@@ -67,11 +56,11 @@ class MCQGeneratorRequest(Resource):
             'questions': questions_dict,
             'options': options_dict,
             'answers': correct_answers_dict,
-            'status': "Success"
+            'status': 'Success'
         }
         
         repository.update(dr_key = id, field= 'mcqs', data=mcqs)
-        print("Generated MCQs")
+        return { "mcqs" : mcqs, "status" : mcqs['status']}
         
 
 
