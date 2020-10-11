@@ -38,7 +38,7 @@ echo -e "\n---------------------------------------------------------------------
 echo "Checking for venv"
 echo -e "---------------------------------------------------------------------"
 
-DIRECTORY="venv-01"
+DIRECTORY=".venv"
 if [ ! -d "$DIRECTORY" ]; then
 # Control will enter here if $DIRECTORY doesn't exist.
     echo "Setting up venv"
@@ -50,6 +50,7 @@ fi
 
 # echo -e "\n---------------------------------------------------------------------\n"
 # Other dependencies go here
+python3 -m spacy download en #a language pack required for extracting keywords in MCQs
 # echo -e "\n---------------------------------------------------------------------\n"
 
 
