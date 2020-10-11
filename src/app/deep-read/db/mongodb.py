@@ -95,5 +95,5 @@ class Repository(object):
         try:
             doc = obj.to_dict()
             self.collection.insert(doc)
-        except(KeyError):
+        except KeyError:
             raise KeyError
