@@ -130,3 +130,6 @@ dmypy.json
 
 # VSCode
 .vscode/
+
+#Data
+data/training/GloVe

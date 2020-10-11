@@ -50,7 +50,15 @@ fi
 
 # echo -e "\n---------------------------------------------------------------------\n"
 # Other dependencies go here
-python3 -m spacy download en #a language pack required for extracting keywords in MCQs
+
+#Download GloVe model
+GloVeModelFILE=../../../data/training/GloVe/word2vec-glove.6B.300d.txt
+if [ ! -f "$GloVeModelFILE" ]; then
+    echo "GloVe Model not found"
+    gdown https://drive.google.com/uc?id=1ht_zpKv8uXM6LZhUuEpim3cLppLj9GWX -O $GloVeModelFILE
+fi
+
+python3 -m spacy download en #This language pack is required for extracting keywords in MCQs
 # echo -e "\n---------------------------------------------------------------------\n"
 
 
