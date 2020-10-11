@@ -11,7 +11,7 @@ import uuid
 import pandas as pd
 
 class RecognizerSegment:
-    '''
+    """
     Converts .wav audio files to text. Uses vosk library internally.
     Use Recognizer for larger audio files
 
@@ -19,7 +19,7 @@ class RecognizerSegment:
         wav_audio   : Path to mono PCM .wav audio
         model       : Path to unzipped vosk model
                       Compatible models from https://alphacephei.com/vosk/models
-    '''
+    """
 
     def __init__(self, wav_audio, model="model-indian"):
         
@@ -28,21 +28,23 @@ class RecognizerSegment:
         
         self.transcript = ""
         self.timestamped_text = []
+        self._wf = None
+        self._output_wav = None
         # Remove logging
         SetLogLevel(-1)
     
     def to_valid_audio(self):
-        '''
+        """
         Converts to mono PCM .wav
         Audio file must be WAV format mono PCM for transcribing
-        '''
+        """
         # ffmpeg PCM conversion
         self._output_wav = self.wav_audio.split(".")[0] + "_converted.wav"
         sample_rate = 16000
         
         os.system("ffmpeg  -loglevel quiet -i {0} -acodec pcm_s16le -ac 1 -ar {1} {2}"\
-            .format(self.wav_audio,\
-                    sample_rate, \
+            .format(self.wav_audio,
+                    sample_rate,
                     self._output_wav))
         
         # open converted .wav
@@ -50,15 +52,15 @@ class RecognizerSegment:
         
 
     def transcribe(self, frames=None):
-        '''
+        """
         Transcribes the text
-        
+
         Args:
             frames      : Number of frames to read at a time.
         Returns:
             transcript  : Transcript of audio
-        
-        '''
+
+        """
         self.to_valid_audio()
         
         if frames is None:
@@ -76,17 +78,17 @@ class RecognizerSegment:
 
 
     def __transcribe_frames(self, wf, rec, frames):
-        '''
+        """
         Helper function that reads frames from .wav and transcribes it
 
         Args:
             rec (KaldiRecognizer)   : Vosk KaldiRecognizer object
             frames (int)            : Number of frames to read at a time
-        
+
         Returns:
-            transcript      
+            transcript
             timestamped_text
-        '''
+        """
         timestamped_text = []
         transcript       = ""
         
@@ -110,34 +112,34 @@ class RecognizerSegment:
                 timestamped_text.append(result)     
             transcript += res['text']
 
-        return (transcript, timestamped_text)
+        return transcript, timestamped_text
 
 
     def get_timestamped_text(self):
-        '''
+        """
         Returns:
             timestamped_text: list of words spoken along with corresponding timestamps and confidence
 
-        '''
+        """
         return self.timestamped_text
 
     
     def get_transcript(self):
-        '''
+        """
         Returns:
             transcript: transcript of audio file
-        '''
+        """
         return self.transcript
 
     def _delete_temp_audio(self):
-        '''
+        """
         Deletes PCM .wav files that were created
-        '''
+        """
         os.remove(self._output_wav)
     
 
 class Recognizer:
-    '''
+    """
     Converts .wav audio files to text. Uses RecognizerSegement & Vosk internally.
     Use RecognizerSegment for very small audio files (less than 1 min duration)
 
@@ -147,7 +149,7 @@ class Recognizer:
                           Available models=[model-indian, model-generic]
         workers         : Number of subprocesses to spawn
         min_per_split   : Number of minutes to split the audio by.
-    '''
+    """
     def __init__(self, wav_audio, model = "model-indian" ,workers = 4, min_per_split = 3):
        
         self.__folder       = 'core/chunks_' + str(uuid.uuid4())
@@ -163,9 +165,9 @@ class Recognizer:
     
 
     def __split(self, file, folder, min_per_split):
-        '''
+        """
         Split audio into chunks. Uses audiosplitter.py
-        '''
+        """
         os.mkdir(folder)
         # copy file to directory but without folder prefixes
         copyfile(file, f"{folder}/{file.split('/')[-1]}")
@@ -191,25 +193,25 @@ class Recognizer:
 
 
     def transcribe_chunks(self, files):
-        '''
+        """
         Helper function to transcribe chunks of audio
 
         Returns:
             transcript
-        '''
+        """
         uid, filename = files.split()
         r = RecognizerSegment(wav_audio = filename, model=self.model)
         r.transcribe()
-        return (uid, r.transcript, r.get_timestamped_text())
+        return uid, r.transcript, r.get_timestamped_text()
 
 
     def transcribe(self):
-        '''
+        """
         Transcribes the text
-       
+
         Returns:
             transcript  : Transcript of audio
-        '''
+        """
         try:
             # Split audio into chunks
             n_splits = self.__split(
@@ -269,28 +271,7 @@ class Recognizer:
 
 
     def _delete_temp_chunks(self):
-        '''
+        """
         Deletes PCM .wav file chunks that were created
-        '''
+        """
         rmtree(self.__folder)
-
-
-
-# Main
-if __name__ == "__main__":
-    r = Recognizer(
-        wav_audio = sys.argv[1], 
-        workers=8, 
-        min_per_split=4,
-        model = 'model-indian'
-        )
-    r.transcribe()
-
-    with open('transcript.txt', 'w') as f:
-        for item in r.transcript:
-            f.write(f"{item}\n")
-    
-    with open('transcript.json', 'w') as f:
-        f.write(r.timestamped_text)
-
-    sys.exit(0)
