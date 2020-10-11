@@ -24,8 +24,10 @@ text : str
 """
 class MCQ_Generator():
 
-    word2vec_file = '/content/drive/My Drive/Open Source/Incorrect_Options_Suggester/glove.6B/word2vec-glove.6B.300d.txt'
+    print("loading GloVe model(MCQ_Generator module)")
+    word2vec_file = '../../../data/training/GloVe/word2vec-glove.6B.300d.txt'
     model = KeyedVectors.load_word2vec_format(word2vec_file)
+    print("loaded GloVe model(MCQ_Generator module)")
 
     def __init__(self, text):
         self.text = text
