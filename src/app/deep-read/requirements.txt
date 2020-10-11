@@ -12,3 +12,4 @@ filetype==1.0.7
 fuzzywuzzy==0.18.0
 git+https://github.com/boudinfl/pke.git@6abbcd5d29d14f5151b79a20715ae06dbdd5e4b5
 gensim==3.8.3
+spacy==2.3.2

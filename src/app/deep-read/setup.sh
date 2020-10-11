@@ -42,7 +42,7 @@ DIRECTORY=".venv"
 if [ ! -d "$DIRECTORY" ]; then
 # Control will enter here if $DIRECTORY doesn't exist.
     echo "Setting up venv"
-    python3 -m venv ./venv
+    python -m venv ./venv
     source ./venv/bin/activate
     pip install -r ./requirements.txt
 fi
@@ -58,7 +58,7 @@ if [ ! -f "$GloVeModelFILE" ]; then
     gdown https://drive.google.com/uc?id=1ht_zpKv8uXM6LZhUuEpim3cLppLj9GWX -O $GloVeModelFILE
 fi
 
-python3 -m spacy download en #This language pack is required for extracting keywords in MCQs
+python -m spacy download en #This language pack is required for extracting keywords in MCQs
 # echo -e "\n---------------------------------------------------------------------\n"
 
 
