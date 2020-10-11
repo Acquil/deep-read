@@ -6,12 +6,30 @@ DIRECTORY_INDIAN="model-indian"
 
 echo "Installing required packages..."
 
-PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
-echo Checking for $REQUIRED_PKG: $PKG_OK
-if [ "" = "$PKG_OK" ]; then
-  echo "No $REQUIRED_PKG. Setting up $REQUIRED_PKG."
-  sudo apt-get --yes install $REQUIRED_PKG 
-fi
+# Find our package manager
+# Debian
+if VERB="$( which apt-get )" 2> /dev/null; then
+  
+  PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
+  echo Checking for $REQUIRED_PKG: $PKG_OK
+  if [ "" = "$PKG_OK" ]; then
+    echo "No $REQUIRED_PKG. Setting up $REQUIRED_PKG."
+    sudo apt-get --yes install $REQUIRED_PKG 
+  fi
+  
+# Arch based
+elif VERB="$( which pacman )" 2> /dev/null; then
+   echo "Arch-based"
+   if pacman -Qs $package > /dev/null ; then
+      echo "$REQUIRED_PKG already installed"
+   else
+      sudo pacman -S $REQUIRED_PKG
+   fi
+   
+else
+   echo "Not Supported!" >&2
+   exit 1
+
 
 echo -e "\n---------------------------------------------------------------------"
 echo "Checking for VOSK models"
@@ -42,7 +60,7 @@ DIRECTORY=".venv"
 if [ ! -d "$DIRECTORY" ]; then
 # Control will enter here if $DIRECTORY doesn't exist.
     echo "Setting up venv"
-    python -m venv ./venv
+    python3 -m venv ./venv
     source ./venv/bin/activate
     pip install -r ./requirements.txt
 fi
