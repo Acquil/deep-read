@@ -30,6 +30,7 @@ else
    echo "Not Supported!" >&2
    exit 1
 
+fi
 
 echo -e "\n---------------------------------------------------------------------"
 echo "Checking for VOSK models"
@@ -72,8 +73,10 @@ fi
 #Download GloVe model
 GloVeModelFILE=../../../data/training/GloVe/word2vec-glove.6B.300d.txt
 if [ ! -f "$GloVeModelFILE" ]; then
+    # create directory(if non-existent)
+    mkdir -p ../../../data/training/GloVe
     echo "GloVe Model not found"
-    gdown https://drive.google.com/uc?id=1ht_zpKv8uXM6LZhUuEpim3cLppLj9GWX -O $GloVeModelFILE
+    gdown "https://drive.google.com/uc?id=1ht_zpKv8uXM6LZhUuEpim3cLppLj9GWX" -O $GloVeModelFILE
 fi
 
 python -m spacy download en #This language pack is required for extracting keywords in MCQs

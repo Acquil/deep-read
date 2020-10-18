@@ -5,8 +5,8 @@ from .mcq_generator_api import api as ns3
 from .tester_api import api as ns4
 
 api = Api(
-    version="0.1.1",
-    title="Deep Speech APIs",
+    version="0.1",
+    title="Deep Read APIs",
     description="APIs For uploading files, text transcription, summarization and MCQ generation."
 )
 
