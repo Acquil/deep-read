@@ -1,7 +1,7 @@
 import requests
 from os import environ
 
-API_KEY = environ.get('DEEPSPEECH_API_KEY')
+API_KEY = environ.get('DEEPSEGMENT_API_KEY')
 
 def segment_text(text):
   """
