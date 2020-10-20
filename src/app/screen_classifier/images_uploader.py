@@ -1,5 +1,6 @@
 from azure.storage.blob import BlockBlobService
 import uuid
+from os import environ
 
 CONNECT_STR = environ.get('BLOB_CONNECTION_STR')
 CONTAINER_NAME ='images' 
