@@ -36,6 +36,10 @@ class Summarizer():
             return (summarize(self.paragraph,0.3))
 
 
+    def __del__(self):
+        os.remove(self.filename)
+
+
 
 def filter_text(text):
 	filtered_text = dict()
