@@ -1,7 +1,7 @@
 import os
-from video_to_image_converter import Video_to_JPG_Converter
-from image_to_text_converter import Image_to_Text_Converter
-from text_to_sentence_converter import Text_to_Sentence_Converter
+from .video_to_image_converter import Video_to_JPG_Converter
+from .image_to_text_converter import Image_to_Text_Converter
+from .text_to_sentence_converter import Text_to_Sentence_Converter
 
 class Video_to_Text_Converter:
 
@@ -40,3 +40,4 @@ class Video_to_Text_Converter:
             sentences = self.extract_sentences_from_text(image_text)
             self.append_sentences_to_video_text(sentences)
         return self.video_text
+        

@@ -12,7 +12,11 @@ import os
 class Summarizer():
 
     def __init__(self,text):
-      self.paragraph = text
+      self.text = text
+      paragraph = ''
+      for sentence in self.text:
+        paragraph += sentence+'. '
+      self.paragraph = paragraph
       self.filename = str(uuid.uuid1())+'.txt'
       f = open(self.filename, "w")
       f.write(self.paragraph)
