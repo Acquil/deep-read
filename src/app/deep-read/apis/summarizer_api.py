@@ -7,7 +7,7 @@ import pymongo
 import os
 import json
 import soundfile
-
+import time
 from threading import Thread
 import threading
 
@@ -53,9 +53,14 @@ class SummarizerRequest(Resource):
         video_text = video_to_text_converter.convert()
         print('Extracted Video Text')
         
+        #get audio text
+        data = repository.get_one(id)
+        while data.status == "In Process":
+            time.sleep(10)
+            data = repository.get_one(id)
+        
         #summarize the video and audio text
-        # TODO summarize audio text
-        audio_text = ""
+        audio_text = data.transcript['transcript']
         text = video_text + audio_text
         filtered_text = filter_text(text.split(". "))
         chunks = list(get_chunks(filtered_text, 16))
