@@ -27,13 +27,16 @@ class Summarizer():
         num_of_words = len(self.paragraph.split())
     
         if num_of_words >= 5000:
-            return (summarize(self.paragraph,0.05))
+            summary = summarize(self.paragraph,0.05)
         elif num_of_words >= 3000: #and num_of_words < 5000
-            return (summarize(self.paragraph,0.1))
+            summary = summarize(self.paragraph,0.1)
         elif num_of_words >= 1000: #and num_of_words < 3000
-            return (summarize(self.paragraph,0.2))
+            summary = summarize(self.paragraph,0.2)
         else:
-            return (summarize(self.paragraph,0.3))
+            summary = summarize(self.paragraph,0.3)
+
+        summary = summary.replace("\n", " ")
+        return summary
 
 
     def __del__(self):
