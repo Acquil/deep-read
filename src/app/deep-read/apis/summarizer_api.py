@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, Response
 from flask_restx import Resource, Namespace, fields
-from core.video_to_text_converter import Video_to_Text_Converter
+from core.video_to_text.video_to_text_converter import Video_to_Text_Converter
 from core.summarizer import *
 from math import ceil
 import pymongo
@@ -76,7 +76,7 @@ class SummarizerRequest(Resource):
         repository.update(dr_key = id, field= 'image_text', data=video_text)
         output = {'summary': summary, 'status':'Success'}
         repository.update(dr_key = id, field= 'summary', data= output)
-        print('Summarized')
+        print('Completed Summarization Task')
 
 
 @api.route('/get/<file_id>')

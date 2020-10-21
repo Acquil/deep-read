@@ -33,3 +33,4 @@ class ScreenClassifier:
         slides_index = np.array(np.where(prob>0.7)).flatten()
 
         return dataframe.iloc[slides_index,0].tolist()
+        
