@@ -2,8 +2,11 @@ import os
 from .video_to_image_converter import Video_to_JPG_Converter
 from .image_to_text_converter import Image_to_Text_Converter
 from .text_to_sentence_converter import Text_to_Sentence_Converter
+from .screenclassifier import ScreenClassifier
 
 class Video_to_Text_Converter:
+
+    classifier = ScreenClassifier()
 
     def __init__(self, video_path, offset_duration_seconds = 10):
         self.video_path = video_path
@@ -14,9 +17,10 @@ class Video_to_Text_Converter:
         video_to_jpg_converter = Video_to_JPG_Converter(self.video_path, self.render_path, self.offset_duration_seconds)
         video_to_jpg_converter.convert()
     
-    def get_extracted_image_paths(self):
-        image_paths = [f for f in os.listdir(self.render_path) if os.path.isfile(os.path.join(self.render_path, f))]
-        return image_paths
+    #Images are classified as screens or slides(presentation slides) using NN, we will convert only slide images into text
+    def get_slide_images_from_extracted_images(self):
+        slide_images = Video_to_Text_Converter.classifier.predict("/media/ashwin/Current/sem_9/open_source/deep-read/src/app/deep-read/core/temp/sample_transcript1")
+        return slide_images
 
     def extract_text_from_image(self, image_path):
         image_to_text_converter = Image_to_Text_Converter(image_path)
@@ -34,10 +38,10 @@ class Video_to_Text_Converter:
     def convert(self):
         self.video_text = ""
         self.extract_images_from_video()
-        image_paths = self.get_extracted_image_paths()
-        for image_path in image_paths:
-            image_text = self.extract_text_from_image(os.path.join(self.render_path, image_path))
+        slide_images = self.get_slide_images_from_extracted_images()
+        for image in slide_images:
+            image_path = os.path.join(self.render_path, image)
+            image_text = self.extract_text_from_image(image_path)
             sentences = self.extract_sentences_from_text(image_text)
             self.append_sentences_to_video_text(sentences)
         return self.video_text
-        
