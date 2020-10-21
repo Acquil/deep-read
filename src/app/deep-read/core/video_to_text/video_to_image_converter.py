@@ -51,7 +51,7 @@ class Video_to_JPG_Converter:
                 break
 
             if current_frame % (self.fps * 300) == 0:
-                print("Completed extracting ", current_frame / (self.fps * 60), " minutes of video")
+                print("Completed extracting frames for", current_frame / (self.fps * 60), " minutes of video")
 
     # Release all space and windows once done 
     def release_resources(self):
