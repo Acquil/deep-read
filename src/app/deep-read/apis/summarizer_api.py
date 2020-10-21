@@ -2,6 +2,7 @@ from flask import Flask, jsonify, Response
 from flask_restx import Resource, Namespace, fields
 from core.video_to_text.video_to_text_converter import Video_to_Text_Converter
 from core.summarizer import *
+from core.image_uploader import *
 from math import ceil
 import pymongo
 import os
@@ -77,7 +78,15 @@ class SummarizerRequest(Resource):
         summarizer = Summarizer(final_text)
         summary = summarizer.get_summary()
 
+        #upload images to azure blob storage
+        image_paths = []
+        for image in video_to_text_converter.slide_images:
+            image_paths.append(os.path.join("core/temp/"+id,image))
+
         
+        image_urls = upload_images(image_paths)
+        
+        repository.update(dr_key = id, field= 'images', data=image_urls)
         repository.update(dr_key = id, field= 'image_text', data=video_text)
         output = {'summary': summary, 'status':'Success'}
         repository.update(dr_key = id, field= 'summary', data= output)
