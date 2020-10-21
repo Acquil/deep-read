@@ -70,6 +70,15 @@ fi
 # echo -e "\n---------------------------------------------------------------------\n"
 # Other dependencies go here
 
+#Download CUDA
+CUDADirectory=/usr/local/cuda/
+if [ ! -d "$CUDADirectory" ]; then
+   
+    echo "Installing CUDA..."
+    sh cuda_installation_script.sh
+    echo "Installed CUDA"
+fi
+
 #Download GloVe model
 GloVeModelFILE=../../../data/training/GloVe/word2vec-glove.6B.300d.txt
 if [ ! -f "$GloVeModelFILE" ]; then
