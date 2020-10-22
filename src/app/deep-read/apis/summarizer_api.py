@@ -1,7 +1,5 @@
 from flask_restx import Resource, Namespace
-from core.video_to_text.video_to_text_converter import Video_to_Text_Converter
 from core.summarizer import *
-from core.image_uploader import *
 import pymongo
 import os
 import json
@@ -28,36 +26,31 @@ class SummarizerRequest(Resource):
 
     def post(self, file):
         id = file
-        # check if file exists else
-        file = f"core/temp/{file}.mp4"
-        if not os.path.isfile(file):
-            api.abort(404, "file does not exist", custom="file should be uploaded first")
+        
+        data = repository.get_one(id)
+        #check if text has been extracted from video and audio
+        if data.status == "Success" and data.image_text['status'] == "Success":
+            output = {'summary': "", 'status': 'In Process'}
+            repository.update(dr_key=id, field='summary', data=output)
 
-        # TODO check if doc already exists
-        output = {'summary': "", 'status': 'In Process'}
-        repository.update(dr_key=id, field='summary', data=output)
+            Thread(target=self.summarize_task, args=(file, id)).start()
+            return {
+                'id': id,
+                'status': 'In Process'
+            }
 
-        Thread(target=self.summarize_task, args=(file, id)).start()
-        return {
-            'id': id,
-            'status': 'In Process'
-        }
+        else:
+            api.abort(404, 'Call this API after text has been extracted from video and audio')
+
 
     # Thread to spawn more processes and summarize in background
     def summarize_task(self, file, id):
-        # Extract Text from Video
-        video_path = file  # f"core/temp/{file}.mp4"
-        video_to_text_converter = Video_to_Text_Converter(video_path=video_path)
-        video_text = video_to_text_converter.convert()
-        print('Extracted Video Text')
-
-        # get audio text
+       
+        # get audio and video text
         data = repository.get_one(id)
-        while data.status == "In Process":
-            time.sleep(10)
-            data = repository.get_one(id)
 
         # summarize the video and audio text
+        video_text = data.image_text['image_text']
         audio_text = data.transcript['transcript']
         text = video_text + audio_text
         filtered_text = filter_text(text.split(". "))
@@ -75,15 +68,6 @@ class SummarizerRequest(Resource):
         summarizer = Summarizer(final_text)
         summary = summarizer.get_summary()
 
-        # upload images to azure blob storage
-        image_paths = []
-        for image in video_to_text_converter.slide_images:
-            image_paths.append(os.path.join("core/temp/" + id, image))
-
-        image_urls = upload_images(image_paths)
-
-        repository.update(dr_key=id, field='images', data=image_urls)
-        repository.update(dr_key=id, field='image_text', data=video_text)
         output = {'summary': summary, 'status': 'Success'}
         repository.update(dr_key=id, field='summary', data=output)
         print('Completed Summarization Task')
