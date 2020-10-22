@@ -77,9 +77,9 @@ class SpeechTranscript(Resource):
 @api.route('/get/<file_id>')
 @api.param('file_id','File ID')
 class SpeechTranscriptResponse(Resource):
-    '''
+    """
     Poll for transcript
-    '''
+    """
     def get(self, file_id):
         data = repository.get_one(file_id)
         # if data.status == "In Process":
@@ -93,5 +93,5 @@ class SpeechTranscriptResponse(Resource):
 
 @api.errorhandler(DRVideoNotFound)
 def video_no_found(error):
-    '''no such video exists'''
+    """no such video exists"""
     return {'message': 'video does not exist'}, 404
