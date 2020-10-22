@@ -112,21 +112,6 @@ function StartDeepRead() {
   ];
   
   const baseURL = "http://127.0.0.1:5000/"
-  const images = [
-    {
-      original: 'https://picsum.photos/id/1018/1000/600/',
-      thumbnail: 'https://picsum.photos/id/1018/250/150/',
-    },
-    {
-      original: 'https://picsum.photos/id/1015/1000/600/',
-      thumbnail: 'https://picsum.photos/id/1015/250/150/',
-    },
-    {
-      original: 'https://picsum.photos/id/1019/1000/600/',
-      thumbnail: 'https://picsum.photos/id/1019/250/150/',
-    },
-  ];
-
   
 
   const updateGDriveTextBox = (e) => {
@@ -146,8 +131,7 @@ function StartDeepRead() {
         console.log(responseData)
         if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
           setVideoNameFromAPI(responseData.data.filename);
-          setVideoSizeFromAPI(responseData.data.size);
-          
+          setVideoSizeFromAPI(responseData.data.size);          
           setFileIDFromAPI(responseData.data.id);
           // console.log("Filename:"+videoNameFromAPI)
           // console.log("ID_1:"+fileIDFromAPI)
@@ -167,7 +151,7 @@ function StartDeepRead() {
   }
 
   const call_POST_speech_post = (id) => {
-    console.log("id in fun1:"+id)
+    //console.log("id in fun1:"+id)
     console.log("call_POST_speech_post Reached")
     // console.log("ID_2:"+fileIDFromAPI)
     // console.log("model:"+model)import Lightbox from 'react-lightbox-component';
@@ -204,6 +188,7 @@ function StartDeepRead() {
         // console.log("Transcript before setting var: "+response.data.transcript.transcript)
         // console.log("Transcript from API: "+transcriptFromAPI)
         //showTranscripts();
+        call_POST_mcq_generator_post(id);
         setDataSuccessRecievedFromAPI(true);
         
         return false;
@@ -218,6 +203,29 @@ function StartDeepRead() {
     //TEST
     // setTranscriptFromAPI("ABCDEF");
     // setDataSuccessRecievedFromAPI(true);
+
+  }
+
+  const call_POST_mcq_generator_post = (id) => {
+    //console.log("id in fun1:"+id)
+    console.log("call_POST_mcq_generator_post Reached")
+    // console.log("ID_2:"+fileIDFromAPI)
+    // console.log("model:"+model)import Lightbox from 'react-lightbox-component';
+
+    if ((id !== null)) {
+      console.log("call_POST_mcq_generator_post called")
+      axios.post(baseURL + '/mcq_generator/post/' + id, {
+      }).then((responseData) => {
+        console.log(responseData.mcqs)       
+         
+      }).catch(error => {
+        console.log(error)
+      });
+
+    }
+
+    //TEST
+    // poll_call_GET_speech_get("abc"); 
 
   }
 
