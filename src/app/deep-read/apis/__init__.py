@@ -1,10 +1,11 @@
 from flask_restx import Api
 from .gdrive_api import api as ns1
 from .speech_api import api as ns2
-from .mcq_generator_api import api as ns3
-from .summarizer_api import api as ns4
-from .gallery_api import api as ns5
-from .tester_api import api as ns6
+from .video_to_text_converter_api import api as ns3
+from .mcq_generator_api import api as ns4
+from .summarizer_api import api as ns5
+from .gallery_api import api as ns6
+from .tester_api import api as ns7
 
 api = Api(
     version="0.1",
@@ -18,4 +19,4 @@ api.add_namespace(ns3)
 api.add_namespace(ns4)
 api.add_namespace(ns5)
 api.add_namespace(ns6)
-
+api.add_namespace(ns7)
