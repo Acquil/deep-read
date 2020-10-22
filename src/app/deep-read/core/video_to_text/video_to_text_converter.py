@@ -19,7 +19,7 @@ class Video_to_Text_Converter:
     
     #Images are classified as screens or slides(presentation slides) using NN, we will convert only slide images into text
     def get_slide_images_from_extracted_images(self):
-        self.slide_images = Video_to_Text_Converter.classifier.predict("/media/ashwin/Current/sem_9/open_source/deep-read/src/app/deep-read/core/temp/sample_transcript1")
+        self.slide_images = Video_to_Text_Converter.classifier.predict(self.render_path)
         return self.slide_images
 
     def extract_text_from_image(self, image_path):
