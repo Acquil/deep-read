@@ -29,22 +29,22 @@ class SplitWavAudio():
             self.single_split(i, i+min_per_split, split_fn)
             print(str(i) + ' Done')
             if i == total_mins - min_per_split:
-                print('All splitted successfully')
+                print('All split successfully')
                 number_splits = i
         
         return number_splits
 
     def split_silence(self, min_per_split):
-        '''
+        """
         Splits audio without abruptly cutting words.
 
         Args:
             min_per_split : Number of minutes per split
-        '''
+        """
         dBFS = self.audio.dBFS
         chunks = split_on_silence(
             self.audio, 
-            min_silence_len = 500, # atleast 0.5 seconds
+            min_silence_len = 500, # at least 0.5 seconds
             silence_thresh = dBFS-16,
             keep_silence = 250 #optional
         )
