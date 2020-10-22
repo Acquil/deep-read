@@ -145,5 +145,4 @@ model*/
 *.mp3
 
 # Temporary files for transcript and summary
-core/temp/
 !core/temp/README.md

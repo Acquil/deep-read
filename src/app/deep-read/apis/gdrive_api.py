@@ -1,9 +1,11 @@
-from flask_restx import Namespace, Resource, fields
+import os
 from uuid import uuid4
+
+import filetype
+from flask_restx import Namespace, Resource, fields
+
 # import gdown
 from core.gdown import download
-import filetype
-import os
 
 api = Namespace('files', description='Video/Audio file related operations')
 
@@ -51,4 +53,3 @@ class Url(Resource):
                 }
         
         api.abort(404, 'No video found. Either the link does not exist or file is not a video.')
-        
