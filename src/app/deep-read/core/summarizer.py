@@ -17,7 +17,7 @@ class Summarizer:
         for sentence in self.text:
             paragraph += sentence + '. '
         self.paragraph = paragraph
-        self.filename = str(uuid.uuid4()) + '.txt'
+        self.filename = os.path.join("core/temp/", str(uuid.uuid4()) + '.txt')
         f = open(self.filename, "w")
         f.write(self.paragraph)
         f.close()
