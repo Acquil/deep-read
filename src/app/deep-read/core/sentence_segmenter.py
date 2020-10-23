@@ -21,5 +21,7 @@ def segment_text(text):
             result = requests.post("https://tech.notai.tech/deepsegment/en/result", params={'api_key': SEGMENTER_KEY},
                                    json={"unique_id": response['unique_id']}).json()
         if result['success']:
+            print("api success")
+            print(result)
             return result['prediction']
     return text
