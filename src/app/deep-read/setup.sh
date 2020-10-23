@@ -69,9 +69,21 @@ if [ ! -d "$VENV_DIRECTORY" ]; then
 fi
 
 
+
+#Download CUDA
+echo -e "\n---------------------------------------------------------------------\n"
+CUDADirectory=/usr/local/cuda/
+if [ ! -d "$CUDADirectory" ]; then   
+    echo "Installing CUDA..."
+    sh cuda_installation_script.sh
+    echo "Installed CUDA"
+fi
+echo -e "\n---------------------------------------------------------------------\n"
+
+
+#Download GloVe model
 echo -e "\n---------------------------------------------------------------------\n"
 echo "Checking GloVe model"
-#Download GloVe model
 if [ ! -f "$GloVe_MODEL_FILE" ]; then
     # create directory(if non-existent)
     mkdir -p $GloVe_MODEL_DIRECTORY
@@ -80,6 +92,31 @@ if [ ! -f "$GloVe_MODEL_FILE" ]; then
 fi
 echo -e "\n---------------------------------------------------------------------\n"
 
+
+# Download Xception Model
+echo -e "\n---------------------------------------------------------------------\n"
+XceptionModel=../../../data/training/model_v3_xception
+if [ ! -d "$XceptionModel" ]; then
+   
+    echo "Installing Xception Model..."
+    mkdir -p ../../../data/training/model_v3_xception/assets
+    mkdir -p ../../../data/training/model_v3_xception/variables
+
+    SavedModel=../../../data/training/model_v3_xception/saved_model.pb
+    gdown "https://drive.google.com/uc?id=1--ZA0bBYvh507b4LKgAvY29HAb0LWzCp" -O $SavedModel
+
+    VariablesData=../../../data/training/model_v3_xception/variables/variables.data-00000-of-00001
+    gdown "https://drive.google.com/uc?id=1-0w_iOTI8r5zoILvBqnRVnwDMdBCJWeu" -O $VariablesData
+
+    VariablesIndex=../../../data/training/model_v3_xception/variables/variables.index
+    gdown "https://drive.google.com/uc?id=1-BWqWDb1sWUyyHKPM7Vrv6rwDNRbnta1" -O $VariablesIndex
+
+    echo "Installed Xception Model"
+fi
+echo -e "\n---------------------------------------------------------------------\n"
+
+
+# spacy
 echo -e "\n---------------------------------------------------------------------\n"
   echo "Downloading spacy"
   python -m spacy download en #This language pack is required for extracting keywords in MCQs

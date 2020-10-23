@@ -134,3 +134,4 @@ dmypy.json
 
 #Data
 data/training/GloVe
+data/training/model_v3_xception
