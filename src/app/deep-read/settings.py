@@ -25,3 +25,8 @@ else:
 
 # Number of processes to spawn for transcription
 TRANSCRIPTION_WORKERS = 4
+
+# Azure-blob storage settings
+AZURE_CONNECT_STR = environ.get('BLOB_CONNECTION_STR')
+AZURE_CONTAINER_NAME = 'images'
+AZURE_URI_PREFIX = 'https://deepread.blob.core.windows.net/images/'

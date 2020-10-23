@@ -144,6 +144,5 @@ model*/
 *.avi
 *.mp3
 
-# transcript
-core/temp/.*
-core/temp/*json
+# Temporary files for transcript and summary
+!core/temp/README.md
