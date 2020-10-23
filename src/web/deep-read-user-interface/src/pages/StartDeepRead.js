@@ -103,7 +103,7 @@ function StartDeepRead() {
   const [openAlert, setOpenAlert] = React.useState(true);
   const [transcriptTimeFromAPI, setTranscriptTimeFromAPI] = React.useState(null);
   const [dataSuccessRecievedFromAPI, setDataSuccessRecievedFromAPI] = React.useState(null);
-  const [mcqDataFromAPI, setMcqDataFromAPI] = React.useState(null);
+  const [mcqDataFromAPI, setMcqDataFromAPI] = React.useState("Hello");
   const top100Films = [
     { title: 'The Shawshank Redemption', year: 1994 },
     { title: 'The Godfather', year: 1972 },
@@ -217,41 +217,47 @@ function StartDeepRead() {
       console.log("call_POST_mcq_generator_post called")
       axios.post(baseURL + 'mcq_generator/post/' + id, {
       }).then((responseData) => {
-        console.log(responseData.mcqs)       
-        //setMcqDataFromAPI(responseData.mcqs)
-        setMcqDataFromAPI({
-          quiestions: {
-              1: 'What US city is known as the "birthplace of jazz"?',
-              2: 'What is the capital of Greece?',
-              3: 'What planet gave birth to Superman?'
-          },
-          answers: {
-              1: {
-                  1: 'Chicago',
-                  2: 'New Orleans',
-                  3: 'New York'
-              },
-              2: {
-                  1: 'Athens',
-                  2: 'Patras',
-                  3: 'Kalamata'
-              },
-              3: {
-                  1: 'Krypton',
-                  2: 'Mars',
-                  3: 'Saturn'
-              }
-          },
-          correctAnswers: {
-              1: '2',
-              2: '1',
-              3: '1'
-          },
-          correctAnswer: 0,
-          clickedAnswer: 0,
-          step: 1,
-          score: 0
-      })
+        //console.log(responseData)
+        var tmpMcqs = responseData.data.mcqs
+        tmpMcqs["correctAnswer"] = 0;
+        tmpMcqs["clickedAnswer"] = 0;
+        tmpMcqs["step"] = 1;
+        tmpMcqs["score"] = 0;
+        setMcqDataFromAPI(tmpMcqs)
+        console.log(tmpMcqs)
+      //   setMcqDataFromAPI({
+      //     quiestions: {
+      //         1: 'What US city is known as the "birthplace of jazz"?',
+      //         2: 'What is the capital of Greece?',
+      //         3: 'What planet gave birth to Superman?'
+      //     },
+      //     answers: {
+      //         1: {
+      //             1: 'Chicago',
+      //             2: 'New Orleans',
+      //             3: 'New York'
+      //         },
+      //         2: {
+      //             1: 'Athens',
+      //             2: 'Patras',
+      //             3: 'Kalamata'
+      //         },
+      //         3: {
+      //             1: 'Krypton',
+      //             2: 'Mars',
+      //             3: 'Saturn'
+      //         }
+      //     },
+      //     correctAnswers: {
+      //         1: '2',
+      //         2: '1',
+      //         3: '1'
+      //     },
+      //     correctAnswer: 0,
+      //     clickedAnswer: 0,
+      //     step: 1,
+      //     score: 0
+      // })
       }).catch(error => {
         console.log(error)
       });
@@ -442,6 +448,7 @@ function StartDeepRead() {
           </div>
           <div>
             <Quiz mcqData={mcqDataFromAPI} />
+            {/* <Quiz></Quiz> */}
           </div>
           {/* <div>
             {showScore ? (
@@ -502,6 +509,7 @@ function StartDeepRead() {
           <div className={classes.fullWidthElement}>
             <SimpleReactLightbox>
               <SRLWrapper>
+                {/* {list1.map(i=>(<img src={i}></img>))} */}
                 <img src='https://upload.wikimedia.org/wikipedia/commons/8/89/Ropy_pahoehoe.jpg' alt="Caption" width="640" height="280"/>
                 <img src='https://upload.wikimedia.org/wikipedia/commons/7/73/Pyroclastic_flows_at_Mayon_Volcano.jpg' width="640" height="280" alt="Another Caption" />
                 <img src='https://upload.wikimedia.org/wikipedia/commons/f/f3/Okataina.jpg'alt="Final Caption" width="640" height="280"/>
