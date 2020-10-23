@@ -7,25 +7,28 @@ from pymongo import MongoClient
 
 from . import DRVideo, DRVideoNotFound
 
+
 def _dr_from_doc(doc):
     """Creates a DR object from the MongoDB DR document."""
     return DRVideo(
-        key = str(doc['_id']), 
-        id= doc['id'], 
-        transcript = doc['transcript'], 
-        duration = doc['duration'], 
-        images = doc['images'],
-        image_text = doc['image_text'],
-        summary = doc['summary'],
-        mcqs = doc['mcqs'],
-        status = doc['status'])
-    
+        key=str(doc['_id']),
+        id=doc['id'],
+        transcript=doc['transcript'],
+        duration=doc['duration'],
+        images=doc['images'],
+        image_text=doc['image_text'],
+        summary=doc['summary'],
+        mcqs=doc['mcqs'],
+        status=doc['status'])
+
 
 def _image_from_doc(doc):
     return None
 
+
 class Repository(object):
     """MongoDB repository."""
+
     def __init__(self, settings):
         """Initializes the repository with the specified settings dict.
         Required settings are:
@@ -54,16 +57,15 @@ class Repository(object):
 
             dr = _dr_from_doc(doc)
             # dr.images = [_image_from_doc(slide_doc)
-                            # for slide_doc in doc['images']]
+            # for slide_doc in doc['images']]
             return dr
         except InvalidId:
             raise DRVideoNotFound()
 
-    
     def get_transcript(self, dr_key):
         """Returns a dr object from the repository."""
         try:
-            #//TODO change _id
+            # //TODO change _id
             doc = self.collection.find_one({"id": dr_key})
             if doc is None:
                 raise DRVideoNotFound()
@@ -73,8 +75,7 @@ class Repository(object):
         except InvalidId:
             raise DRVideoNotFound()
 
-
-    def update(self, dr_key, field ,data=None):
+    def update(self, dr_key, field, data=None):
         """Update data for the specified video."""
         try:
             self.collection.update(
@@ -83,12 +84,11 @@ class Repository(object):
                     "id": dr_key,
                 },
                 {
-                    "$set": { str(field): data}
+                    "$set": {str(field): data}
                 }
             )
         except(InvalidId, ValueError):
             raise DRVideoNotFound()
-
 
     def upload_one(self, obj):
         """Adds a dr-video object to the repository."""
