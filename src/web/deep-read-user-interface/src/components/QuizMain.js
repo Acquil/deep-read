@@ -5,40 +5,45 @@ import './QuizMain.css';
 
 export default class Quiz extends Component {
 
-    // initiating the local state
-    state = {
-        quiestions: {
-            1: 'What US city is known as the "birthplace of jazz"?',
-            2: 'What is the capital of Greece?',
-            3: 'What planet gave birth to Superman?'
-        },
-        answers: {
-            1: {
-                1: 'Chicago',
-                2: 'New Orleans',
-                3: 'New York'
+    constructor(props){
+        super(props)
+        console.log("Props:  "+ props.mcqData)
+        this.state = {
+            quiestions: {
+                1: 'What US city is known as the "birthplace of jazz"?',
+                2: 'What is the capital of Greece?',
+                3: 'What planet gave birth to Superman?'
             },
-            2: {
-                1: 'Athens',
-                2: 'Patras',
-                3: 'Kalamata'
+            answers: {
+                1: {
+                    1: 'Chicago',
+                    2: 'New Orleans',
+                    3: 'New York'
+                },
+                2: {
+                    1: 'Athens',
+                    2: 'Patras',
+                    3: 'Kalamata'
+                },
+                3: {
+                    1: 'Krypton',
+                    2: 'Mars',
+                    3: 'Saturn'
+                }
             },
-            3: {
-                1: 'Krypton',
-                2: 'Mars',
-                3: 'Saturn'
-            }
-        },
-        correctAnswers: {
-            1: '2',
-            2: '1',
-            3: '1'
-        },
-        correctAnswer: 0,
-        clickedAnswer: 0,
-        step: 1,
-        score: 0
+            correctAnswers: {
+                1: '2',
+                2: '1',
+                3: '1'
+            },
+            correctAnswer: 0,
+            clickedAnswer: 0,
+            step: 1,
+            score: 0
+        }
     }
+    // initiating the local state
+    
 
     // the method that checks the correct answer
     checkAnswer = answer => {
