@@ -66,6 +66,10 @@ class SpeechTranscript(Resource):
 
         if USE_SENTENCE_SEGMENTER:
             r.transcript = sentence_segmenter.segment_text(r.transcript)
+            # Flatten if API returns list
+            if type(r.transcript) == list:
+                # join list of sentences with periods
+                r.transcript = '. '.join(r.transcript[0])
 
         # load again to prevent double-encoding
         output = {
