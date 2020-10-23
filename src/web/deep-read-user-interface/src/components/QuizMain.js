@@ -7,51 +7,19 @@ export default class Quiz extends Component {
 
     constructor(props){
         super(props)
-        console.log("Props:  "+ props.mcqData)
-        this.state = {
-            quiestions: {
-                1: 'What US city is known as the "birthplace of jazz"?',
-                2: 'What is the capital of Greece?',
-                3: 'What planet gave birth to Superman?'
-            },
-            answers: {
-                1: {
-                    1: 'Chicago',
-                    2: 'New Orleans',
-                    3: 'New York'
-                },
-                2: {
-                    1: 'Athens',
-                    2: 'Patras',
-                    3: 'Kalamata'
-                },
-                3: {
-                    1: 'Krypton',
-                    2: 'Mars',
-                    3: 'Saturn'
-                }
-            },
-            correctAnswers: {
-                1: '2',
-                2: '1',
-                3: '1'
-            },
-            correctAnswer: 0,
-            clickedAnswer: 0,
-            step: 1,
-            score: 0
-        }
+        console.log(props.mcqData)
+        this.state = props.mcqData;
     }
     // initiating the local state
     
 
     // the method that checks the correct answer
     checkAnswer = answer => {
-        const { correctAnswers, step, score } = this.state;
-        if(answer === correctAnswers[step]){
+        const { answers, step, score } = this.state;
+        if(answer === answers[step]){
             this.setState({
                 score: score + 1,
-                correctAnswer: correctAnswers[step],
+                correctAnswer: answers[step],
                 clickedAnswer: answer
             });
         }else{
@@ -72,16 +40,16 @@ export default class Quiz extends Component {
     }
 
     render(){
-        let { quiestions, answers, correctAnswer, clickedAnswer, step, score } = this.state;
+        let { questions, options, correctAnswer, clickedAnswer, step, score } = this.state;
         return(
             <div className="Content">
-                {step <= Object.keys(quiestions).length ? 
+                {step <= Object.keys(questions).length ? 
                     (<>
                         <Question
-                            question={quiestions[step]}
+                            question={questions[step]}
                         />
                         <Answer
-                            answer={answers[step]}
+                            answer={options[step]}
                             step={step}
                             checkAnswer={this.checkAnswer}
                             correctAnswer={correctAnswer}
@@ -90,14 +58,14 @@ export default class Quiz extends Component {
                         <button
                         className="NextStep"
                         disabled={
-                            clickedAnswer && Object.keys(quiestions).length >= step
+                            clickedAnswer && Object.keys(questions).length >= step
                             ? false : true
                         }
                         onClick={() => this.nextStep(step)}>Next</button>
                     </>) : (
                         <div className="finalPage">
                             <h1>You have completed the quiz!</h1>
-                            <p>Your score is: {score} of {Object.keys(quiestions).length}</p>
+                            <p>Your score is: {score} of {Object.keys(questions).length}</p>
                             <p>Thank you!</p>
                         </div>
                     )
