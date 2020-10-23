@@ -102,8 +102,8 @@ function StartDeepRead() {
   const [alertMSG, setAlertMSG] = React.useState('');
   const [openAlert, setOpenAlert] = React.useState(true);
   const [transcriptTimeFromAPI, setTranscriptTimeFromAPI] = React.useState(null);
-  const [dataSuccessRecievedFromAPI, setDataSuccessRecievedFromAPI] = React.useState(null);
-  const [mcqDataFromAPI, setMcqDataFromAPI] = React.useState("Hello");
+  const [dataSuccessRecievedFromAPI, setDataSuccessRecievedFromAPI] = React.useState(true);
+  const [mcqDataFromAPI, setMcqDataFromAPI] = React.useState(null);
   const top100Films = [
     { title: 'The Shawshank Redemption', year: 1994 },
     { title: 'The Godfather', year: 1972 },
@@ -111,6 +111,8 @@ function StartDeepRead() {
     { title: 'The Dark Knight', year: 2008 },
     { title: '12 Angry Men', year: 1957 }
   ];
+  var tmpMcqs = {}
+  
   
   const baseURL = "http://127.0.0.1:5000/"
   
@@ -123,153 +125,8 @@ function StartDeepRead() {
     setModel(event.target.value);
   };
 
-  const call_POST_files_gdrive = () => {
-    console.log("call_POST_files_gdrive Reached")
-    if ((gDriveLinkVar !== '')) {     
-      console.log("call_POST_files_gdrive Called") 
-      axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
-      }).then((responseData) => {
-        console.log(responseData)
-        if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
-          setVideoNameFromAPI(responseData.data.filename);
-          setVideoSizeFromAPI(responseData.data.size);          
-          setFileIDFromAPI(responseData.data.id);
-          // console.log("Filename:"+videoNameFromAPI)
-          // console.log("ID_1:"+fileIDFromAPI)
-          // console.log("id in fun1:"+responseData.data.id)
-          call_POST_speech_post(responseData.data.id);          
-        }
-      }).catch(error => {
-        console.log(error)
-      });
-    }
-
-    //TEST
-    // setVideoNameFromAPI("Video 1");
-    // setVideoSizeFromAPI("60 MB");
-    // call_POST_speech_post("abc"); 
-
-  }
-
-  const call_POST_speech_post = (id) => {
-    //console.log("id in fun1:"+id)
-    console.log("call_POST_speech_post Reached")
-    // console.log("ID_2:"+fileIDFromAPI)
-    // console.log("model:"+model)import Lightbox from 'react-lightbox-component';
-
-    if ((id !== null) && (model !== '')) {
-      console.log("call_POST_speech_post called")
-      axios.post(baseURL + 'speech/post/' + id + '&' + model, {
-      }).then((responseData) => {
-        console.log(responseData)       
-        poll_call_GET_speech_get(responseData.data.id); 
-      }).catch(error => {
-        console.log(error)
-      });
-
-    }
-
-    //TEST
-    // poll_call_GET_speech_get("abc"); 
-
-  }
-   
-  const poll_call_GET_speech_get = (id) => {
-    console.log("poll_call_GET_speech_get reached")
-    const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
-    api_call_GET_speech_get.poll(3000).get((response) => {
-      console.log("poll_call_GET_speech_get started")
-      console.log(response.data);
-      
-      if(response.data.status === "Success"){
-        setTranscriptFromAPI(response.data.transcript.transcript);
-        // transcriptTime = JSON.parse(response.data.transcript.transcript_times);
-        setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
-        //transcriptFromAPI = response.data.transcript.transcript;
-        // console.log("Transcript before setting var: "+response.data.transcript.transcript)
-        // console.log("Transcript from API: "+transcriptFromAPI)
-        //showTranscripts();
-        call_POST_mcq_generator_post(id);
-        setDataSuccessRecievedFromAPI(true);
-        
-        return false;
-      }
-
-      // for (var i = 0, emp; i < result.employees.length; i++) {
-      //   emp = result.employees[i];
-      //   employees[ emp.id ] = emp;
-      // }
-      // you can cancel polling by returning false
-    });
-    //TEST
-    // setTranscriptFromAPI("ABCDEF");
-    // setDataSuccessRecievedFromAPI(true);
-
-  }
-
-  const call_POST_mcq_generator_post = (id) => {
-    //console.log("id in fun1:"+id)
-    console.log("call_POST_mcq_generator_post Reached")
-    // console.log("ID_2:"+fileIDFromAPI)
-    // console.log("model:"+model)import Lightbox from 'react-lightbox-component';
-
-    if ((id !== null)) {
-      console.log("call_POST_mcq_generator_post called")
-      axios.post(baseURL + 'mcq_generator/post/' + id, {
-      }).then((responseData) => {
-        //console.log(responseData)
-        var tmpMcqs = responseData.data.mcqs
-        tmpMcqs["correctAnswer"] = 0;
-        tmpMcqs["clickedAnswer"] = 0;
-        tmpMcqs["step"] = 1;
-        tmpMcqs["score"] = 0;
-        setMcqDataFromAPI(tmpMcqs)
-        console.log(tmpMcqs)
-      //   setMcqDataFromAPI({
-      //     quiestions: {
-      //         1: 'What US city is known as the "birthplace of jazz"?',
-      //         2: 'What is the capital of Greece?',
-      //         3: 'What planet gave birth to Superman?'
-      //     },
-      //     answers: {
-      //         1: {
-      //             1: 'Chicago',
-      //             2: 'New Orleans',
-      //             3: 'New York'
-      //         },
-      //         2: {
-      //             1: 'Athens',
-      //             2: 'Patras',
-      //             3: 'Kalamata'
-      //         },
-      //         3: {
-      //             1: 'Krypton',
-      //             2: 'Mars',
-      //             3: 'Saturn'
-      //         }
-      //     },
-      //     correctAnswers: {
-      //         1: '2',
-      //         2: '1',
-      //         3: '1'
-      //     },
-      //     correctAnswer: 0,
-      //     clickedAnswer: 0,
-      //     step: 1,
-      //     score: 0
-      // })
-      }).catch(error => {
-        console.log(error)
-      });
-
-    }
-
-    //TEST
-    // poll_call_GET_speech_get("abc"); 
-
-  }
-
   const sendGDriveLinkAPI = () => {
+    setAllFalse(true)
     if(gDriveLinkVar === ''){
       setAlertMSG("Please enter Google Drive Link!");
       setAlert();
@@ -287,9 +144,121 @@ function StartDeepRead() {
       return;
     }
     call_POST_files_gdrive();
-    showVideoInformation();
 
   }
+
+  const call_POST_files_gdrive = () => {
+    console.log("call_POST_files_gdrive Reached")
+    if ((gDriveLinkVar !== '')) {     
+      console.log("call_POST_files_gdrive Called") 
+      axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
+      }).then((responseData) => {
+        console.log(responseData)
+        if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
+          setVideoNameFromAPI(responseData.data.filename);
+          setVideoSizeFromAPI(responseData.data.size);          
+          setFileIDFromAPI(responseData.data.id);
+          call_POST_speech_post(responseData.data.id);  
+          call_POST_v2t_post(responseData.data.id);      
+          showVideoInformation();  
+        }
+      }).catch(error => {
+        console.log(error)
+      });
+    }
+  }
+
+  const call_POST_speech_post = (id) => {
+    console.log("call_POST_speech_post Reached")
+    if ((id !== null) && (model !== '')) {
+      console.log("call_POST_speech_post called")
+      axios.post(baseURL + 'speech/post/' + id + '&' + model, {
+      }).then((responseData) => {
+        console.log(responseData)       
+        poll_call_GET_speech_get(responseData.data.id); 
+      }).catch(error => {
+        console.log(error)
+      });
+
+    }
+  }
+   
+  const poll_call_GET_speech_get = (id) => {
+    console.log("poll_call_GET_speech_get reached")
+    const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
+    api_call_GET_speech_get.poll(3000).get((response) => {
+      console.log("poll_call_GET_speech_get started")
+      console.log(response.data);      
+      if(response.data.status === "Success"){
+        setTranscriptFromAPI(response.data.transcript.transcript);
+        setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
+        poll_call_GET_v2t_get(id);         
+        return false;
+      }
+    });
+  }
+
+  const call_POST_v2t_post = (id) => {
+    console.log("call_POST_v2t_post Reached")
+
+    if (id !== null) {
+      console.log("call_POST_v2t_post called")
+      // axios.post(baseURL + 'speech/post/' + id + '&' + model, {
+      // }).then((responseData) => {
+      //   console.log(responseData)       
+      //   poll_call_GET_v2t_get(responseData.data.id); 
+      // }).catch(error => {
+      //   console.log(error)
+      // });
+
+    }
+
+    //TEST
+    // poll_call_GET_speech_get("abc"); 
+
+  }
+
+  const poll_call_GET_v2t_get = (id) => {
+    console.log("poll_call_GET_v2t_get reached")
+    call_POST_Summarize_post(id);
+    call_POST_mcq_generator_post(id);
+    call_POST_Gallery_post(id);
+  }
+
+  const call_POST_Summarize_post = (id) => {
+    console.log("call_POST_Summarize_post Reached")
+    poll_call_GET_Summarize_get(id)
+  }
+
+  const poll_call_GET_Summarize_get = (id) => {
+    console.log("poll_call_GET_Summarize_get reached")
+  }
+
+  const call_POST_mcq_generator_post = (id) => {
+    console.log("call_POST_mcq_generator_post Reached")
+    if ((id !== null)) {
+      console.log("call_POST_mcq_generator_post called")
+      axios.post(baseURL + 'mcq_generator/post/' + id, {
+      }).then((responseData) => {
+        tmpMcqs = responseData.data.mcqs
+        tmpMcqs["correctAnswer"] = 0;
+        tmpMcqs["clickedAnswer"] = 0;
+        tmpMcqs["step"] = 1;
+        tmpMcqs["score"] = 0;
+        setMcqDataFromAPI(tmpMcqs)
+        console.log(tmpMcqs)
+      }).catch(error => {
+        console.log(error)
+      });
+
+    }
+  }
+
+  const call_POST_Gallery_post = (id) => {
+    console.log("call_POST_Gallery_post Reached")
+  }
+
+  
 
   const displayAlert = () =>{
     if(alertFlag === null){
@@ -362,10 +331,10 @@ function StartDeepRead() {
   }
 
   const displayVideoInformation = () => {
-    if (videoInformationFlag === null) {
+    if (!videoInformationFlag) {
       return null;
     }
-    if (videoNameFromAPI !== null) {
+    else {
       return (
           <Grid item xs>
             <Paper className={classes.paper}>
@@ -448,29 +417,7 @@ function StartDeepRead() {
           </div>
           <div>
             <Quiz mcqData={mcqDataFromAPI} />
-            {/* <Quiz></Quiz> */}
           </div>
-          {/* <div>
-            {showScore ? (
-              <div className='score-section'>
-                You scored {score} out of {questions.length}
-              </div>
-            ) : (
-              <>
-                <div className='question-section'>
-                  <div className='question-count'>
-                    <span>Question {currentQuestion + 1}</span>/{questions.length}
-                  </div>
-                  <div className='question-text'>{questions[currentQuestion].questionText}</div>
-                </div>
-                <div className='answer-section'>
-                  {questions[currentQuestion].answerOptions.map((answerOption) => (
-                    <button onClick={() => handleAnswerOptionClick(answerOption.isCorrect)}>{answerOption.answerText}</button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div> */}
         </Paper>
       </Grid>)
     }
@@ -481,16 +428,6 @@ function StartDeepRead() {
       return null;
     }
     else {
-      // return (<Grid item xs>
-      //   <Paper className={classes.paper}>
-      //     <div>
-      //       <strong>IR</strong>
-      //     </div>
-      //     <div>
-      //       Test
-      //     </div>
-      //   </Paper>
-      // </Grid>)
     }
   }
 
@@ -516,7 +453,6 @@ function StartDeepRead() {
               </SRLWrapper>
             </SimpleReactLightbox>
           </div>
-          {/* <ImageGallery items={images} />; */}
         </Paper>
       </Grid>)
     }
@@ -538,9 +474,13 @@ function StartDeepRead() {
       }
   }
 
-  const setAllFalse = () => {
+  const setAllFalse = (processClickedFlag) => {
     setGDriveBoxFlag(true);
     setVideoInformationFlag(true);
+    if(processClickedFlag == true){
+      console.log("Reached here")
+      setVideoInformationFlag(false);
+    }
     setTranscriptFlag(false)
     setSummaryFlag(false);
     setMCQFlag(false);
@@ -555,6 +495,7 @@ function StartDeepRead() {
   }
 
   const showVideoInformation = () => {
+    console.log("Show video info reached")
     if(dataSuccessRecievedFromAPI === true){
     setAllFalse();
     setVideoInformationFlag(true);
