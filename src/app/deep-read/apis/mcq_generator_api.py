@@ -72,10 +72,11 @@ class MCQGeneratorResponse(Resource):
     '''
     def get(self, file_id):
         data = repository.get_one(file_id)
-        # if data.status == "In Process":
+        status = data.mcqs['status']
+        del data.mcqs['status']
         return ({
             "mcqs": data.mcqs,
-            "status": data.mcqs['status'],
+            "status": status
         })
 
 
