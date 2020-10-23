@@ -103,6 +103,7 @@ function StartDeepRead() {
   const [openAlert, setOpenAlert] = React.useState(true);
   const [transcriptTimeFromAPI, setTranscriptTimeFromAPI] = React.useState(null);
   const [dataSuccessRecievedFromAPI, setDataSuccessRecievedFromAPI] = React.useState(null);
+  const [mcqDataFromAPI, setMcqDataFromAPI] = React.useState(null);
   const top100Films = [
     { title: 'The Shawshank Redemption', year: 1994 },
     { title: 'The Godfather', year: 1972 },
@@ -214,10 +215,43 @@ function StartDeepRead() {
 
     if ((id !== null)) {
       console.log("call_POST_mcq_generator_post called")
-      axios.post(baseURL + '/mcq_generator/post/' + id, {
+      axios.post(baseURL + 'mcq_generator/post/' + id, {
       }).then((responseData) => {
         console.log(responseData.mcqs)       
-         
+        //setMcqDataFromAPI(responseData.mcqs)
+        setMcqDataFromAPI({
+          quiestions: {
+              1: 'What US city is known as the "birthplace of jazz"?',
+              2: 'What is the capital of Greece?',
+              3: 'What planet gave birth to Superman?'
+          },
+          answers: {
+              1: {
+                  1: 'Chicago',
+                  2: 'New Orleans',
+                  3: 'New York'
+              },
+              2: {
+                  1: 'Athens',
+                  2: 'Patras',
+                  3: 'Kalamata'
+              },
+              3: {
+                  1: 'Krypton',
+                  2: 'Mars',
+                  3: 'Saturn'
+              }
+          },
+          correctAnswers: {
+              1: '2',
+              2: '1',
+              3: '1'
+          },
+          correctAnswer: 0,
+          clickedAnswer: 0,
+          step: 1,
+          score: 0
+      })
       }).catch(error => {
         console.log(error)
       });
@@ -407,7 +441,7 @@ function StartDeepRead() {
             </strong>            
           </div>
           <div>
-            <Quiz />
+            <Quiz mcqData={mcqDataFromAPI} />
           </div>
           {/* <div>
             {showScore ? (
