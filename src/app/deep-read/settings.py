@@ -9,8 +9,8 @@ from os import environ
 
 # default storage
 REPOSITORY_NAME = environ.get('REPOSITORY_NAME', 'memory')
-USE_SENTENCE_SEGMENTER = False
-SEGMENTER_KEY = environ.get('DEEPSEGMENT_API_KEY', '')
+USE_SENTENCE_SEGMENTER = True
+SEGMENTER_KEY = environ.get('DEEPSEGMENT_API_KEY', 'aLeOUEFcETcmxOykNhhuRBFbUHPCeABvGolJEdyl')
 
 if REPOSITORY_NAME == 'mongodb':
     REPOSITORY_SETTINGS = {
