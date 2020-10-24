@@ -25,8 +25,6 @@ import Quiz from '../components/QuizMain';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 
-
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -113,6 +111,7 @@ function StartDeepRead() {
   const [galleryDataFromAPI, setGalleryDataFromAPI] = React.useState(null);
   const [s2t_v2t_done_flag, set_s2t_v2t_done_flag] = React.useState(false);
   const [fileID, setFileID] = React.useState(null);
+  const [searchGDrive, setSearchGDrive] = React.useState(null);
   const top100Films = [
     { title: 'The Shawshank Redemption', year: 1994 },
     { title: 'The Godfather', year: 1972 },
@@ -127,7 +126,8 @@ function StartDeepRead() {
   
 
   const updateGDriveTextBox = (e) => {
-    setGDriveLinkVar(e.target.value)
+    setGDriveLinkVar(e.target.value);
+    setSearchGDrive((e.target.value).replace("/view?usp=sharing","/preview"));
   }
 
   const handleModelChange = (event) => {
@@ -152,8 +152,9 @@ function StartDeepRead() {
       setAlert();
       return;
     }
-    call_POST_files_gdrive();
     setProcessButtonClicked(true);
+    call_POST_files_gdrive();
+
   }
 
   const call_POST_files_gdrive = () => {
@@ -165,15 +166,17 @@ function StartDeepRead() {
         console.log(responseData)
         if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
           setVideoNameFromAPI(responseData.data.filename);
-          setVideoSizeFromAPI(responseData.data.size);          
+          setVideoSizeFromAPI(responseData.data.size);         
+          showVideoInformation();   
           setFileID(responseData.data.id);
           setFileIDFromAPI(responseData.data.id);
           call_POST_speech_post(responseData.data.id);  
           call_POST_v2t_post(responseData.data.id);      
-          //showVideoInformation();  
         }
       }).catch(error => {
         console.log(error)
+        setAlertMSG("Error when posting gDrive data check console logs!")
+        setAlert();
       });
     }
   }
@@ -188,6 +191,8 @@ function StartDeepRead() {
         poll_call_GET_speech_get(responseData.data.id); 
       }).catch(error => {
         console.log(error)
+        setAlertMSG("Error when posting Speech2text data check console logs!")
+        setAlert();
       });
 
     }
@@ -198,7 +203,7 @@ function StartDeepRead() {
     const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
     api_call_GET_speech_get.poll(3000).get((response) => {
       console.log("poll_call_GET_speech_get started")
-      //console.log(response.data);      
+      console.log(response.data);      
       if(response.data.status === "Success"){
         setTranscriptFromAPI(response.data.transcript.transcript);
         setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
@@ -206,6 +211,8 @@ function StartDeepRead() {
         return false;
       }
     }).catch(error =>{
+      setAlertMSG("Error when polling Speech2text data check console logs!")
+      setAlert();
       console.log(error);
     });
   }
@@ -220,6 +227,8 @@ function StartDeepRead() {
         console.log(responseData)       
       }).catch(error => {
         console.log(error)
+        setAlertMSG("Error when posting video2text data check console logs!")
+        setAlert();
       });
       // axios.post(baseURL + 'speech/post/' + id + '&' + model, {
       // }).then((responseData) => {
@@ -255,6 +264,8 @@ function StartDeepRead() {
       }
     }).catch(error =>{
       console.log(error);
+      setAlertMSG("Error when polling video2text data check console logs!")
+      setAlert();
     });
     // call_POST_mcq_generator_post(id);
     // call_POST_Gallery_post(id);
@@ -271,7 +282,10 @@ function StartDeepRead() {
         console.log(responseData)   
         poll_call_GET_Summarize_get(id);    
       }).catch(error => {
+        setSummaryPostCalled(false);
         console.log(error)
+        setAlertMSG("Error when posting Summary data check console logs!")
+        setAlert();
       });
     }
   }
@@ -288,6 +302,8 @@ function StartDeepRead() {
       }
     }).catch(error =>{
       console.log(error);
+      setAlertMSG("Error when polling Summary data check console logs!")
+      setAlert();
     });
   }
 
@@ -300,15 +316,17 @@ function StartDeepRead() {
         console.log(responseData);
         poll_call_GET_Mcq_get(id)
       }).catch(error => {
+        setMcqPostCalled(false);
         console.log(error)
+        setAlertMSG("Error when posting MCQ data check console logs!")
+        setAlert();
       });
-
     }
   }
 
   const poll_call_GET_Mcq_get = (id) => {
     console.log("poll_call_GET_Mcq_get reached")
-    const api_call_GET_mcq_get  = new Request(baseURL + 'mcq_generator/get/' + id);
+    const api_call_GET_mcq_get  = new Request(baseURL + 'mcq_generator/post/' + id);
     api_call_GET_mcq_get.poll(3000).get((response) => {
       console.log("poll_call_GET_Mcq_get started")
       //console.log(response.data);      
@@ -324,6 +342,8 @@ function StartDeepRead() {
       }
     }).catch(error =>{
       console.log(error);
+      setAlertMSG("Error when polling MCQ data check console logs!")
+      setAlert();
     });
   }
 
@@ -336,7 +356,10 @@ function StartDeepRead() {
         console.log(responseData);
         setGalleryDataFromAPI(responseData.data)
       }).catch(error => {
+        setGalleryPostCalled(false);
         console.log(error)
+        setAlertMSG("Error when posting Gallery data check console logs!")
+        setAlert();
       });
 
     }
@@ -438,7 +461,7 @@ function StartDeepRead() {
                 <Grid item className={classes.topSpacing10}>
                   {/* <iframe title="Video" src="https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/preview?t=45" width="1280" height="720"></iframe> */}
                   {/* https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/view?usp=sharing */}                  
-                  <iframe title="Video" src={gDriveLinkVar.replace("/view?usp=sharing","/preview")} ></iframe>
+                  <iframe title="Video" src={searchGDrive}  width="1280" height="720"></iframe>
                 </Grid>
               </Grid>
             </Paper>
@@ -446,6 +469,34 @@ function StartDeepRead() {
         
       )
     }
+  }
+
+  const displaySearchBoxForIR = () =>{
+    if(irSearchFlag){
+      if(transcriptTimeFromAPI !== null){
+        return ( <Autocomplete
+          id="combo-box-demo"
+          options={transcriptTimeFromAPI}
+          getOptionLabel={(option) => option.word}
+          onChange={(event, value) => setSearchGDriveValue(value.start)}
+          renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
+        />)
+      }
+      else{
+        return (          
+          <CircularProgress>
+          </CircularProgress>          
+        )
+      }
+    }
+    else{
+      return null;
+    }
+}
+
+  const setSearchGDriveValue = (seconds)=>{
+    setSearchGDrive(gDriveLinkVar.replace("/view?usp=sharing","/preview?t="+seconds))
+    console.log(searchGDrive);
   }
 
   const displayTranscripts = () => {
@@ -588,10 +639,16 @@ function StartDeepRead() {
             <div className={classes.fullWidthElement}>
               <SimpleReactLightbox>
                 <SRLWrapper>
+                  {
+                    galleryDataFromAPI.map(
+                    each_url=>(
+                    <img src={each_url} width="640" height="280" ></img>
+                    ))
+                  }
                   {/* {list1.map(i=>(<img src={i}></img>))} */}
-                  <img src='https://upload.wikimedia.org/wikipedia/commons/8/89/Ropy_pahoehoe.jpg' alt="Caption" width="640" height="280"/>
+                  {/* <img src='https://upload.wikimedia.org/wikipedia/commons/8/89/Ropy_pahoehoe.jpg' alt="Caption" width="640" height="280"/>
                   <img src='https://upload.wikimedia.org/wikipedia/commons/7/73/Pyroclastic_flows_at_Mayon_Volcano.jpg' width="640" height="280" alt="Another Caption" />
-                  <img src='https://upload.wikimedia.org/wikipedia/commons/f/f3/Okataina.jpg'alt="Final Caption" width="640" height="280"/>
+                  <img src='https://upload.wikimedia.org/wikipedia/commons/f/f3/Okataina.jpg'alt="Final Caption" width="640" height="280"/> */}
                 </SRLWrapper>
               </SimpleReactLightbox>
             </div>
@@ -621,26 +678,11 @@ function StartDeepRead() {
     }
   }
 
-  const displaySearchBoxForIR = () =>{
-      if(!irSearchFlag){
-        return null;
-      }
-      else{
-        return(
-          <Autocomplete
-            id="combo-box-demo"
-            options={top100Films}
-            getOptionLabel={(option) => option.title}
-            renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
-          />
-        )
-      }
-  }
 
-  const setAllFalse = (processClickedFlag) => {
+  const setAllFalse = (reProcess=false) => {
     setGDriveBoxFlag(true);
     setVideoInformationFlag(true);
-    if(processClickedFlag == true){
+    if(reProcess === true){
       //console.log("Reached here")
       setVideoInformationFlag(false);
     }
@@ -658,11 +700,11 @@ function StartDeepRead() {
   }
 
   const showVideoInformation = () => {
+    //if(processButtonClicked === true){
     console.log("Show video info reached")
-    if(processButtonClicked === true){
     setAllFalse();
     setVideoInformationFlag(true);
-    }
+    //}
   }
 
   const showNotes = () => {
@@ -679,7 +721,11 @@ function StartDeepRead() {
           poll_call_GET_Summarize_get(fileID);
         }      
       }
-    } 
+    }
+    else{
+      setAlertMSG("Process a video first!")
+      setAlert();
+    }
     // if(dataSuccessRecievedFromAPI === true){
     //   if(transcriptFromAPI !== null){
     //     setAllFalse();
@@ -717,6 +763,10 @@ function StartDeepRead() {
         }      
       }
     } 
+    else{
+      setAlertMSG("Process a video first!")
+      setAlert();
+    }
   }
 
   const showIR = () => {
@@ -725,6 +775,10 @@ function StartDeepRead() {
     setAllFalse();
     setIRFlag(true);
     setIRSearchFlag(true);
+    }
+    else{
+      setAlertMSG("Process a video first!")
+      setAlert();
     }
   }
 
@@ -739,6 +793,10 @@ function StartDeepRead() {
       }    
     }
     }
+    else{
+      setAlertMSG("Process a video first!")
+      setAlert();
+    }
   }
 
   const setAlert = () =>{
@@ -748,9 +806,7 @@ function StartDeepRead() {
 
   return (    
     <div>      
-      <div>
-        {displayAlert()}       
-      </div>
+      
 
       <div><h1><strong>Start deep-read</strong></h1>
       </div>
@@ -779,7 +835,7 @@ function StartDeepRead() {
 
       <div >
         
-
+     
         <Grid
           container
           spacing={0}
@@ -788,19 +844,25 @@ function StartDeepRead() {
           justify="center"
         >
           <Grid item className={classes.bottom}>
-            <BottomNavigation
-              value={bottomNavValue}
-              onChange={(event, newValue) => {
-                setBottomNavValue(newValue);
-              }}
-              showLabels
-              className={classes.root}
-            >
-              <BottomNavigationAction label="Notes"  icon={<ReceiptSharpIcon />} onClick={showNotes} />
-              <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ} />
-              <BottomNavigationAction label="IR" icon={<SearchSharpIcon />} onClick={showIR} />
-              <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery} />
-            </BottomNavigation>
+            <div>
+              {displayAlert()}       
+            </div>
+            <div>
+              <BottomNavigation
+                value={bottomNavValue}
+                onChange={(event, newValue) => {
+                  setBottomNavValue(newValue);
+                }}
+                showLabels
+                className={classes.root}
+              >
+                <BottomNavigationAction label="Notes"  icon={<ReceiptSharpIcon />} onClick={showNotes} />
+                <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ} />
+                <BottomNavigationAction label="IR" icon={<SearchSharpIcon />} onClick={showIR} />
+                <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery} />
+              </BottomNavigation>
+            </div>
+           
           </Grid>
 
         </Grid>
