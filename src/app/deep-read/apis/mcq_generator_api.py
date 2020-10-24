@@ -1,7 +1,7 @@
 from flask_restx import Resource, Namespace  # https://flask-restx.readthedocs.io/en/latest/quickstart.html
 from core.mcq_generator import McqGenerator
 import os
-
+import copy
 from db import DRVideoNotFound
 from db.factory import create_repository
 from settings import REPOSITORY_NAME, REPOSITORY_SETTINGS
@@ -49,12 +49,10 @@ class MCQGeneratorRequest(Resource):
         mcqs = {
             'questions': questions_dict,
             'options': options_dict,
-            'answers': correct_answers_dict,
-            'status': 'Success'
+            'answers': correct_answers_dict
         }
 
         repository.update(dr_key=id, field='mcqs', data=mcqs)
-        del mcqs['status']
         return {"mcqs": mcqs, "status": "Success"}
 
 
@@ -68,11 +66,9 @@ class MCQGeneratorResponse(Resource):
     def get(self, file_id):
         data = repository.get_one(file_id)
         if data.mcqs is not None:
-            status = data.mcqs['status']
-            del data.mcqs['status']
             return ({
                 "mcqs": data.mcqs,
-                "status": status
+                "status": "Success"
             })
         else:
             return ({
