@@ -9,6 +9,8 @@ import wave
 import json
 import uuid
 import pandas as pd
+from settings import USE_SENTENCE_SEGMENTER
+
 
 class RecognizerSegment:
     """
@@ -22,17 +24,17 @@ class RecognizerSegment:
     """
 
     def __init__(self, wav_audio, model="model-indian"):
-        
+
         self.model = Model(model)
         self.wav_audio = wav_audio
-        
+
         self.transcript = ""
         self.timestamped_text = []
         self._wf = None
         self._output_wav = None
         # Remove logging
         SetLogLevel(-1)
-    
+
     def to_valid_audio(self):
         """
         Converts to mono PCM .wav
@@ -41,15 +43,14 @@ class RecognizerSegment:
         # ffmpeg PCM conversion
         self._output_wav = self.wav_audio.split(".")[0] + "_converted.wav"
         sample_rate = 16000
-        
-        os.system("ffmpeg  -loglevel quiet -i {0} -acodec pcm_s16le -ac 1 -ar {1} {2}"\
-            .format(self.wav_audio,
-                    sample_rate,
-                    self._output_wav))
-        
+
+        os.system("ffmpeg  -loglevel quiet -i {0} -acodec pcm_s16le -ac 1 -ar {1} {2}" \
+                  .format(self.wav_audio,
+                          sample_rate,
+                          self._output_wav))
+
         # open converted .wav
-        self._wf = wave.open(self._output_wav, "rb")    
-        
+        self._wf = wave.open(self._output_wav, "rb")
 
     def transcribe(self, frames=None):
         """
@@ -62,20 +63,19 @@ class RecognizerSegment:
 
         """
         self.to_valid_audio()
-        
+
         if frames is None:
             frames = self._wf.getnframes()
-        
+
         rec = KaldiRecognizer(self.model, self._wf.getframerate())
 
         # Transcribe frames
         self.transcript, self.timestamped_text = self.__transcribe_frames(self._wf, rec, frames)
         # Delete temp audio
         self._delete_temp_audio()
-        
+
         # Return
         return self.transcript
-
 
     def __transcribe_frames(self, wf, rec, frames):
         """
@@ -90,8 +90,8 @@ class RecognizerSegment:
             timestamped_text
         """
         timestamped_text = []
-        transcript       = ""
-        
+        transcript = ""
+
         while True:
             data = wf.readframes(frames)
 
@@ -102,18 +102,17 @@ class RecognizerSegment:
                 res = json.loads(rec.Result())
                 for result in res['result']:
                     timestamped_text.append(result)
-                        
+
                 transcript += res['text']
-                
+
         res = json.loads(rec.FinalResult())
 
-        if len(res['text'])>0:
+        if len(res['text']) > 0:
             for result in res['result']:
-                timestamped_text.append(result)     
+                timestamped_text.append(result)
             transcript += res['text']
 
         return transcript, timestamped_text
-
 
     def get_timestamped_text(self):
         """
@@ -123,7 +122,6 @@ class RecognizerSegment:
         """
         return self.timestamped_text
 
-    
     def get_transcript(self):
         """
         Returns:
@@ -136,7 +134,7 @@ class RecognizerSegment:
         Deletes PCM .wav files that were created
         """
         os.remove(self._output_wav)
-    
+
 
 class Recognizer:
     """
@@ -150,19 +148,19 @@ class Recognizer:
         workers         : Number of subprocesses to spawn
         min_per_split   : Number of minutes to split the audio by.
     """
-    def __init__(self, wav_audio, model = "model-indian" ,workers = 4, min_per_split = 3):
-       
-        self.__folder       = 'core/chunks_' + str(uuid.uuid4())
 
-        self.file           = wav_audio
-        self.model          = model
+    def __init__(self, wav_audio, model="model-indian", workers=4, min_per_split=3):
 
-        self.workers        = workers
-        self.min_per_split  = min_per_split
-        
+        self.__folder = 'core/chunks_' + str(uuid.uuid4())
+
+        self.file = wav_audio
+        self.model = model
+
+        self.workers = workers
+        self.min_per_split = min_per_split
+
         self.transcript = ""
         self.timestamped_text = []
-    
 
     def __split(self, file, folder, min_per_split):
         """
@@ -177,7 +175,6 @@ class Recognizer:
         number_of_splits = split_wav.multiple_split(min_per_split)
         return number_of_splits
 
-        
     def __get_segments(self, file, folder, number_of_splits):
         '''
         Get the filenames of segments
@@ -188,9 +185,8 @@ class Recognizer:
         # files = list(map(lambda x: folder+"/"+x, files))
         temp = []
         for i in range(len(files)):
-            temp.append(str(i)+ " "+ folder+"/"+files[i])
+            temp.append(str(i) + " " + folder + "/" + files[i])
         return temp
-
 
     def transcribe_chunks(self, files):
         """
@@ -200,10 +196,9 @@ class Recognizer:
             transcript
         """
         uid, filename = files.split()
-        r = RecognizerSegment(wav_audio = filename, model=self.model)
+        r = RecognizerSegment(wav_audio=filename, model=self.model)
         r.transcribe()
         return uid, r.transcript, r.get_timestamped_text()
-
 
     def transcribe(self):
         """
@@ -221,54 +216,57 @@ class Recognizer:
             )
             # Get files
             files = self.__get_segments(
-                number_of_splits = n_splits,
-                folder = self.__folder,
-                file = self.file.split("/")[-1]
+                number_of_splits=n_splits,
+                folder=self.__folder,
+                file=self.file.split("/")[-1]
             )
             # Map to worker pool
-            p = Pool(self.workers) 
-            result = p.map(self.transcribe_chunks, files)   
-            
+            p = Pool(self.workers)
+            result = p.map(self.transcribe_chunks, files)
+
             df = pd.DataFrame(result)
-            
-            def add_time(i,ld):
+
+            def add_time(i, ld):
                 for d in ld:
-                    d['start'] = d['start']+60*int(i)
-                    d['end'] = d['end']+60*int(i)
+                    d['start'] = d['start'] + 60 * int(i)
+                    d['end'] = d['end'] + 60 * int(i)
 
                 return ld
 
-            df[2] = df.apply(lambda x: add_time(x[0],x[2]), axis=1)
+            df[2] = df.apply(lambda x: add_time(x[0], x[2]), axis=1)
             df = df.set_index(0)
             df = df.sort_index()
             # Finish sorting
 
             # Flatten list of lists to single list
+
             # for item in df[1].tolist():
-                # self.transcript += item
+            #     self.transcript += item
             # Flatten list of list of dicts to list of dicts
             self.timestamped_text = [item for sublist in df[2].tolist() for item in sublist]
 
-            # //TODO adding punctuations
-            df = pd.DataFrame(self.timestamped_text)
-            df['next_start'] = df['start'].shift(-1)
-            df['interval'] = df.apply(lambda row: float(row['next_start']) - float(row['end']), axis=1)
-            # //TODO change interval
-            df.loc[df['interval'] > 0.5, 'word'] = df['word'].apply(lambda x: x + ".")
-            self.transcript = ' '.join(df['word'].to_list()) + "."
+            if not USE_SENTENCE_SEGMENTER:
+                # //TODO adding punctuations - removed for sentence_segmenter
+                df = pd.DataFrame(self.timestamped_text)
+                df['next_start'] = df['start'].shift(-1)
+                df['interval'] = df.apply(lambda row: float(row['next_start']) - float(row['end']), axis=1)
+                # //TODO change interval
+                df.loc[df['interval'] > 0.5, 'word'] = df['word'].apply(lambda x: x + ".")
+                self.transcript = ' '.join(df['word'].to_list()) + "."
+            else:
+                for item in df[1].tolist():
+                    self.transcript += item
 
             self.timestamped_text = json.dumps(self.timestamped_text)
             # cleanup
             p.close()
             p.join()
-    
+
             return self.transcript
 
         finally:
             # remove chunks
             self._delete_temp_chunks()
-    
-
 
     def _delete_temp_chunks(self):
         """
