@@ -5,14 +5,16 @@ Package for the db models.
 from os import path
 import json
 
+
 class DRVideo(object):
     """A transcript object for use in db/repository"""
+
     def __init__(
-        self, key="", id="", transcript="", 
-        duration=None, images=None, image_text=None, 
-        summary="", mcqs=None,
-        status="In Process"
-        ):
+            self, key="", id="", transcript="",
+            duration=None, images=None, image_text=None,
+            summary="", mcqs=None,
+            status="In Process"
+    ):
         """Initializes the Transcript Collection"""
         self.key = key
         self.id = id
@@ -31,13 +33,13 @@ class DRVideo(object):
         obj = {
             'id': self.id,
             'transcript': self.transcript,
-            'images':self.images,
-            'duration':self.duration,
-            'image_text':self.image_text,
-            'summary':self.summary,
+            'images': self.images,
+            'duration': self.duration,
+            'image_text': self.image_text,
+            'summary': self.summary,
             'mcqs': self.mcqs,
             'status': self.status
-            
+
         }
         return obj
 
