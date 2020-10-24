@@ -27,7 +27,7 @@ class GalleryRequest(Resource):
             response = data.images
 
         else:
-            api.abort(404, 'Call this API after summary has been generated')
+            api.abort(404, 'Call this API after text has been generated for audio and video')
         return response
 
 
@@ -44,7 +44,7 @@ class GalleryResponse(Resource):
             response = data.images
 
         else:
-            api.abort(404, 'Call this API after summary has been generated')
+            api.abort(404, 'Call this API after text has been generated for audio and video')
         return response
 
 

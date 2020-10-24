@@ -29,7 +29,7 @@ class MCQGeneratorRequest(Resource):
             repository.update(dr_key=id, field='mcqs', data=response['mcqs'])
 
         else:
-            api.abort(404, 'Call this API after transcript has been generated')
+            api.abort(404, 'Call this API after text has been extracted from video and audio')
         return response
 
     # Returns response dictionary for McqGenerator Post Request
@@ -54,6 +54,7 @@ class MCQGeneratorRequest(Resource):
         }
 
         repository.update(dr_key=id, field='mcqs', data=mcqs)
+        del mcqs['status']
         return {"mcqs": mcqs, "status": mcqs['status']}
 
 
@@ -66,13 +67,18 @@ class MCQGeneratorResponse(Resource):
 
     def get(self, file_id):
         data = repository.get_one(file_id)
-        status = data.mcqs['status']
-        del data.mcqs['status']
-        return ({
-            "mcqs": data.mcqs,
-            "status": status
-        })
-
+        if data.mcqs is not None:
+            status = data.mcqs['status']
+            del data.mcqs['status']
+            return ({
+                "mcqs": data.mcqs,
+                "status": status
+            })
+        else:
+            return ({
+                "mcqs": "",
+                "status": "In Process"
+            })
 
 @api.errorhandler(DRVideoNotFound)
 def video_no_found(error):
