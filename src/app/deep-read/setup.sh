@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-REQUIRED_PKG="ffmpeg python3-venv"
+REQUIRED_PKG="ffmpeg python3-venv tesseract-ocr"
 DIRECTORY_GENERIC="model-generic"
 DIRECTORY_INDIAN="model-indian"
 VENV_DIRECTORY=".venv"
