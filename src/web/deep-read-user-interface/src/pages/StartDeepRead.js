@@ -22,6 +22,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox";
 import Quiz from '../components/QuizMain';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 
 
@@ -87,8 +88,11 @@ function StartDeepRead() {
   const [processFlag, setProcessFlag] = React.useState(false);
   const [videoInformationFlag, setVideoInformationFlag] = React.useState(false);
   const [transcriptFlag, setTranscriptFlag] = React.useState(false);
+  const [transcriptLoadingFlag, setTranscriptLoadingFlag] = React.useState(false);
   const [summaryFlag, setSummaryFlag] = React.useState(false);
+  const [summaryPostCalled, setSummaryPostCalled] = React.useState(false);
   const [mcqFlag, setMCQFlag] = React.useState(false);
+  const [mcqPostCalled, setMcqPostCalled] = React.useState(false);
   const [irFlag, setIRFlag] = React.useState(false);
   const [irSearchFlag, setIRSearchFlag] = React.useState(false);
   const [GDriveBoxFlag, setGDriveBoxFlag] = React.useState(false);
@@ -97,13 +101,16 @@ function StartDeepRead() {
   const [videoSizeFromAPI, setVideoSizeFromAPI] = React.useState(null);
   const [fileIDFromAPI, setFileIDFromAPI] = React.useState(null);
   const [transcriptFromAPI, setTranscriptFromAPI] = React.useState(null);
+  const [summaryFromAPI, setSummaryFromAPI] = React.useState(null);
   const [model, setModel] = React.useState('');
   const [alertFlag, setAlertFlag] = React.useState(null);
   const [alertMSG, setAlertMSG] = React.useState('');
   const [openAlert, setOpenAlert] = React.useState(true);
   const [transcriptTimeFromAPI, setTranscriptTimeFromAPI] = React.useState(null);
-  const [dataSuccessRecievedFromAPI, setDataSuccessRecievedFromAPI] = React.useState(true);
+  const [processButtonClicked, setProcessButtonClicked] = React.useState(false);
   const [mcqDataFromAPI, setMcqDataFromAPI] = React.useState(null);
+  const [s2t_v2t_done_flag, set_s2t_v2t_done_flag] = React.useState(false);
+  const [fileID, setFileID] = React.useState(null);
   const top100Films = [
     { title: 'The Shawshank Redemption', year: 1994 },
     { title: 'The Godfather', year: 1972 },
@@ -144,7 +151,7 @@ function StartDeepRead() {
       return;
     }
     call_POST_files_gdrive();
-
+    setProcessButtonClicked(true);
   }
 
   const call_POST_files_gdrive = () => {
@@ -157,6 +164,7 @@ function StartDeepRead() {
         if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
           setVideoNameFromAPI(responseData.data.filename);
           setVideoSizeFromAPI(responseData.data.size);          
+          setFileID(responseData.data.id);
           setFileIDFromAPI(responseData.data.id);
           call_POST_speech_post(responseData.data.id);  
           call_POST_v2t_post(responseData.data.id);      
@@ -188,7 +196,7 @@ function StartDeepRead() {
     const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
     api_call_GET_speech_get.poll(3000).get((response) => {
       console.log("poll_call_GET_speech_get started")
-      console.log(response.data);      
+      //console.log(response.data);      
       if(response.data.status === "Success"){
         setTranscriptFromAPI(response.data.transcript.transcript);
         setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
@@ -218,24 +226,50 @@ function StartDeepRead() {
 
   }
 
+
   const poll_call_GET_v2t_get = (id) => {
     console.log("poll_call_GET_v2t_get reached")
+    set_s2t_v2t_done_flag(true);
     call_POST_Summarize_post(id);
-    call_POST_mcq_generator_post(id);
-    call_POST_Gallery_post(id);
+    setSummaryPostCalled(true);
+    // call_POST_mcq_generator_post(id);
+    // call_POST_Gallery_post(id);
   }
 
   const call_POST_Summarize_post = (id) => {
     console.log("call_POST_Summarize_post Reached")
-    poll_call_GET_Summarize_get(id)
+    // in catch error add setsummarycalled as false
+    //poll_call_GET_Summarize_get(id)
   }
 
   const poll_call_GET_Summarize_get = (id) => {
     console.log("poll_call_GET_Summarize_get reached")
+    setSummaryFromAPI("This is a test summary")
   }
 
   const call_POST_mcq_generator_post = (id) => {
     console.log("call_POST_mcq_generator_post Reached")
+    if ((id !== null)) {
+      console.log("call_POST_mcq_generator_post called")
+      axios.post(baseURL + 'mcq_generator/post/' + id, {
+      }).then((responseData) => {
+        poll_call_GET_Mcq_get(id)
+        tmpMcqs = responseData.data.mcqs
+        tmpMcqs["correctAnswer"] = 0;
+        tmpMcqs["clickedAnswer"] = 0;
+        tmpMcqs["step"] = 1;
+        tmpMcqs["score"] = 0;
+        setMcqDataFromAPI(tmpMcqs)
+        console.log(tmpMcqs)
+      }).catch(error => {
+        console.log(error)
+      });
+
+    }
+  }
+
+  const poll_call_GET_Mcq_get = (id) => {
+    console.log("poll_call_GET_Mcq_get reached")
     if ((id !== null)) {
       console.log("call_POST_mcq_generator_post called")
       axios.post(baseURL + 'mcq_generator/post/' + id, {
@@ -367,40 +401,83 @@ function StartDeepRead() {
   }
 
   const displayTranscripts = () => {
-    if (!transcriptFlag) {
-      return null;
+    if(transcriptFlag){
+      if(transcriptFromAPI !== null){
+        return (<Grid item xs>
+          <Paper className={classes.paper}>
+            <div>
+              <strong>
+                Transcript
+                </strong>            
+            </div>
+            <div className={classes.topSpacing10}>
+              {transcriptFromAPI}
+            </div>
+            </Paper>
+        </Grid>)
+      }
+      else{
+        return (
+          <Grid item xs>
+          <Paper className={classes.paper}>
+            <div>
+              <strong>
+                Transcript
+                </strong> 
+                <CircularProgress>
+                </CircularProgress>           
+            </div>
+            <div className={classes.topSpacing10}>
+            </div>
+            </Paper>
+        </Grid>
+        )
+      }
     }
-    else {
-      return (<Grid item xs>
-        <Paper className={classes.paper}>
-          <div>
-            <strong>
-              Transcript
-              </strong>            
-          </div>
-          <div className={classes.topSpacing10}>
-            {transcriptFromAPI}
-          </div>
-          </Paper>
-      </Grid>)
+    else{
+      return null;
     }
   }
 
   const displaySummary = () => {
-    if (!summaryFlag) {
+    if(summaryFlag){
+      if(processButtonClicked === true){
+        if(summaryFromAPI !== null){
+          return (<Grid item xs>
+            <Paper className={classes.paper}>
+              <div>
+                <strong>
+                  Summary
+                  </strong>            
+              </div>
+              <div className={classes.topSpacing10}>
+                {summaryFromAPI}
+              </div>
+              </Paper>
+          </Grid>)
+        }
+        else{          
+          return (
+            <Grid item xs>
+            <Paper className={classes.paper}>
+              <div>
+                <strong>
+                  Summary
+                  </strong> 
+                  <CircularProgress>
+                  </CircularProgress>           
+              </div>
+              <div className={classes.topSpacing10}>
+              </div>
+              </Paper>
+          </Grid>
+          )
+        }
+      }
+    }
+    else{
       return null;
     }
-    else {
-      return (<Grid item xs>
-        <Paper className={classes.paper}>
-          <div>
-            <strong>
-              Summary
-              </strong>
-          </div></Paper>
-      </Grid>)
-    }
-
   }
 
   const displayMCQS = () => {
@@ -478,7 +555,7 @@ function StartDeepRead() {
     setGDriveBoxFlag(true);
     setVideoInformationFlag(true);
     if(processClickedFlag == true){
-      console.log("Reached here")
+      //console.log("Reached here")
       setVideoInformationFlag(false);
     }
     setTranscriptFlag(false)
@@ -496,36 +573,68 @@ function StartDeepRead() {
 
   const showVideoInformation = () => {
     console.log("Show video info reached")
-    if(dataSuccessRecievedFromAPI === true){
+    if(processButtonClicked === true){
     setAllFalse();
     setVideoInformationFlag(true);
     }
   }
 
-  const showTranscripts = () => {
-    if(dataSuccessRecievedFromAPI === true){
+  const showNotes = () => {
+    if(processButtonClicked){
       setAllFalse();
-      showSummary();
-      setTranscriptFlag(true) 
-    }      
+      setTranscriptFlag(true);
+      setSummaryFlag(true);
+      if((s2t_v2t_done_flag) && (summaryFromAPI === null)){
+        if(summaryPostCalled === false){
+          call_POST_Summarize_post(fileID);
+          setSummaryPostCalled(true);
+        }
+        else{
+          poll_call_GET_Summarize_get(fileID);
+        }      
+      }
+    } 
+    // if(dataSuccessRecievedFromAPI === true){
+    //   if(transcriptFromAPI !== null){
+    //     setAllFalse();
+    //     showSummary();
+    //     setTranscriptLoadingFlag(false)
+    //     setTranscriptFlag(true)
+    //   }
+    //   else{
+    //     setAllFalse();
+    //     showSummary();
+    //     setTranscriptLoadingFlag(true)
+    //     setTranscriptFlag(false)
+    //   }
+    // }      
   }
 
   const showSummary = () => {
-    if(dataSuccessRecievedFromAPI === true){
+    if(processButtonClicked === true){
     setAllFalse();
     setSummaryFlag(true);
   }
   }
 
   const showMCQ = () => {
-    if(dataSuccessRecievedFromAPI === true){
-    setAllFalse();
-    setMCQFlag(true);
-    }
+    if(processButtonClicked){
+      setAllFalse();
+      setMCQFlag(true);
+      if((s2t_v2t_done_flag) && (mcqDataFromAPI === null)){
+        if(mcqPostCalled === false){
+          call_POST_mcq_generator_post(fileID);
+          setMcqPostCalled(true);
+        }
+        else{
+          poll_call_GET_Mcq_get(fileID);
+        }      
+      }
+    } 
   }
 
   const showIR = () => {
-    if(dataSuccessRecievedFromAPI === true){
+    if(processButtonClicked === true){
     setAllFalse();
     setIRFlag(true);
     setIRSearchFlag(true);
@@ -533,7 +642,7 @@ function StartDeepRead() {
   }
 
   const showGallery = () => {
-    if(dataSuccessRecievedFromAPI === true){
+    if(processButtonClicked === true){
     setAllFalse();
     setGalleryFlag(true);
     }
@@ -544,10 +653,8 @@ function StartDeepRead() {
     setOpenAlert(true);
   }
 
-  return (
-    
-    <div>
-      
+  return (    
+    <div>      
       <div>
         {displayAlert()}       
       </div>
@@ -596,7 +703,7 @@ function StartDeepRead() {
               showLabels
               className={classes.root}
             >
-              <BottomNavigationAction label="Notes"  icon={<ReceiptSharpIcon />} onClick={showTranscripts} />
+              <BottomNavigationAction label="Notes"  icon={<ReceiptSharpIcon />} onClick={showNotes} />
               <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ} />
               <BottomNavigationAction label="IR" icon={<SearchSharpIcon />} onClick={showIR} />
               <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery} />
