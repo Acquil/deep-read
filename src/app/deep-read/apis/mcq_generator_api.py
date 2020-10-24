@@ -55,7 +55,7 @@ class MCQGeneratorRequest(Resource):
 
         repository.update(dr_key=id, field='mcqs', data=mcqs)
         del mcqs['status']
-        return {"mcqs": mcqs, "status": mcqs['status']}
+        return {"mcqs": mcqs, "status": "Success"}
 
 
 @api.route('/get/<file_id>')
