@@ -97,6 +97,7 @@ function StartDeepRead() {
   const [irSearchFlag, setIRSearchFlag] = React.useState(false);
   const [GDriveBoxFlag, setGDriveBoxFlag] = React.useState(false);
   const [galleryFlag, setGalleryFlag] = React.useState(false);
+  const [galleryPostCalled, setGalleryPostCalled] = React.useState(false);
   const [videoNameFromAPI, setVideoNameFromAPI] = React.useState(null);
   const [videoSizeFromAPI, setVideoSizeFromAPI] = React.useState(null);
   const [fileIDFromAPI, setFileIDFromAPI] = React.useState(null);
@@ -109,6 +110,7 @@ function StartDeepRead() {
   const [transcriptTimeFromAPI, setTranscriptTimeFromAPI] = React.useState(null);
   const [processButtonClicked, setProcessButtonClicked] = React.useState(false);
   const [mcqDataFromAPI, setMcqDataFromAPI] = React.useState(null);
+  const [galleryDataFromAPI, setGalleryDataFromAPI] = React.useState(null);
   const [s2t_v2t_done_flag, set_s2t_v2t_done_flag] = React.useState(false);
   const [fileID, setFileID] = React.useState(null);
   const top100Films = [
@@ -168,7 +170,7 @@ function StartDeepRead() {
           setFileIDFromAPI(responseData.data.id);
           call_POST_speech_post(responseData.data.id);  
           call_POST_v2t_post(responseData.data.id);      
-          showVideoInformation();  
+          //showVideoInformation();  
         }
       }).catch(error => {
         console.log(error)
@@ -203,6 +205,8 @@ function StartDeepRead() {
         poll_call_GET_v2t_get(id);         
         return false;
       }
+    }).catch(error =>{
+      console.log(error);
     });
   }
 
@@ -211,6 +215,12 @@ function StartDeepRead() {
 
     if (id !== null) {
       console.log("call_POST_v2t_post called")
+      axios.post(baseURL + 'VideotoTextConverter/post/' + id, {
+      }).then((responseData) => {
+        console.log(responseData)       
+      }).catch(error => {
+        console.log(error)
+      });
       // axios.post(baseURL + 'speech/post/' + id + '&' + model, {
       // }).then((responseData) => {
       //   console.log(responseData)       
@@ -226,12 +236,26 @@ function StartDeepRead() {
 
   }
 
-
   const poll_call_GET_v2t_get = (id) => {
     console.log("poll_call_GET_v2t_get reached")
-    set_s2t_v2t_done_flag(true);
-    call_POST_Summarize_post(id);
-    setSummaryPostCalled(true);
+    const api_call_GET_v2t_get  = new Request(baseURL + 'VideotoTextConverter/get/' + id);
+    api_call_GET_v2t_get.poll(3000).get((response) => {
+      console.log("poll_call_GET_v2t_get started")
+      //console.log(response.data);      
+      console.log(response)
+      if(response.data.status === "Success"){
+        set_s2t_v2t_done_flag(true);
+        call_POST_Summarize_post(id);
+        setSummaryPostCalled(true);        
+        call_POST_mcq_generator_post(id);
+        setMcqPostCalled(true);
+        call_POST_Gallery_post(id);
+        setGalleryPostCalled(true);
+        return false;
+      }
+    }).catch(error =>{
+      console.log(error);
+    });
     // call_POST_mcq_generator_post(id);
     // call_POST_Gallery_post(id);
   }
@@ -240,11 +264,31 @@ function StartDeepRead() {
     console.log("call_POST_Summarize_post Reached")
     // in catch error add setsummarycalled as false
     //poll_call_GET_Summarize_get(id)
+    if (id !== null) {
+      console.log("call_POST_Summarize_post called")
+      axios.post(baseURL + 'summarizer/post/' + id, {
+      }).then((responseData) => {
+        console.log(responseData)   
+        poll_call_GET_Summarize_get(id);    
+      }).catch(error => {
+        console.log(error)
+      });
+    }
   }
 
   const poll_call_GET_Summarize_get = (id) => {
     console.log("poll_call_GET_Summarize_get reached")
-    setSummaryFromAPI("This is a test summary")
+    const api_call_GET_summarizer_get  = new Request(baseURL + 'summarizer/get/' + id);
+    api_call_GET_summarizer_get.poll(3000).get((response) => {
+      console.log("poll_call_GET_Summarize_get started")
+      //console.log(response.data);      
+      if(response.data.status === "Success"){
+        setSummaryFromAPI(response.data.summary)      
+        return false;
+      }
+    }).catch(error =>{
+      console.log(error);
+    });
   }
 
   const call_POST_mcq_generator_post = (id) => {
@@ -253,14 +297,8 @@ function StartDeepRead() {
       console.log("call_POST_mcq_generator_post called")
       axios.post(baseURL + 'mcq_generator/post/' + id, {
       }).then((responseData) => {
+        console.log(responseData);
         poll_call_GET_Mcq_get(id)
-        tmpMcqs = responseData.data.mcqs
-        tmpMcqs["correctAnswer"] = 0;
-        tmpMcqs["clickedAnswer"] = 0;
-        tmpMcqs["step"] = 1;
-        tmpMcqs["score"] = 0;
-        setMcqDataFromAPI(tmpMcqs)
-        console.log(tmpMcqs)
       }).catch(error => {
         console.log(error)
       });
@@ -270,29 +308,39 @@ function StartDeepRead() {
 
   const poll_call_GET_Mcq_get = (id) => {
     console.log("poll_call_GET_Mcq_get reached")
-    if ((id !== null)) {
-      console.log("call_POST_mcq_generator_post called")
-      axios.post(baseURL + 'mcq_generator/post/' + id, {
-      }).then((responseData) => {
-        tmpMcqs = responseData.data.mcqs
+    const api_call_GET_mcq_get  = new Request(baseURL + 'mcq_generator/get/' + id);
+    api_call_GET_mcq_get.poll(3000).get((response) => {
+      console.log("poll_call_GET_Mcq_get started")
+      //console.log(response.data);      
+      if(response.data.status === "Success"){
+        tmpMcqs = response.data.mcqs
         tmpMcqs["correctAnswer"] = 0;
         tmpMcqs["clickedAnswer"] = 0;
         tmpMcqs["step"] = 1;
         tmpMcqs["score"] = 0;
         setMcqDataFromAPI(tmpMcqs)
         console.log(tmpMcqs)
+        return false;
+      }
+    }).catch(error =>{
+      console.log(error);
+    });
+  }
+
+  const call_POST_Gallery_post = (id) => {
+    console.log("call_POST_Gallery_post Reached")
+    if ((id !== null)) {
+      console.log("call_POST_Gallery_post called")
+      axios.post(baseURL + 'gallery/post/' + id, {
+      }).then((responseData) => {
+        console.log(responseData);
+        setGalleryDataFromAPI(responseData.data)
       }).catch(error => {
         console.log(error)
       });
 
     }
-  }
-
-  const call_POST_Gallery_post = (id) => {
-    console.log("call_POST_Gallery_post Reached")
-  }
-
-  
+  }  
 
   const displayAlert = () =>{
     if(alertFlag === null){
@@ -441,7 +489,6 @@ function StartDeepRead() {
 
   const displaySummary = () => {
     if(summaryFlag){
-      if(processButtonClicked === true){
         if(summaryFromAPI !== null){
           return (<Grid item xs>
             <Paper className={classes.paper}>
@@ -473,7 +520,7 @@ function StartDeepRead() {
           </Grid>
           )
         }
-      }
+      
     }
     else{
       return null;
@@ -481,22 +528,42 @@ function StartDeepRead() {
   }
 
   const displayMCQS = () => {
-    if (!mcqFlag) {
-      return null;
+    if(mcqFlag){
+        if(mcqDataFromAPI !== null){
+          return (<Grid item xs>
+            <Paper className={classes.paper}>
+              <div>
+                <strong>
+                  MCQs
+                </strong>            
+              </div>
+              <div>
+                <Quiz mcqData={mcqDataFromAPI} />
+              </div>
+            </Paper>
+          </Grid>)
+        }
+        else{          
+          return (
+            <Grid item xs>
+            <Paper className={classes.paper}>
+              <div>
+                <strong>
+                  MCQS
+                  </strong> 
+                  <CircularProgress>
+                  </CircularProgress>           
+              </div>
+              <div className={classes.topSpacing10}>
+              </div>
+              </Paper>
+          </Grid>
+          )
+        
+      }
     }
-    else {
-      return (<Grid item xs>
-        <Paper className={classes.paper}>
-          <div>
-            <strong>
-              MCQs
-            </strong>            
-          </div>
-          <div>
-            <Quiz mcqData={mcqDataFromAPI} />
-          </div>
-        </Paper>
-      </Grid>)
+    else{
+      return null;
     }
   }
 
@@ -509,29 +576,48 @@ function StartDeepRead() {
   }
 
   const displayGallery = () => {
-    if (!galleryFlag) {
-      return null;
+    if(galleryFlag){
+      if(galleryDataFromAPI !== null){
+        return (<Grid item xs>
+          <Paper className={classes.paper}>
+            <div>
+              <strong>
+                Gallery
+              </strong>            
+            </div>
+            <div className={classes.fullWidthElement}>
+              <SimpleReactLightbox>
+                <SRLWrapper>
+                  {/* {list1.map(i=>(<img src={i}></img>))} */}
+                  <img src='https://upload.wikimedia.org/wikipedia/commons/8/89/Ropy_pahoehoe.jpg' alt="Caption" width="640" height="280"/>
+                  <img src='https://upload.wikimedia.org/wikipedia/commons/7/73/Pyroclastic_flows_at_Mayon_Volcano.jpg' width="640" height="280" alt="Another Caption" />
+                  <img src='https://upload.wikimedia.org/wikipedia/commons/f/f3/Okataina.jpg'alt="Final Caption" width="640" height="280"/>
+                </SRLWrapper>
+              </SimpleReactLightbox>
+            </div>
+          </Paper>
+        </Grid>)
+      }
+      else{
+        return (
+          <Grid item xs>
+          <Paper className={classes.paper}>
+            <div>
+              <strong>
+                Gallery
+                </strong> 
+                <CircularProgress>
+                </CircularProgress>           
+            </div>
+            <div className={classes.topSpacing10}>
+            </div>
+            </Paper>
+        </Grid>
+        )
+      }
     }
-    else {
-      return (<Grid item xs>
-        <Paper className={classes.paper}>
-          <div>
-            <strong>
-              Gallery
-            </strong>            
-          </div>
-          <div className={classes.fullWidthElement}>
-            <SimpleReactLightbox>
-              <SRLWrapper>
-                {/* {list1.map(i=>(<img src={i}></img>))} */}
-                <img src='https://upload.wikimedia.org/wikipedia/commons/8/89/Ropy_pahoehoe.jpg' alt="Caption" width="640" height="280"/>
-                <img src='https://upload.wikimedia.org/wikipedia/commons/7/73/Pyroclastic_flows_at_Mayon_Volcano.jpg' width="640" height="280" alt="Another Caption" />
-                <img src='https://upload.wikimedia.org/wikipedia/commons/f/f3/Okataina.jpg'alt="Final Caption" width="640" height="280"/>
-              </SRLWrapper>
-            </SimpleReactLightbox>
-          </div>
-        </Paper>
-      </Grid>)
+    else{
+      return null;
     }
   }
 
@@ -610,12 +696,12 @@ function StartDeepRead() {
     // }      
   }
 
-  const showSummary = () => {
-    if(processButtonClicked === true){
-    setAllFalse();
-    setSummaryFlag(true);
-  }
-  }
+  // const showSummary = () => {
+  //   if(processButtonClicked === true){
+  //   setAllFalse();
+  //   setSummaryFlag(true);
+  // }
+  // }
 
   const showMCQ = () => {
     if(processButtonClicked){
@@ -634,6 +720,7 @@ function StartDeepRead() {
   }
 
   const showIR = () => {
+    // TODO in local
     if(processButtonClicked === true){
     setAllFalse();
     setIRFlag(true);
@@ -645,6 +732,12 @@ function StartDeepRead() {
     if(processButtonClicked === true){
     setAllFalse();
     setGalleryFlag(true);
+    if((s2t_v2t_done_flag) && (galleryDataFromAPI === null)){
+      if(galleryPostCalled === false){
+        call_POST_Gallery_post(fileID);
+        setGalleryPostCalled(true);
+      }    
+    }
     }
   }
 
