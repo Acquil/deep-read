@@ -10,6 +10,7 @@ from PIL import Image
 import pytesseract
 import cv2
 import os
+import uuid
 # from google.colab.patches import cv2_imshow
 
 class Image_to_Text_Converter:
@@ -22,7 +23,7 @@ class Image_to_Text_Converter:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         _,thresh = cv2.threshold(gray,240,255,cv2.THRESH_BINARY)
 
-        filename = "{}.png".format(os.getpid())
+        filename = os.path.join("core/temp/", str(uuid.uuid4()) + '.png')
         cv2.imwrite(filename, thresh)
         text = pytesseract.image_to_string(Image.open(filename))
         os.remove(filename)
