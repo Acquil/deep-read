@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import Question from './question/Question';
 import Answer from './answer/Answer';
 import './QuizMain.css';
+import {  Button} from '@material-ui/core';
+
 
 export default class Quiz extends Component {
 
@@ -55,18 +57,17 @@ export default class Quiz extends Component {
                             correctAnswer={correctAnswer}
                             clickedAnswer={clickedAnswer}
                         />
-                        <button
+                        <Button variant="outlined" color="default"
                         className="NextStep"
                         disabled={
                             clickedAnswer && Object.keys(questions).length >= step
                             ? false : true
                         }
-                        onClick={() => this.nextStep(step)}>Next</button>
+                        onClick={() => this.nextStep(step)}>Next</Button>
                     </>) : (
                         <div className="finalPage">
                             <h1>You have completed the quiz!</h1>
                             <p>Your score is: {score} of {Object.keys(questions).length}</p>
-                            <p>Thank you!</p>
                         </div>
                     )
                 }
