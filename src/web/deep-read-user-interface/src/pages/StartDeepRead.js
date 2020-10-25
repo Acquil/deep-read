@@ -23,6 +23,13 @@ import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox";
 import Quiz from '../components/QuizMain';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -45,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
 
   },
+  accordian:{
+    background: '#f5f5f5',
+  },
   topSpacing10: {
     marginTop: '10px'
   },
@@ -62,18 +72,22 @@ const useStyles = makeStyles((theme) => ({
   bottom: {
     position: "fixed",
     bottom: "0",
-    left:"0",
+    left: "0",
     width: "100%",
   },
   bottom1: {
+    position: "fixed",
+    right:"0",
+    bottom: "0",
+    left: "0",
     width: "100%",
   },
   bottomPadding: {
     paddingBottom: "50px",
   },
-  AlertMSG:{
-    position:"fixed",
-    top:"20px"
+  AlertMSG: {
+    position: "fixed",
+    top: "20px"
   }
 }));
 
@@ -112,6 +126,12 @@ function StartDeepRead() {
   const [s2t_v2t_done_flag, set_s2t_v2t_done_flag] = React.useState(false);
   const [fileID, setFileID] = React.useState(null);
   const [searchGDrive, setSearchGDrive] = React.useState(null);
+  const [disableProcessButton, setDisableProcessButton] = React.useState(false);
+  const [videoInfoShown, setVideoInfoShown] = React.useState(false);
+  const [displayMainLoadingFlag, setDisplayMainLoadingFlag] = React.useState(false);
+  // const [videoInfoExpanded, setVideoInfoExpandedFlag] = React.useState(false); 
+  // const expandVideoInfo = React.useRef(null)
+  const notesClickRef = React.useRef(null);
   const top100Films = [
     { title: 'The Shawshank Redemption', year: 1994 },
     { title: 'The Godfather', year: 1972 },
@@ -120,14 +140,14 @@ function StartDeepRead() {
     { title: '12 Angry Men', year: 1957 }
   ];
   var tmpMcqs = {}
-  
-  
+
+
   const baseURL = "http://127.0.0.1:5000/"
-  
+
 
   const updateGDriveTextBox = (e) => {
     setGDriveLinkVar(e.target.value);
-    setSearchGDrive((e.target.value).replace("/view?usp=sharing","/preview"));
+    setSearchGDrive((e.target.value).replace("/view?usp=sharing", "/preview"));
   }
 
   const handleModelChange = (event) => {
@@ -136,47 +156,54 @@ function StartDeepRead() {
 
   const sendGDriveLinkAPI = () => {
     setAllFalse(true)
-    if(gDriveLinkVar === ''){
+    if (gDriveLinkVar === '') {
       setAlertMSG("Please enter Google Drive Link!");
       setAlert();
       return;
     }
     var urlValid = gDriveLinkVar.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
-    if(urlValid == null){
+    if (urlValid == null) {
       setAlertMSG("Please enter a VALID Google Drive Link!");
       setAlert();
       return;
     }
-    if(model === ''){
+    if (model === '') {
       setAlertMSG("Please select a language!");
       setAlert();
       return;
     }
     setProcessButtonClicked(true);
+    setDisableProcessButton(true);
+    setDisplayMainLoadingFlag(true);
     call_POST_files_gdrive();
 
   }
 
   const call_POST_files_gdrive = () => {
     console.log("call_POST_files_gdrive Reached")
-    if ((gDriveLinkVar !== '')) {     
-      console.log("call_POST_files_gdrive Called") 
+    if ((gDriveLinkVar !== '')) {
+      console.log("call_POST_files_gdrive Called")
       axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
       }).then((responseData) => {
         console.log(responseData)
         if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
           setVideoNameFromAPI(responseData.data.filename);
-          setVideoSizeFromAPI(responseData.data.size);         
-          showVideoInformation();   
+          setVideoSizeFromAPI(responseData.data.size);
+          showVideoInformation();
+          // setVideoInfoExpandedFlag(true);
+          showNavBar();
+          notesClickRef.current.click();
+          setDisplayMainLoadingFlag(false);
           setFileID(responseData.data.id);
           setFileIDFromAPI(responseData.data.id);
-          call_POST_speech_post(responseData.data.id);  
-          call_POST_v2t_post(responseData.data.id);      
+          call_POST_speech_post(responseData.data.id);
+          call_POST_v2t_post(responseData.data.id);
         }
       }).catch(error => {
         console.log(error)
         setAlertMSG("Error when posting gDrive data check console logs!")
         setAlert();
+        setDisplayMainLoadingFlag(false);
       });
     }
   }
@@ -187,8 +214,8 @@ function StartDeepRead() {
       console.log("call_POST_speech_post called")
       axios.post(baseURL + 'speech/post/' + id + '&' + model, {
       }).then((responseData) => {
-        console.log(responseData)       
-        poll_call_GET_speech_get(responseData.data.id); 
+        console.log(responseData)
+        poll_call_GET_speech_get(responseData.data.id);
       }).catch(error => {
         console.log(error)
         setAlertMSG("Error when posting Speech2text data check console logs!")
@@ -197,20 +224,20 @@ function StartDeepRead() {
 
     }
   }
-   
+
   const poll_call_GET_speech_get = (id) => {
     console.log("poll_call_GET_speech_get reached")
-    const api_call_GET_speech_get  = new Request(baseURL + 'speech/get/' + id);
+    const api_call_GET_speech_get = new Request(baseURL + 'speech/get/' + id);
     api_call_GET_speech_get.poll(3000).get((response) => {
       console.log("poll_call_GET_speech_get started")
-      console.log(response.data);      
-      if(response.data.status === "Success"){
+      console.log(response.data);
+      if (response.data.status === "Success") {
         setTranscriptFromAPI(response.data.transcript.transcript);
         setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
-        poll_call_GET_v2t_get(id);         
+        poll_call_GET_v2t_get(id);
         return false;
       }
-    }).catch(error =>{
+    }).catch(error => {
       setAlertMSG("Error when polling Speech2text data check console logs!")
       setAlert();
       console.log(error);
@@ -224,63 +251,51 @@ function StartDeepRead() {
       console.log("call_POST_v2t_post called")
       axios.post(baseURL + 'VideotoTextConverter/post/' + id, {
       }).then((responseData) => {
-        console.log(responseData)       
+        console.log(responseData)
       }).catch(error => {
         console.log(error)
         setAlertMSG("Error when posting video2text data check console logs!")
         setAlert();
       });
-      // axios.post(baseURL + 'speech/post/' + id + '&' + model, {
-      // }).then((responseData) => {
-      //   console.log(responseData)       
-      //   poll_call_GET_v2t_get(responseData.data.id); 
-      // }).catch(error => {
-      //   console.log(error)
-      // });
 
     }
-
-    //TEST
-    // poll_call_GET_speech_get("abc"); 
 
   }
 
   const poll_call_GET_v2t_get = (id) => {
     console.log("poll_call_GET_v2t_get reached")
-    const api_call_GET_v2t_get  = new Request(baseURL + 'VideotoTextConverter/get/' + id);
+    const api_call_GET_v2t_get = new Request(baseURL + 'VideotoTextConverter/get/' + id);
     api_call_GET_v2t_get.poll(3000).get((response) => {
       console.log("poll_call_GET_v2t_get started")
       //console.log(response.data);      
       console.log(response)
-      if(response.data.status === "Success"){
+      if (response.data.status === "Success") {
         set_s2t_v2t_done_flag(true);
+        setDisableProcessButton(false);
         call_POST_Summarize_post(id);
-        setSummaryPostCalled(true);        
+        setSummaryPostCalled(true);
         call_POST_mcq_generator_post(id);
         setMcqPostCalled(true);
         call_POST_Gallery_post(id);
         setGalleryPostCalled(true);
         return false;
       }
-    }).catch(error =>{
+    }).catch(error => {
       console.log(error);
       setAlertMSG("Error when polling video2text data check console logs!")
       setAlert();
     });
-    // call_POST_mcq_generator_post(id);
-    // call_POST_Gallery_post(id);
+
   }
 
   const call_POST_Summarize_post = (id) => {
     console.log("call_POST_Summarize_post Reached")
-    // in catch error add setsummarycalled as false
-    //poll_call_GET_Summarize_get(id)
     if (id !== null) {
       console.log("call_POST_Summarize_post called")
       axios.post(baseURL + 'summarizer/post/' + id, {
       }).then((responseData) => {
-        console.log(responseData)   
-        poll_call_GET_Summarize_get(id);    
+        console.log(responseData)
+        poll_call_GET_Summarize_get(id);
       }).catch(error => {
         setSummaryPostCalled(false);
         console.log(error)
@@ -292,15 +307,14 @@ function StartDeepRead() {
 
   const poll_call_GET_Summarize_get = (id) => {
     console.log("poll_call_GET_Summarize_get reached")
-    const api_call_GET_summarizer_get  = new Request(baseURL + 'summarizer/get/' + id);
+    const api_call_GET_summarizer_get = new Request(baseURL + 'summarizer/get/' + id);
     api_call_GET_summarizer_get.poll(3000).get((response) => {
       console.log("poll_call_GET_Summarize_get started")
-      //console.log(response.data);      
-      if(response.data.status === "Success"){
-        setSummaryFromAPI(response.data.summary)      
+      if (response.data.status === "Success") {
+        setSummaryFromAPI(response.data.summary)
         return false;
       }
-    }).catch(error =>{
+    }).catch(error => {
       console.log(error);
       setAlertMSG("Error when polling Summary data check console logs!")
       setAlert();
@@ -326,11 +340,11 @@ function StartDeepRead() {
 
   const poll_call_GET_Mcq_get = (id) => {
     console.log("poll_call_GET_Mcq_get reached")
-    const api_call_GET_mcq_get  = new Request(baseURL + 'mcq_generator/post/' + id);
+    const api_call_GET_mcq_get = new Request(baseURL + 'mcq_generator/get/' + id);
     api_call_GET_mcq_get.poll(3000).get((response) => {
       console.log("poll_call_GET_Mcq_get started")
       //console.log(response.data);      
-      if(response.data.status === "Success"){
+      if (response.data.status === "Success") {
         tmpMcqs = response.data.mcqs
         tmpMcqs["correctAnswer"] = 0;
         tmpMcqs["clickedAnswer"] = 0;
@@ -340,7 +354,7 @@ function StartDeepRead() {
         console.log(tmpMcqs)
         return false;
       }
-    }).catch(error =>{
+    }).catch(error => {
       console.log(error);
       setAlertMSG("Error when polling MCQ data check console logs!")
       setAlert();
@@ -363,35 +377,35 @@ function StartDeepRead() {
       });
 
     }
-  }  
+  }
 
-  const displayAlert = () =>{
-    if(alertFlag === null){
+  const displayAlert = () => {
+    if (alertFlag === null) {
       return null
     }
-    else{
-    return (
-      <Collapse in={openAlert}>
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setOpenAlert(false);
-                setAlertFlag(false);
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          {alertMSG}
-      </Alert>
-    </Collapse>
-    ) 
+    else {
+      return (
+        <Collapse in={openAlert}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpenAlert(false);
+                  setAlertFlag(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            {alertMSG}
+          </Alert>
+        </Collapse>
+      )
     }
   }
 
@@ -400,9 +414,13 @@ function StartDeepRead() {
     //   return null;
     // }
     // else{
-    return (<Grid item xs>
+    return (
+    <Grid item xs>
       <Paper className={classes.paper}>
-        <Grid container spacing={2}>
+        <div>
+          {displayMainLoading()}
+        </div>
+        <Grid container spacing={2} className={classes.topSpacing10}>
           <Grid item xs={8}>
             <div>
               <TextField className={classes.fullWidthElement} id="outlined-basic" label="Google Drive Link" variant="outlined" onChange={updateGDriveTextBox} />
@@ -429,7 +447,11 @@ function StartDeepRead() {
             </div>
           </Grid>
         </Grid>
-        <div className={classes.topSpacing10}><Button color="primary" className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon />} label="Process" onClick={sendGDriveLinkAPI}>Process</Button></div>
+        <div className={classes.topSpacing10}>
+          <Button variant="outlined" color="default" disabled={disableProcessButton} className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon />} label="Process" onClick={sendGDriveLinkAPI}>
+            Process
+          </Button>
+        </div>
       </Paper>
     </Grid>)
     // }
@@ -440,180 +462,181 @@ function StartDeepRead() {
       return null;
     }
     else {
-      return (
-          <Grid item xs>
-            <Paper className={classes.paper}>
-              {displaySearchBoxForIR()}
-              <Grid container spacing={2}>
-                <Grid item className={classes.topSpacing10}>
+          console.log("NO irFlag")
+          return(  
+            <Accordion className={classes.accordian} defaultExpanded>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
                 <div>
-                <strong>
-                  Video Information
-                </strong>              
+                  <strong>
+                    Video Information
+                </strong>
                 </div>
-                <div className={classes.topSpacing10}>
+              </AccordionSummary>
+            <AccordionDetails className={classes.fullWidthElement}>
+              <div className={classes.fullWidthElement}>
+                 <div className={classes.topSpacing10}>
                     Video Name: {videoNameFromAPI}
                   </div>
-                <div>
-                  Video Size: {videoSizeFromAPI}
+                  <div>
+                    Video Size: {videoSizeFromAPI}
+                  </div>
+                  <div className={classes.topSpacing10}>
+                    {displaySearchBoxForIR()}            
+                  </div>
+                 <div item className={classes.topSpacing10}>
+                  <iframe title="Video" src={searchGDrive} width="1280" height="720"></iframe>
                 </div>
-                </Grid>
-                <Grid item className={classes.topSpacing10}>
-                  {/* <iframe title="Video" src="https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/preview?t=45" width="1280" height="720"></iframe> */}
-                  {/* https://drive.google.com/file/d/1qbDEOE5pridr2AOmRt4J1w1GokGr8SHm/view?usp=sharing */}                  
-                  <iframe title="Video" src={searchGDrive}  width="1280" height="720"></iframe>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>        
-        
-      )
-    }
+              </div>
+             
+            </AccordionDetails>
+          </Accordion>
+          )
+             
+      
   }
+}
 
-  const displaySearchBoxForIR = () =>{
-    if(irSearchFlag){
-      if(transcriptTimeFromAPI !== null){
-        return ( <Autocomplete
+
+  const displaySearchBoxForIR = () => {
+    if (irSearchFlag) {
+      if (transcriptTimeFromAPI !== null) {
+        return (<Autocomplete
           id="combo-box-demo"
           options={transcriptTimeFromAPI}
           getOptionLabel={(option) => option.word}
-          onChange={(event, value) => setSearchGDriveValue(value.start)}
+          onChange={(event, value) => setSearchGDriveValue(value)}
           renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
         />)
       }
-      else{
-        return (          
-          <CircularProgress>
-          </CircularProgress>          
+      else {
+        return (
+          <LinearProgress />
         )
       }
     }
-    else{
+    else {
       return null;
     }
-}
+  }
 
-  const setSearchGDriveValue = (seconds)=>{
-    setSearchGDrive(gDriveLinkVar.replace("/view?usp=sharing","/preview?t="+seconds))
+  const setSearchGDriveValue = (seconds) => {
+    console.log(seconds)
+    if(seconds !== null){
+      setSearchGDrive(gDriveLinkVar.replace("/view?usp=sharing", "/preview?t=" + seconds.start))
+    }
     console.log(searchGDrive);
   }
 
   const displayTranscripts = () => {
-    if(transcriptFlag){
-      if(transcriptFromAPI !== null){
+    if (transcriptFlag) {
+      if (transcriptFromAPI !== null) {
         return (<Grid item xs>
           <Paper className={classes.paper}>
             <div>
               <strong>
                 Transcript
-                </strong>            
+                </strong>
             </div>
             <div className={classes.topSpacing10}>
               {transcriptFromAPI}
             </div>
-            </Paper>
+          </Paper>
         </Grid>)
       }
-      else{
+      else {
         return (
           <Grid item xs>
-          <Paper className={classes.paper}>
-            <div>
+            <Paper className={classes.paper}>
+            <LinearProgress />
+              <div className={classes.topSpacing10}>
               <strong>
-                Transcript
-                </strong> 
-                <CircularProgress>
-                </CircularProgress>           
-            </div>
-            <div className={classes.topSpacing10}>
-            </div>
+                  Transcript
+                </strong>
+              </div>
             </Paper>
-        </Grid>
+          </Grid>
         )
       }
     }
-    else{
+    else {
       return null;
     }
   }
 
   const displaySummary = () => {
-    if(summaryFlag){
-        if(summaryFromAPI !== null){
-          return (<Grid item xs>
+    if (summaryFlag) {
+      if (summaryFromAPI !== null) {
+        return (<Grid item xs>
+          <Paper className={classes.paper}>
+            <div>
+              <strong>
+                Summary
+                  </strong>
+            </div>
+            <div className={classes.topSpacing10}>
+              {summaryFromAPI}
+            </div>
+          </Paper>
+        </Grid>)
+      }
+      else {
+        return (
+          <Grid item xs>
             <Paper className={classes.paper}>
-              <div>
-                <strong>
-                  Summary
-                  </strong>            
-              </div>
+            <LinearProgress />
               <div className={classes.topSpacing10}>
-                {summaryFromAPI}
-              </div>
-              </Paper>
-          </Grid>)
-        }
-        else{          
-          return (
-            <Grid item xs>
-            <Paper className={classes.paper}>
-              <div>
-                <strong>
+              <strong>
                   Summary
-                  </strong> 
-                  <CircularProgress>
-                  </CircularProgress>           
+                  </strong>
               </div>
-              <div className={classes.topSpacing10}>
-              </div>
-              </Paper>
+            </Paper>
           </Grid>
-          )
-        }
-      
+        )
+      }
+
     }
-    else{
+    else {
       return null;
     }
   }
 
   const displayMCQS = () => {
-    if(mcqFlag){
-        if(mcqDataFromAPI !== null){
-          return (<Grid item xs>
+    if (mcqFlag) {
+      if (mcqDataFromAPI !== null) {
+        return (<Grid item xs>
+          <Paper className={classes.paper}>
+            <div>
+              <strong>
+                MCQs
+                </strong>
+            </div>
+            <div>
+              <Quiz mcqData={mcqDataFromAPI} />
+            </div>
+          </Paper>
+        </Grid>)
+      }
+      else {
+        return (
+          <Grid item xs>
             <Paper className={classes.paper}>
-              <div>
-                <strong>
-                  MCQs
-                </strong>            
-              </div>
-              <div>
-                <Quiz mcqData={mcqDataFromAPI} />
+            <LinearProgress />
+              <div className={classes.topSpacing10}>
+              <strong>
+                  MCQS
+                  </strong>
               </div>
             </Paper>
-          </Grid>)
-        }
-        else{          
-          return (
-            <Grid item xs>
-            <Paper className={classes.paper}>
-              <div>
-                <strong>
-                  MCQS
-                  </strong> 
-                  <CircularProgress>
-                  </CircularProgress>           
-              </div>
-              <div className={classes.topSpacing10}>
-              </div>
-              </Paper>
           </Grid>
-          )
-        
+        )
+
       }
     }
-    else{
+    else {
       return null;
     }
   }
@@ -627,64 +650,132 @@ function StartDeepRead() {
   }
 
   const displayGallery = () => {
-    if(galleryFlag){
-      if(galleryDataFromAPI !== null){
+    if (galleryFlag) {
+      if (galleryDataFromAPI !== null) {
         return (<Grid item xs>
           <Paper className={classes.paper}>
             <div>
               <strong>
                 Gallery
-              </strong>            
+              </strong>
             </div>
             <div className={classes.fullWidthElement}>
               <SimpleReactLightbox>
                 <SRLWrapper>
-                  {
-                    galleryDataFromAPI.map(
-                    each_url=>(
+                <Grid container>     
+                {
+                  galleryDataFromAPI.map(
+                      each_url => (    
+                  <Grid item>
                     <img src={each_url} width="640" height="280" ></img>
-                    ))
-                  }
-                  {/* {list1.map(i=>(<img src={i}></img>))} */}
-                  {/* <img src='https://upload.wikimedia.org/wikipedia/commons/8/89/Ropy_pahoehoe.jpg' alt="Caption" width="640" height="280"/>
-                  <img src='https://upload.wikimedia.org/wikipedia/commons/7/73/Pyroclastic_flows_at_Mayon_Volcano.jpg' width="640" height="280" alt="Another Caption" />
-                  <img src='https://upload.wikimedia.org/wikipedia/commons/f/f3/Okataina.jpg'alt="Final Caption" width="640" height="280"/> */}
+                  </Grid>
+                  ))
+                }
+                </Grid>
                 </SRLWrapper>
               </SimpleReactLightbox>
             </div>
           </Paper>
         </Grid>)
       }
-      else{
+      else {
         return (
           <Grid item xs>
-          <Paper className={classes.paper}>
-            <div>
+            <Paper className={classes.paper}>
+              <LinearProgress />
+              <div>
+                
+              </div>
+              <div className={classes.topSpacing10}>
               <strong>
-                Gallery
-                </strong> 
-                <CircularProgress>
-                </CircularProgress>           
-            </div>
-            <div className={classes.topSpacing10}>
-            </div>
+                  Gallery
+                </strong>
+              </div>
             </Paper>
-        </Grid>
+          </Grid>
         )
       }
     }
-    else{
+    else {
       return null;
     }
   }
 
+  const displayNavBar = () =>{
+    if(processButtonClicked){
+      if(videoInfoShown){
+        return(
+          <div >
+          <Grid
+            container
+            spacing={0}
+            direction="column"
+            alignItems="center"
+            justify="center"
+          >
+            <Grid item className={classes.bottom}>
+              <div>
+                {displayAlert()}
+              </div>
+              <div>
+                <BottomNavigation
+                  disabled={disableProcessButton} 
+                  value={bottomNavValue}
+                  onChange={(event, newValue) => {
+                    setBottomNavValue(newValue);
+                  }}
+                  showLabels
+                  className={classes.root}
+                >
+                  <BottomNavigationAction label="Notes" icon={<ReceiptSharpIcon />}  ref={notesClickRef} onClick={showNotes} />
+                  <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ} />
+                  <BottomNavigationAction label="IR" icon={<SearchSharpIcon />} onClick={showIR} />
+                  <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery} />
+                </BottomNavigation>
+              </div>
+  
+            </Grid>
+  
+          </Grid>
+        </div>
+        )
+      }
+      else
+      {
+        return(
+           <div className={classes.bottom1}>
+             <div>
+                {displayAlert()}
+              </div>
+            </div>
+          )
+      }
+    }
+    else{
+      return(
+        <div className={classes.bottom}>
+          {displayAlert()}
+        </div>
+      )
+    }
+ 
+  }
 
-  const setAllFalse = (reProcess=false) => {
+  const displayMainLoading = () =>{
+    if(displayMainLoadingFlag){
+      return (
+        <LinearProgress></LinearProgress>
+      )
+    }
+  }
+
+
+  const setAllFalse = (reProcess = false) => {
     setGDriveBoxFlag(true);
     setVideoInformationFlag(true);
-    if(reProcess === true){
-      //console.log("Reached here")
+    if (reProcess === true) {
       setVideoInformationFlag(false);
+      setVideoInfoShown(false);
     }
     setTranscriptFlag(false)
     setSummaryFlag(false);
@@ -707,108 +798,76 @@ function StartDeepRead() {
     //}
   }
 
+  const showNavBar = () => {
+    setAllFalse();
+    setVideoInfoShown(true);
+  }
+
   const showNotes = () => {
-    if(processButtonClicked){
       setAllFalse();
       setTranscriptFlag(true);
       setSummaryFlag(true);
-      if((s2t_v2t_done_flag) && (summaryFromAPI === null)){
-        if(summaryPostCalled === false){
+      if ((s2t_v2t_done_flag) && (summaryFromAPI === null)) {
+        if (summaryPostCalled === false) {
           call_POST_Summarize_post(fileID);
           setSummaryPostCalled(true);
         }
-        else{
+        else {
           poll_call_GET_Summarize_get(fileID);
-        }      
+        }
       }
-    }
-    else{
-      setAlertMSG("Process a video first!")
-      setAlert();
-    }
-    // if(dataSuccessRecievedFromAPI === true){
-    //   if(transcriptFromAPI !== null){
-    //     setAllFalse();
-    //     showSummary();
-    //     setTranscriptLoadingFlag(false)
-    //     setTranscriptFlag(true)
-    //   }
-    //   else{
-    //     setAllFalse();
-    //     showSummary();
-    //     setTranscriptLoadingFlag(true)
-    //     setTranscriptFlag(false)
-    //   }
-    // }      
+    
   }
 
-  // const showSummary = () => {
-  //   if(processButtonClicked === true){
-  //   setAllFalse();
-  //   setSummaryFlag(true);
-  // }
-  // }
 
   const showMCQ = () => {
-    if(processButtonClicked){
+    
       setAllFalse();
       setMCQFlag(true);
-      if((s2t_v2t_done_flag) && (mcqDataFromAPI === null)){
-        if(mcqPostCalled === false){
+      if ((s2t_v2t_done_flag) && (mcqDataFromAPI === null)) {
+        if (mcqPostCalled === false) {
           call_POST_mcq_generator_post(fileID);
           setMcqPostCalled(true);
         }
-        else{
+        else {
           poll_call_GET_Mcq_get(fileID);
-        }      
+        }
       }
-    } 
-    else{
-      setAlertMSG("Process a video first!")
-      setAlert();
-    }
+  
   }
 
-  const showIR = () => {
-    // TODO in local
-    if(processButtonClicked === true){
-    setAllFalse();
-    setIRFlag(true);
-    setIRSearchFlag(true);
-    }
-    else{
-      setAlertMSG("Process a video first!")
-      setAlert();
-    }
+  const showIR = () => {  
+      setAllFalse();
+      setIRFlag(true);
+      setIRSearchFlag(true);
+      // if(!videoInfoExpanded){
+      //   expandVideoInfo.current.click();
+      // }
+      //showVideoInformation();
+    
   }
 
-  const showGallery = () => {
-    if(processButtonClicked === true){
-    setAllFalse();
-    setGalleryFlag(true);
-    if((s2t_v2t_done_flag) && (galleryDataFromAPI === null)){
-      if(galleryPostCalled === false){
-        call_POST_Gallery_post(fileID);
-        setGalleryPostCalled(true);
-      }    
-    }
-    }
-    else{
-      setAlertMSG("Process a video first!")
-      setAlert();
-    }
+  const showGallery = () => {    
+      setAllFalse();
+      setGalleryFlag(true);
+      if ((s2t_v2t_done_flag) && (galleryDataFromAPI === null)) {
+        if (galleryPostCalled === false) {
+          call_POST_Gallery_post(fileID);
+          setGalleryPostCalled(true);
+        }
+      }
+
   }
 
-  const setAlert = () =>{
+  const setAlert = () => {
     setAlertFlag(true);
     setOpenAlert(true);
   }
 
-  return (    
-    <div>      
-      
-
-      <div><h1><strong>Start deep-read</strong></h1>
+  return (
+    <div>
+      <div>
+        <h1><strong>Start deep-read</strong></h1>
       </div>
 
       <div className={classes.topSpacing30}>
@@ -818,9 +877,7 @@ function StartDeepRead() {
       </div>
 
       <div>
-        <Grid container spacing={3}>
-          {displayVideoInformation()}
-        </Grid>
+        {displayVideoInformation()}
       </div>
 
       <div className={classes.bottomPadding}>
@@ -833,41 +890,8 @@ function StartDeepRead() {
         </Grid>
       </div>
 
-      <div >
-        
-     
-        <Grid
-          container
-          spacing={0}
-          direction="column"
-          alignItems="center"
-          justify="center"
-        >
-          <Grid item className={classes.bottom}>
-            <div>
-              {displayAlert()}       
-            </div>
-            <div>
-              <BottomNavigation
-                value={bottomNavValue}
-                onChange={(event, newValue) => {
-                  setBottomNavValue(newValue);
-                }}
-                showLabels
-                className={classes.root}
-              >
-                <BottomNavigationAction label="Notes"  icon={<ReceiptSharpIcon />} onClick={showNotes} />
-                <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ} />
-                <BottomNavigationAction label="IR" icon={<SearchSharpIcon />} onClick={showIR} />
-                <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery} />
-              </BottomNavigation>
-            </div>
-           
-          </Grid>
+      {displayNavBar()}
 
-        </Grid>
-      </div>
-   
     </div>
   );
 }
