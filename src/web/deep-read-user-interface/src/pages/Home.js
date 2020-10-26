@@ -1,6 +1,5 @@
 import React from 'react';
 import { makeStyles, Paper } from '@material-ui/core';
-import GitHubIcon from '@material-ui/icons/GitHub';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -12,13 +11,11 @@ const useStyles = makeStyles((theme) => ({
   },
   spacing20: {
     paddingTop: '20px',
-    paddingLeft: '20px',
     paddingRight: '20px',
     paddingBottom: '20px'
   },
   spacing10: {
     paddingTop: '10px',
-    paddingLeft: '20px',
     paddingRight: '20px',
     paddingBottom: '20px'
   },
@@ -26,16 +23,10 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: '20px'
   },
   paper: {
-    background: '#f5f5f5'
-  },
-  linkWithoutStyle: {
-    color: 'inherit',
-    textDecoration: 'inherit'
-  },
-  rightBottom:{
-    position:"absolute",
-    paddingRight:"24px",
-    right:"0"
+    background: '#f5f5f5',
+    borderColor: '#000000',
+    margin: `${theme.spacing(1)}px auto`,
+    padding: theme.spacing(2),
   }
 }));
 
@@ -44,9 +35,10 @@ function Home() {
 
   return (
     <div>
-      <div><h1><strong>Home</strong></h1></div>
       <div className={classes.topSpacing10}>
-        <Paper className={classes.paper}>
+        <Paper className={classes.paper} variant="outlined">
+          <div><h1><span><strong>Home</strong></span></h1></div>
+          <div className={classes.spacing10}></div>
           <div className={classes.spacing10}>
             <h1><span><strong>deep-read</strong></span></h1>
             <p><span className={classes.fontSize20}>&nbsp; &nbsp; Meeting summarization and quiz generator.</span></p>
@@ -68,11 +60,7 @@ function Home() {
         </Paper>     
         <br/>
       </div>  
-      <div className={classes.rightBottom}>
-          <a href="https://github.com/Acquil/deep-read" className={classes.linkWithoutStyle}>
-          <GitHubIcon />
-          </a>
-      </div>    
+      
     </div>
   );
 }

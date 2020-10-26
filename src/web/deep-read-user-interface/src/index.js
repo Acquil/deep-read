@@ -4,14 +4,14 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import deepOrange from '@material-ui/core/colors/deepOrange';
-import indigo from '@material-ui/core/colors/indigo';
 
-
-const theme_1 = createMuiTheme({
+const mainTheme = createMuiTheme({
   palette: {
     primary: {
-      main: deepOrange[700]
+      main: '#FF7A00'
+    },
+    secondary:{
+      main: "#0085ff"
     }
   },
 });
@@ -19,7 +19,7 @@ const theme_1 = createMuiTheme({
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme_1}>
+    <ThemeProvider theme={mainTheme}>
       <App />
     </ThemeProvider>
   </React.StrictMode>,

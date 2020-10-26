@@ -4,7 +4,6 @@ import ThreeSixtyIcon from '@material-ui/icons/ThreeSixty';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import ReceiptSharpIcon from '@material-ui/icons/ReceiptSharp';
-import PhotoSizeSelectSmallSharpIcon from '@material-ui/icons/PhotoSizeSelectSmallSharp';
 import QuestionAnswerSharpIcon from '@material-ui/icons/QuestionAnswerSharp';
 import SearchSharpIcon from '@material-ui/icons/SearchSharp';
 import PhotoLibrarySharpIcon from '@material-ui/icons/PhotoLibrarySharp';
@@ -22,15 +21,12 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox";
 import Quiz from '../components/QuizMain';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LinearProgress from '@material-ui/core/LinearProgress';
-
-
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,12 +44,16 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     background: '#f5f5f5',
+    borderColor: '#000000',
     margin: `${theme.spacing(1)}px auto`,
     padding: theme.spacing(2),
-
   },
-  accordian:{
+  accordian: {
+    borderColor: '#000000',
     background: '#f5f5f5',
+  },
+  topSpacing20: {
+    marginTop: '10px'
   },
   topSpacing10: {
     marginTop: '10px'
@@ -61,13 +61,8 @@ const useStyles = makeStyles((theme) => ({
   topSpacing30: {
     marginTop: '30px',
   },
-  fullDisplay: {
-  },
   fullWidthElement: {
     width: '100%'
-  },
-  labelWidth: {
-    fontSize: "70px"
   },
   bottom: {
     position: "fixed",
@@ -75,19 +70,14 @@ const useStyles = makeStyles((theme) => ({
     left: "0",
     width: "100%",
   },
-  bottom1: {
-    position: "fixed",
-    right:"0",
-    bottom: "0",
-    left: "0",
-    width: "100%",
-  },
   bottomPadding: {
     paddingBottom: "50px",
   },
-  AlertMSG: {
-    position: "fixed",
-    top: "20px"
+  border: {
+    border: '2px solid black'
+  },
+  fontSize20: {
+    fontSize: "20px"
   }
 }));
 
@@ -95,50 +85,35 @@ function StartDeepRead() {
 
   const classes = useStyles();
   const [gDriveLinkVar, setGDriveLinkVar] = React.useState('');
-  const [dataForGDriveLinkVar, setdataForGDriveLinkVar] = React.useState(false);
+  const [model, setModel] = React.useState('');
   const [bottomNavValue, setBottomNavValue] = React.useState(false);
-  const [processFlag, setProcessFlag] = React.useState(false);
   const [videoInformationFlag, setVideoInformationFlag] = React.useState(false);
   const [transcriptFlag, setTranscriptFlag] = React.useState(false);
-  const [transcriptLoadingFlag, setTranscriptLoadingFlag] = React.useState(false);
   const [summaryFlag, setSummaryFlag] = React.useState(false);
   const [summaryPostCalled, setSummaryPostCalled] = React.useState(false);
   const [mcqFlag, setMCQFlag] = React.useState(false);
   const [mcqPostCalled, setMcqPostCalled] = React.useState(false);
   const [irFlag, setIRFlag] = React.useState(false);
-  const [irSearchFlag, setIRSearchFlag] = React.useState(false);
-  const [GDriveBoxFlag, setGDriveBoxFlag] = React.useState(false);
   const [galleryFlag, setGalleryFlag] = React.useState(false);
   const [galleryPostCalled, setGalleryPostCalled] = React.useState(false);
   const [videoNameFromAPI, setVideoNameFromAPI] = React.useState(null);
   const [videoSizeFromAPI, setVideoSizeFromAPI] = React.useState(null);
-  const [fileIDFromAPI, setFileIDFromAPI] = React.useState(null);
   const [transcriptFromAPI, setTranscriptFromAPI] = React.useState(null);
   const [summaryFromAPI, setSummaryFromAPI] = React.useState(null);
-  const [model, setModel] = React.useState('');
-  const [alertFlag, setAlertFlag] = React.useState(null);
+  const [alertFlag, setAlertFlag] = React.useState(false);
   const [alertMSG, setAlertMSG] = React.useState('');
   const [openAlert, setOpenAlert] = React.useState(true);
   const [transcriptTimeFromAPI, setTranscriptTimeFromAPI] = React.useState(null);
   const [processButtonClicked, setProcessButtonClicked] = React.useState(false);
   const [mcqDataFromAPI, setMcqDataFromAPI] = React.useState(null);
   const [galleryDataFromAPI, setGalleryDataFromAPI] = React.useState(null);
-  const [s2t_v2t_done_flag, set_s2t_v2t_done_flag] = React.useState(false);
+  const [s2tV2tDoneFlag, setS2tV2tDoneFlag] = React.useState(false);
   const [fileID, setFileID] = React.useState(null);
   const [searchGDrive, setSearchGDrive] = React.useState(null);
   const [disableProcessButton, setDisableProcessButton] = React.useState(false);
   const [videoInfoShown, setVideoInfoShown] = React.useState(false);
   const [displayMainLoadingFlag, setDisplayMainLoadingFlag] = React.useState(false);
-  // const [videoInfoExpanded, setVideoInfoExpandedFlag] = React.useState(false); 
-  // const expandVideoInfo = React.useRef(null)
   const notesClickRef = React.useRef(null);
-  const top100Films = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 },
-    { title: '12 Angry Men', year: 1957 }
-  ];
   var tmpMcqs = {}
 
 
@@ -147,7 +122,6 @@ function StartDeepRead() {
 
   const updateGDriveTextBox = (e) => {
     setGDriveLinkVar(e.target.value);
-    setSearchGDrive((e.target.value).replace("/view?usp=sharing", "/preview"));
   }
 
   const handleModelChange = (event) => {
@@ -161,7 +135,7 @@ function StartDeepRead() {
       setAlert();
       return;
     }
-    var urlValid = gDriveLinkVar.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+    var urlValid = gDriveLinkVar.match(/(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi);
     if (urlValid == null) {
       setAlertMSG("Please enter a VALID Google Drive Link!");
       setAlert();
@@ -187,15 +161,14 @@ function StartDeepRead() {
       }).then((responseData) => {
         console.log(responseData)
         if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
+          setDisplayMainLoadingFlag(false);
+          setSearchGDrive((gDriveLinkVar).replace("/view?usp=sharing", "/preview"));
           setVideoNameFromAPI(responseData.data.filename);
           setVideoSizeFromAPI(responseData.data.size);
           showVideoInformation();
-          // setVideoInfoExpandedFlag(true);
           showNavBar();
           notesClickRef.current.click();
-          setDisplayMainLoadingFlag(false);
           setFileID(responseData.data.id);
-          setFileIDFromAPI(responseData.data.id);
           call_POST_speech_post(responseData.data.id);
           call_POST_v2t_post(responseData.data.id);
         }
@@ -228,9 +201,9 @@ function StartDeepRead() {
   const poll_call_GET_speech_get = (id) => {
     console.log("poll_call_GET_speech_get reached")
     const api_call_GET_speech_get = new Request(baseURL + 'speech/get/' + id);
-    api_call_GET_speech_get.poll(3000).get((response) => {
+    api_call_GET_speech_get.poll(7000).get((response) => {
       console.log("poll_call_GET_speech_get started")
-      console.log(response.data);
+      console.log(response);
       if (response.data.status === "Success") {
         setTranscriptFromAPI(response.data.transcript.transcript);
         setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
@@ -246,7 +219,6 @@ function StartDeepRead() {
 
   const call_POST_v2t_post = (id) => {
     console.log("call_POST_v2t_post Reached")
-
     if (id !== null) {
       console.log("call_POST_v2t_post called")
       axios.post(baseURL + 'VideotoTextConverter/post/' + id, {
@@ -265,12 +237,11 @@ function StartDeepRead() {
   const poll_call_GET_v2t_get = (id) => {
     console.log("poll_call_GET_v2t_get reached")
     const api_call_GET_v2t_get = new Request(baseURL + 'VideotoTextConverter/get/' + id);
-    api_call_GET_v2t_get.poll(3000).get((response) => {
+    api_call_GET_v2t_get.poll(7000).get((response) => {
       console.log("poll_call_GET_v2t_get started")
-      //console.log(response.data);      
       console.log(response)
       if (response.data.status === "Success") {
-        set_s2t_v2t_done_flag(true);
+        setS2tV2tDoneFlag(true);
         setDisableProcessButton(false);
         call_POST_Summarize_post(id);
         setSummaryPostCalled(true);
@@ -308,8 +279,9 @@ function StartDeepRead() {
   const poll_call_GET_Summarize_get = (id) => {
     console.log("poll_call_GET_Summarize_get reached")
     const api_call_GET_summarizer_get = new Request(baseURL + 'summarizer/get/' + id);
-    api_call_GET_summarizer_get.poll(3000).get((response) => {
+    api_call_GET_summarizer_get.poll(7000).get((response) => {
       console.log("poll_call_GET_Summarize_get started")
+      console.log(response);
       if (response.data.status === "Success") {
         setSummaryFromAPI(response.data.summary)
         return false;
@@ -341,9 +313,9 @@ function StartDeepRead() {
   const poll_call_GET_Mcq_get = (id) => {
     console.log("poll_call_GET_Mcq_get reached")
     const api_call_GET_mcq_get = new Request(baseURL + 'mcq_generator/get/' + id);
-    api_call_GET_mcq_get.poll(3000).get((response) => {
+    api_call_GET_mcq_get.poll(7000).get((response) => {
       console.log("poll_call_GET_Mcq_get started")
-      //console.log(response.data);      
+      console.log(response);
       if (response.data.status === "Success") {
         tmpMcqs = response.data.mcqs
         tmpMcqs["correctAnswer"] = 0;
@@ -351,7 +323,6 @@ function StartDeepRead() {
         tmpMcqs["step"] = 1;
         tmpMcqs["score"] = 0;
         setMcqDataFromAPI(tmpMcqs)
-        console.log(tmpMcqs)
         return false;
       }
     }).catch(error => {
@@ -380,7 +351,7 @@ function StartDeepRead() {
   }
 
   const displayAlert = () => {
-    if (alertFlag === null) {
+    if (!alertFlag) {
       return null
     }
     else {
@@ -410,51 +381,49 @@ function StartDeepRead() {
   }
 
   const displayGDrivebox = () => {
-    // if(!GDriveBoxFlag){
-    //   return null;
-    // }
-    // else{
     return (
-    <Grid item xs>
-      <Paper className={classes.paper}>
-        <div>
-          {displayMainLoading()}
-        </div>
-        <Grid container spacing={2} className={classes.topSpacing10}>
-          <Grid item xs={8}>
-            <div>
-              <TextField className={classes.fullWidthElement} id="outlined-basic" label="Google Drive Link" variant="outlined" onChange={updateGDriveTextBox} />
-            </div>
-          </Grid>
-          <Grid item xs={4}>
-            <div>
-              <FormControl variant="outlined" className={classes.fullWidthElement}>
-                <InputLabel id="model-label">Language</InputLabel>
-                <Select
-                  labelId="model-label"
-                  id="model-select"
-                  value={model}
-                  onChange={handleModelChange}
-                  label="Language"
-                  className={classes.fullWidthElement}
-                  required={true}
-                >
-                  <MenuItem value={"model-generic"}>American English</MenuItem>
-                  <MenuItem value={"model-indian"}>Indian English</MenuItem>
-                </Select>
+      <Grid item xs>
+        <Paper className={classes.paper} variant="outlined">
+          <div>
+            {displayMainLoading()}
+          </div>
+          <div>
+            <h1><strong>Start deep-read</strong></h1>
+          </div>
+          <Grid container spacing={2} className={classes.topSpacing20}>
+            <Grid item xs={8}>
+              <div>
+                <TextField className={classes.fullWidthElement} id="outlined-basic" label="Google Drive Link" variant="outlined" onChange={updateGDriveTextBox} />
+              </div>
+            </Grid>
+            <Grid item xs={4}>
+              <div>
+                <FormControl variant="outlined" className={classes.fullWidthElement}>
+                  <InputLabel id="model-label">Language</InputLabel>
+                  <Select
+                    labelId="model-label"
+                    id="model-select"
+                    value={model}
+                    onChange={handleModelChange}
+                    label="Language"
+                    className={classes.fullWidthElement}
+                    required={true}
+                  >
+                    <MenuItem value={"model-generic"}>American English</MenuItem>
+                    <MenuItem value={"model-indian"}>Indian English</MenuItem>
+                  </Select>
 
-              </FormControl>
-            </div>
+                </FormControl>
+              </div>
+            </Grid>
           </Grid>
-        </Grid>
-        <div className={classes.topSpacing10}>
-          <Button variant="outlined" color="default" disabled={disableProcessButton} className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon />} label="Process" onClick={sendGDriveLinkAPI}>
-            Process
+          <div className={classes.topSpacing10}>
+            <Button variant="outlined" disabled={disableProcessButton} className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon />} label="Process" onClick={sendGDriveLinkAPI}>
+              Process
           </Button>
-        </div>
-      </Paper>
-    </Grid>)
-    // }
+          </div>
+        </Paper>
+      </Grid>)
   }
 
   const displayVideoInformation = () => {
@@ -462,47 +431,38 @@ function StartDeepRead() {
       return null;
     }
     else {
-          console.log("NO irFlag")
-          return(  
-            <Accordion className={classes.accordian} defaultExpanded>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <div>
-                  <strong>
-                    Video Information
-                </strong>
-                </div>
-              </AccordionSummary>
-            <AccordionDetails className={classes.fullWidthElement}>
-              <div className={classes.fullWidthElement}>
-                 <div className={classes.topSpacing10}>
-                    Video Name: {videoNameFromAPI}
-                  </div>
-                  <div>
-                    Video Size: {videoSizeFromAPI}
-                  </div>
-                  <div className={classes.topSpacing10}>
-                    {displaySearchBoxForIR()}            
-                  </div>
-                 <div item className={classes.topSpacing10}>
-                  <iframe title="Video" src={searchGDrive} width="1280" height="720"></iframe>
-                </div>
+      return (
+        <Accordion className={classes.accordian} variant="outlined" defaultExpanded>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+          <div><h1><strong>Video</strong></h1></div>
+          </AccordionSummary>
+          <AccordionDetails className={classes.fullWidthElement}>
+            <div className={classes.fullWidthElement}>
+              <div className={classes.fontSize20}><b>Video Name:</b> {videoNameFromAPI}</div>
+              <div>
+              <div className={classes.fontSize20}><b>Video Size:</b> {videoSizeFromAPI}</div>
               </div>
-             
-            </AccordionDetails>
-          </Accordion>
-          )
-             
-      
+              <div className={classes.topSpacing10}>
+              <div className={classes.fontSize20}>{displaySearchBoxForIR()}</div>
+              </div>
+              <div item className={classes.topSpacing10}>
+                <iframe title="Video" src={searchGDrive} width="1280" height="720"></iframe>
+              </div>
+            </div>
+
+          </AccordionDetails>
+        </Accordion>
+      )
+    }
   }
-}
 
 
   const displaySearchBoxForIR = () => {
-    if (irSearchFlag) {
+    if (irFlag) {
       if (transcriptTimeFromAPI !== null) {
         return (<Autocomplete
           id="combo-box-demo"
@@ -524,25 +484,19 @@ function StartDeepRead() {
   }
 
   const setSearchGDriveValue = (seconds) => {
-    console.log(seconds)
-    if(seconds !== null){
+    if (seconds !== null) {
       setSearchGDrive(gDriveLinkVar.replace("/view?usp=sharing", "/preview?t=" + seconds.start))
     }
-    console.log(searchGDrive);
   }
 
   const displayTranscripts = () => {
     if (transcriptFlag) {
       if (transcriptFromAPI !== null) {
         return (<Grid item xs>
-          <Paper className={classes.paper}>
-            <div>
-              <strong>
-                Transcript
-                </strong>
-            </div>
-            <div className={classes.topSpacing10}>
-              {transcriptFromAPI}
+          <Paper className={classes.paper} variant="outlined">
+          <div><h1><strong>Transcript</strong></h1></div>
+            <div className={classes.topSpacing20}>
+               <div className={classes.fontSize20}>{transcriptFromAPI}</div>
             </div>
           </Paper>
         </Grid>)
@@ -550,13 +504,9 @@ function StartDeepRead() {
       else {
         return (
           <Grid item xs>
-            <Paper className={classes.paper}>
-            <LinearProgress />
-              <div className={classes.topSpacing10}>
-              <strong>
-                  Transcript
-                </strong>
-              </div>
+            <Paper className={classes.paper} variant="outlined">
+              <LinearProgress />
+              <div><h1><strong>Transcript</strong></h1></div>
             </Paper>
           </Grid>
         )
@@ -571,14 +521,10 @@ function StartDeepRead() {
     if (summaryFlag) {
       if (summaryFromAPI !== null) {
         return (<Grid item xs>
-          <Paper className={classes.paper}>
-            <div>
-              <strong>
-                Summary
-                  </strong>
-            </div>
-            <div className={classes.topSpacing10}>
-              {summaryFromAPI}
+          <Paper className={classes.paper} variant="outlined">
+            <div><h1><strong>Summary</strong></h1></div>
+            <div className={classes.topSpacing20}>
+            <div className={classes.fontSize20}>{summaryFromAPI}</div>
             </div>
           </Paper>
         </Grid>)
@@ -586,13 +532,9 @@ function StartDeepRead() {
       else {
         return (
           <Grid item xs>
-            <Paper className={classes.paper}>
-            <LinearProgress />
-              <div className={classes.topSpacing10}>
-              <strong>
-                  Summary
-                  </strong>
-              </div>
+            <Paper className={classes.paper} variant="outlined">
+              <LinearProgress />
+              <div><h1><strong>Summary</strong></h1></div>
             </Paper>
           </Grid>
         )
@@ -608,13 +550,9 @@ function StartDeepRead() {
     if (mcqFlag) {
       if (mcqDataFromAPI !== null) {
         return (<Grid item xs>
-          <Paper className={classes.paper}>
-            <div>
-              <strong>
-                MCQs
-                </strong>
-            </div>
-            <div>
+          <Paper className={classes.paper} variant="outlined">
+          <div><h1><strong>MCQs</strong></h1></div>
+            <div className={classes.topSpacing20}>
               <Quiz mcqData={mcqDataFromAPI} />
             </div>
           </Paper>
@@ -623,13 +561,9 @@ function StartDeepRead() {
       else {
         return (
           <Grid item xs>
-            <Paper className={classes.paper}>
-            <LinearProgress />
-              <div className={classes.topSpacing10}>
-              <strong>
-                  MCQS
-                  </strong>
-              </div>
+            <Paper className={classes.paper} variant="outlined">
+              <LinearProgress />
+              <div><h1><strong>MCQs</strong></h1></div>
             </Paper>
           </Grid>
         )
@@ -641,39 +575,30 @@ function StartDeepRead() {
     }
   }
 
-  const displayIR = () => {
-    if (!irFlag) {
-      return null;
-    }
-    else {
-    }
-  }
 
   const displayGallery = () => {
     if (galleryFlag) {
       if (galleryDataFromAPI !== null) {
         return (<Grid item xs>
-          <Paper className={classes.paper}>
-            <div>
-              <strong>
-                Gallery
-              </strong>
-            </div>
+          <Paper className={classes.paper} variant="outlined">
+          <div><h1><strong>Gallery</strong></h1></div>
+            <div className={classes.topSpacing20}>
             <div className={classes.fullWidthElement}>
               <SimpleReactLightbox>
                 <SRLWrapper>
-                <Grid container>     
-                {
-                  galleryDataFromAPI.map(
-                      each_url => (    
-                  <Grid item>
-                    <img src={each_url} width="640" height="280" ></img>
+                  <Grid container spacing={3}>
+                    {
+                      galleryDataFromAPI.map(
+                        each_url => (
+                          <Grid item>
+                            <img src={each_url} width="640" height="280" alt="Video screenshots"></img>
+                          </Grid>
+                        ))
+                    }
                   </Grid>
-                  ))
-                }
-                </Grid>
                 </SRLWrapper>
               </SimpleReactLightbox>
+            </div>
             </div>
           </Paper>
         </Grid>)
@@ -681,16 +606,15 @@ function StartDeepRead() {
       else {
         return (
           <Grid item xs>
-            <Paper className={classes.paper}>
-              <LinearProgress />
-              <div>
-                
-              </div>
-              <div className={classes.topSpacing10}>
-              <strong>
-                  Gallery
-                </strong>
-              </div>
+            <Paper className={classes.paper} variant="outlined">
+              <Grid container spacing={1}>
+                <Grid item>
+                  <div><h1><strong>Gallery</strong></h1></div>
+                </Grid>
+                <Grid item>
+                  <CircularProgress></CircularProgress>
+                </Grid>
+              </Grid>
             </Paper>
           </Grid>
         )
@@ -701,68 +625,67 @@ function StartDeepRead() {
     }
   }
 
-  const displayNavBar = () =>{
-    if(processButtonClicked){
-      if(videoInfoShown){
-        return(
+  const displayNavBar = () => {
+    if (processButtonClicked) {
+      if (videoInfoShown) {
+        return (
           <div >
-          <Grid
-            container
-            spacing={0}
-            direction="column"
-            alignItems="center"
-            justify="center"
-          >
-            <Grid item className={classes.bottom}>
-              <div>
-                {displayAlert()}
-              </div>
-              <div>
-                <BottomNavigation
-                  disabled={disableProcessButton} 
-                  value={bottomNavValue}
-                  onChange={(event, newValue) => {
-                    setBottomNavValue(newValue);
-                  }}
-                  showLabels
-                  className={classes.root}
-                >
-                  <BottomNavigationAction label="Notes" icon={<ReceiptSharpIcon />}  ref={notesClickRef} onClick={showNotes} />
-                  <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ} />
-                  <BottomNavigationAction label="IR" icon={<SearchSharpIcon />} onClick={showIR} />
-                  <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery} />
-                </BottomNavigation>
-              </div>
-  
+            <Grid
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justify="center"
+            >
+              <Grid item className={classes.bottom}>
+                <div>
+                  {displayAlert()}
+                </div>
+                <div>
+                  <BottomNavigation
+                    disabled={disableProcessButton}
+                    value={bottomNavValue}
+                    onChange={(event, newValue) => {
+                      setBottomNavValue(newValue);
+                    }}
+                    showLabels
+                    className={classes.root}
+                  >
+                    <BottomNavigationAction label="Notes" icon={<ReceiptSharpIcon />} ref={notesClickRef} onClick={showNotes} />
+                    <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ} />
+                    <BottomNavigationAction label="Search" icon={<SearchSharpIcon />} onClick={showIR} />
+                    <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery} />
+                  </BottomNavigation>
+                </div>
+
+              </Grid>
+
             </Grid>
-  
-          </Grid>
-        </div>
+          </div>
         )
       }
-      else
-      {
-        return(
-           <div className={classes.bottom1}>
-             <div>
-                {displayAlert()}
-              </div>
+      else {
+        return (
+          <div className={classes.bottom}>
+            <div>
+              {displayAlert()}
             </div>
-          )
+          </div>
+        )
       }
     }
-    else{
-      return(
+    else {
+      return (
         <div className={classes.bottom}>
           {displayAlert()}
         </div>
       )
     }
- 
+
   }
 
-  const displayMainLoading = () =>{
-    if(displayMainLoadingFlag){
+  const displayMainLoading = () => {
+    if (displayMainLoadingFlag) {
       return (
         <LinearProgress></LinearProgress>
       )
@@ -771,31 +694,48 @@ function StartDeepRead() {
 
 
   const setAllFalse = (reProcess = false) => {
-    setGDriveBoxFlag(true);
     setVideoInformationFlag(true);
     if (reProcess === true) {
+      setBottomNavValue(false);
       setVideoInformationFlag(false);
+      setTranscriptFlag(false);
+      setSummaryFlag(false);
+      setSummaryPostCalled(false);
+      setMCQFlag(false);
+      setMcqPostCalled(false);
+      setIRFlag(false);
+      setGalleryFlag(false);
+      setGalleryPostCalled(false);
+      setVideoNameFromAPI(null);
+      setVideoSizeFromAPI(null);
+      setTranscriptFromAPI(null);
+      setSummaryFromAPI(null);
+      setAlertFlag(false);
+      setAlertMSG('');
+      setOpenAlert(false);
+      setTranscriptTimeFromAPI(null);
+      setProcessButtonClicked(false);
+      setMcqDataFromAPI(null);
+      setGalleryDataFromAPI(null);
+      setS2tV2tDoneFlag(false);
+      setFileID(null);
+      setSearchGDrive(null);
+      setDisableProcessButton(false);
       setVideoInfoShown(false);
+      setDisplayMainLoadingFlag(false);
+      tmpMcqs = {};
     }
     setTranscriptFlag(false)
     setSummaryFlag(false);
     setMCQFlag(false);
     setIRFlag(false);
-    setIRSearchFlag(false);
     setGalleryFlag(false);
   }
 
-  const showGDriveBox = () => {
-    setAllFalse();
-    setGDriveBoxFlag(true);
-  }
 
   const showVideoInformation = () => {
-    //if(processButtonClicked === true){
-    console.log("Show video info reached")
     setAllFalse();
     setVideoInformationFlag(true);
-    //}
   }
 
   const showNavBar = () => {
@@ -804,58 +744,52 @@ function StartDeepRead() {
   }
 
   const showNotes = () => {
-      setAllFalse();
-      setTranscriptFlag(true);
-      setSummaryFlag(true);
-      if ((s2t_v2t_done_flag) && (summaryFromAPI === null)) {
-        if (summaryPostCalled === false) {
-          call_POST_Summarize_post(fileID);
-          setSummaryPostCalled(true);
-        }
-        else {
-          poll_call_GET_Summarize_get(fileID);
-        }
+    setAllFalse();
+    setTranscriptFlag(true);
+    setSummaryFlag(true);
+    if ((s2tV2tDoneFlag) && (summaryFromAPI === null)) {
+      if (summaryPostCalled === false) {
+        call_POST_Summarize_post(fileID);
+        setSummaryPostCalled(true);
       }
-    
+      else {
+        poll_call_GET_Summarize_get(fileID);
+      }
+    }
+
   }
 
 
   const showMCQ = () => {
-    
-      setAllFalse();
-      setMCQFlag(true);
-      if ((s2t_v2t_done_flag) && (mcqDataFromAPI === null)) {
-        if (mcqPostCalled === false) {
-          call_POST_mcq_generator_post(fileID);
-          setMcqPostCalled(true);
-        }
-        else {
-          poll_call_GET_Mcq_get(fileID);
-        }
+
+    setAllFalse();
+    setMCQFlag(true);
+    if ((s2tV2tDoneFlag) && (mcqDataFromAPI === null)) {
+      if (mcqPostCalled === false) {
+        call_POST_mcq_generator_post(fileID);
+        setMcqPostCalled(true);
       }
-  
+      else {
+        poll_call_GET_Mcq_get(fileID);
+      }
+    }
+
   }
 
-  const showIR = () => {  
-      setAllFalse();
-      setIRFlag(true);
-      setIRSearchFlag(true);
-      // if(!videoInfoExpanded){
-      //   expandVideoInfo.current.click();
-      // }
-      //showVideoInformation();
-    
+  const showIR = () => {
+    setAllFalse();
+    setIRFlag(true);
   }
 
-  const showGallery = () => {    
-      setAllFalse();
-      setGalleryFlag(true);
-      if ((s2t_v2t_done_flag) && (galleryDataFromAPI === null)) {
-        if (galleryPostCalled === false) {
-          call_POST_Gallery_post(fileID);
-          setGalleryPostCalled(true);
-        }
+  const showGallery = () => {
+    setAllFalse();
+    setGalleryFlag(true);
+    if ((s2tV2tDoneFlag) && (galleryDataFromAPI === null)) {
+      if (galleryPostCalled === false) {
+        call_POST_Gallery_post(fileID);
+        setGalleryPostCalled(true);
       }
+    }
 
   }
 
@@ -867,27 +801,24 @@ function StartDeepRead() {
   return (
     <div>
       <div>
-        <h1><strong>Start deep-read</strong></h1>
-      </div>
-
-      <div className={classes.topSpacing30}>
         <Grid container spacing={3}>
           {displayGDrivebox()}
         </Grid>
       </div>
 
-      <div>
+      <div className={classes.topSpacing30}>
         {displayVideoInformation()}
       </div>
 
+      <div className={classes.topSpacing30}>
       <div className={classes.bottomPadding}>
         <Grid container spacing={3}>
           {displayTranscripts()}
           {displaySummary()}
           {displayMCQS()}
-          {displayIR()}
           {displayGallery()}
         </Grid>
+      </div>
       </div>
 
       {displayNavBar()}
