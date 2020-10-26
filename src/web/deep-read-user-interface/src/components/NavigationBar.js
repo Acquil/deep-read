@@ -12,14 +12,12 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import DraftsSharpIcon from '@material-ui/icons/DraftsSharp';
 import PeopleAltSharpIcon from '@material-ui/icons/PeopleAltSharp';
 import HomeSharpIcon from '@material-ui/icons/HomeSharp';
 import KeyboardArrowRightSharpIcon from '@material-ui/icons/KeyboardArrowRightSharp';
@@ -59,13 +57,11 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     width: drawerWidth,
-    // backgroundColor:"#e64a19"
   },
   drawerHeader: {
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
   },
@@ -88,7 +84,6 @@ const useStyles = makeStyles((theme) => ({
   rightFloatElement: {
     position: "absolute",
     right: "10px",
-
     color:"#e64a19"
   },
   textElementBig: {
@@ -106,10 +101,8 @@ const useStyles = makeStyles((theme) => ({
     color:"black"
   },
   linkWithoutStyle: {
-    color: 'inherit',
+    color: '#FF7A00',
     textDecoration: 'inherit'
-  },
-  whiteBackground:{
   }
 }));
 
