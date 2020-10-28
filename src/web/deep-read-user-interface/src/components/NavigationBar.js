@@ -22,7 +22,12 @@ import PeopleAltSharpIcon from '@material-ui/icons/PeopleAltSharp';
 import HomeSharpIcon from '@material-ui/icons/HomeSharp';
 import KeyboardArrowRightSharpIcon from '@material-ui/icons/KeyboardArrowRightSharp';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-
+import Divider from '@material-ui/core/Divider';
+import Fab from '@material-ui/core/Fab';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import Zoom from '@material-ui/core/Zoom';
+import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import PropTypes from 'prop-types';
 
 const drawerWidth = 240;
 
@@ -89,24 +94,63 @@ const useStyles = makeStyles((theme) => ({
   textElementBig: {
     position: "absolute",
     left: "20px",
-    fontSize: "20px",
+    fontSize: "23px",
     fontWeight: "bold",
   },
   whiteText:{
     color:"white"
   },
   textElementSmall: {
-    fontSize: "15px",
+    fontSize: "17px",
     fontWeight: "bold",
     color:"black"
   },
   linkWithoutStyle: {
-    color: '#FF7A00',
+    color: '#FF6611',
     textDecoration: 'inherit'
   }
 }));
 
-export default function NavigationBar() {
+
+function ScrollTop(props) {
+  const { children, window } = props;
+  const classes = useStyles();
+  // Note that you normally won't need to set the window ref as useScrollTrigger
+  // will default to window.
+  // This is only being set here because the demo is in an iframe.
+  const trigger = useScrollTrigger({
+    target: window ? window() : undefined,
+    disableHysteresis: true,
+    threshold: 100,
+  });
+
+  const handleClick = (event) => {
+    const anchor = (event.target.ownerDocument || document).querySelector('#back-to-top-anchor');
+
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  return (
+    <Zoom in={trigger}>
+      <div onClick={handleClick} role="presentation" className={classes.root}>
+        {children}
+      </div>
+    </Zoom>
+  );
+}
+
+ScrollTop.propTypes = {
+  children: PropTypes.element.isRequired,
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  window: PropTypes.func,
+};
+
+export default function NavigationBar(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -121,16 +165,16 @@ export default function NavigationBar() {
 
   return (
     <>
-      <Router>
+      <Router id="back-to-top-anchor">
         <div className={classes.root}>
           <CssBaseline />
-          <AppBar
+          <AppBar            
             position="fixed"
             className={clsx(classes.appBar, {
               [classes.appBarShift]: open,
             })}
           >
-            <Toolbar >
+            <Toolbar>
               <ClickAwayListener onClickAway={handleDrawerClose}>
                 <IconButton
                   color="primary"
@@ -143,7 +187,7 @@ export default function NavigationBar() {
                 </IconButton>
               </ClickAwayListener>
               <div className={classes.rightFloatElement}>
-                <a href="/" className={classes.linkWithoutStyle}><h1>deep-read</h1></a>
+                <a href="/" className={classes.linkWithoutStyle}><h1><strong>deep-read</strong></h1></a>
               </div>
             </Toolbar>
 
@@ -159,13 +203,13 @@ export default function NavigationBar() {
           >
             <div className={classes.drawerHeader}>
               <div className={classes.textElementBig}>
-                Menu
+                Navigate
                 </div>
               <IconButton onClick={handleDrawerClose}>
                 {theme.direction === 'ltr' ? <ChevronLeftIcon color="primary" /> : <ChevronRightIcon color="primary" />}
               </IconButton>
             </div>
-            {/* <Divider /> */}
+            <Divider />
             <List component="nav" aria-label="main mailbox folders">
               <Link to="/" className={classes.linkWithoutStyle} >
                 <ListItem button>
@@ -213,6 +257,15 @@ export default function NavigationBar() {
             </Switch>
           </main>
         </div>
+        
+        {/* <div>
+          <ScrollTop {...props}>
+            <Fab color="secondary" size="small" aria-label="scroll back to top">
+              <KeyboardArrowUpIcon />
+            </Fab>
+          </ScrollTop>
+        </div> */}
+
       </Router>
     </>
   );

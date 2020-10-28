@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
     borderColor: '#000000',
     margin: `${theme.spacing(1)}px auto`,
     padding: theme.spacing(2),
+  },
+  parentClass:{
+    height:"100"
   }
 }));
 
@@ -34,7 +37,7 @@ function Home() {
   const classes = useStyles();
 
   return (
-    <div>
+    <div className={classes.parentClass}>
       <div className={classes.topSpacing10}>
         <Paper className={classes.paper} variant="outlined">
           <div><h1><span><strong>Home</strong></span></h1></div>
