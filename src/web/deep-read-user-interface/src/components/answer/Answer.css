@@ -2,10 +2,11 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    font-size: 20px;
 }
 .Answers li{
     padding: 10px;
-    border-left: 4px solid #FF7A00;
+    border-left: 4px solid #FF6611;
     background-color: #bbb;
     margin: 0 0 5px;
 }
@@ -21,11 +22,14 @@
 }
 .Answers .incorrect,
 .Answers .incorrect:hover {
-    background-color: #ec0000;
-    border-left: 4px solid #FF3B3B;
+    background-color: #ff975e;
+    border-left: 4px solid #FF6611;
     color: #fff;
 }
 .Answers[disabled] {
     pointer-events: none;
     opacity: 0.7;
+}
+.fontSize20{
+    font-size: 20px;
 }

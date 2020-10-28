@@ -5,6 +5,7 @@
     border: 0;
     border-radius: 3px;
     cursor: pointer;
+    width: 100%;
 }
 .NextStep:hover{
     background-color: green;
@@ -20,7 +21,6 @@
     text-align: center;
     margin: 15px 0;
     font-size: 25px;
-    font-family: Arial,sans-serif;
     font-weight: bold;
     color: #FF7A00;
     text-transform: none;

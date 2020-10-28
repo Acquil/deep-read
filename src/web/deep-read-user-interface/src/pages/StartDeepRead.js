@@ -25,8 +25,9 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import config from '../config.json'
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,12 +49,21 @@ const useStyles = makeStyles((theme) => ({
     margin: `${theme.spacing(1)}px auto`,
     padding: theme.spacing(2),
   },
+  paper1: {
+    position:"fixed",
+    bottom:0,
+    width:"100%",
+    background: '#f5f5f5',
+    borderColor: '#000000',
+    margin: `${theme.spacing(1)}px auto`,
+    padding: theme.spacing(2),
+  },
   accordian: {
     borderColor: '#000000',
     background: '#f5f5f5',
   },
   topSpacing20: {
-    marginTop: '10px'
+    marginTop: '15px'
   },
   topSpacing10: {
     marginTop: '10px'
@@ -73,13 +83,18 @@ const useStyles = makeStyles((theme) => ({
   bottomPadding: {
     paddingBottom: "50px",
   },
-  border: {
-    border: '2px solid black'
-  },
   fontSize20: {
     fontSize: "20px"
+  },
+  rightTop:{
+    position:"relative",
+    float:"right",
+  },
+  parentClass:{
+    height:"100%"
   }
 }));
+
 
 function StartDeepRead() {
 
@@ -114,10 +129,10 @@ function StartDeepRead() {
   const [videoInfoShown, setVideoInfoShown] = React.useState(false);
   const [displayMainLoadingFlag, setDisplayMainLoadingFlag] = React.useState(false);
   const notesClickRef = React.useRef(null);
-  var tmpMcqs = {}
+  var tmpMcqs = {};
 
 
-  const baseURL = "http://127.0.0.1:5000/"
+  const baseURL = config.baseURL;
 
 
   const updateGDriveTextBox = (e) => {
@@ -150,15 +165,14 @@ function StartDeepRead() {
     setDisableProcessButton(true);
     setDisplayMainLoadingFlag(true);
     call_POST_files_gdrive();
-
   }
 
   const call_POST_files_gdrive = () => {
-    console.log("call_POST_files_gdrive Reached")
     if ((gDriveLinkVar !== '')) {
-      console.log("call_POST_files_gdrive Called")
+      console.log(baseURL + "files/gdrive/"+gDriveLinkVar+" POST Called");
       axios.post(baseURL + 'files/g-drive/' + gDriveLinkVar, {
       }).then((responseData) => {
+        console.log(baseURL + "files/gdrive/"+gDriveLinkVar+" POST Success");
         console.log(responseData)
         if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
           setDisplayMainLoadingFlag(false);
@@ -173,61 +187,72 @@ function StartDeepRead() {
           call_POST_v2t_post(responseData.data.id);
         }
       }).catch(error => {
+        console.log(baseURL + "files/gdrive/"+gDriveLinkVar+" POST Error");
         console.log(error)
-        setAlertMSG("Error when posting gDrive data check console logs!")
+        setAlertMSG(baseURL + "files/gdrive/"+gDriveLinkVar+" POST Error")
         setAlert();
         setDisplayMainLoadingFlag(false);
+        setDisableProcessButton(false);
       });
     }
   }
 
   const call_POST_speech_post = (id) => {
-    console.log("call_POST_speech_post Reached")
     if ((id !== null) && (model !== '')) {
-      console.log("call_POST_speech_post called")
+      console.log(baseURL + 'speech/post/' + id + '&' + model + " POST Called");
       axios.post(baseURL + 'speech/post/' + id + '&' + model, {
       }).then((responseData) => {
+        console.log(baseURL + 'speech/post/' + id + '&' + model + " POST Success");
         console.log(responseData)
         poll_call_GET_speech_get(responseData.data.id);
       }).catch(error => {
+        console.log(baseURL + 'speech/post/' + id + '&' + model + " POST Error");
         console.log(error)
-        setAlertMSG("Error when posting Speech2text data check console logs!")
+        setAlertMSG(baseURL + 'speech/post/' + id + '&' + model + " POST Error")
         setAlert();
+        setDisplayMainLoadingFlag(false);
+        setDisableProcessButton(false);
       });
 
     }
   }
 
   const poll_call_GET_speech_get = (id) => {
-    console.log("poll_call_GET_speech_get reached")
     const api_call_GET_speech_get = new Request(baseURL + 'speech/get/' + id);
+    console.log(baseURL + 'speech/get/' + id + ' GET poll Called')
     api_call_GET_speech_get.poll(7000).get((response) => {
-      console.log("poll_call_GET_speech_get started")
-      console.log(response);
       if (response.data.status === "Success") {
+        console.log('speech/get/' + id + ' GET Success')
+        console.log(response);
         setTranscriptFromAPI(response.data.transcript.transcript);
         setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
         poll_call_GET_v2t_get(id);
         return false;
       }
     }).catch(error => {
-      setAlertMSG("Error when polling Speech2text data check console logs!")
-      setAlert();
+      console.log(baseURL + 'speech/get/' + id + ' GET Error')
       console.log(error);
+      setAlertMSG(baseURL + 'speech/get/' + id + ' GET Error')
+      setAlert();
+      setDisplayMainLoadingFlag(false);
+      setDisableProcessButton(false);
     });
   }
 
   const call_POST_v2t_post = (id) => {
-    console.log("call_POST_v2t_post Reached")
     if (id !== null) {
-      console.log("call_POST_v2t_post called")
+      console.log(baseURL + 'VideotoTextConverter/post/' + id + ' POST Called')
       axios.post(baseURL + 'VideotoTextConverter/post/' + id, {
       }).then((responseData) => {
+        console.log(baseURL + 'VideotoTextConverter/post/' + id + ' POST Success')
         console.log(responseData)
       }).catch(error => {
+        console.log(baseURL + 'VideotoTextConverter/post/' + id + ' POST Error')
         console.log(error)
-        setAlertMSG("Error when posting video2text data check console logs!")
+        setAlertMSG(baseURL + 'VideotoTextConverter/post/' + id + ' POST Error')
         setAlert();
+        setDisplayMainLoadingFlag(false);
+        setDisableProcessButton(false);
       });
 
     }
@@ -235,12 +260,12 @@ function StartDeepRead() {
   }
 
   const poll_call_GET_v2t_get = (id) => {
-    console.log("poll_call_GET_v2t_get reached")
     const api_call_GET_v2t_get = new Request(baseURL + 'VideotoTextConverter/get/' + id);
+    console.log(baseURL + 'VideotoTextConverter/get/' + id + ' GET poll Called')
     api_call_GET_v2t_get.poll(7000).get((response) => {
-      console.log("poll_call_GET_v2t_get started")
-      console.log(response)
       if (response.data.status === "Success") {
+        console.log(baseURL + 'VideotoTextConverter/get/' + id + ' GET poll Success')
+        console.log(response)
         setS2tV2tDoneFlag(true);
         setDisableProcessButton(false);
         call_POST_Summarize_post(id);
@@ -252,71 +277,77 @@ function StartDeepRead() {
         return false;
       }
     }).catch(error => {
+      console.log(baseURL + 'VideotoTextConverter/get/' + id + ' GET poll Error')
       console.log(error);
-      setAlertMSG("Error when polling video2text data check console logs!")
+      setAlertMSG(baseURL + 'VideotoTextConverter/get/' + id + ' GET poll Error')
       setAlert();
+      setDisplayMainLoadingFlag(false);
+      setDisableProcessButton(false);
     });
 
   }
 
   const call_POST_Summarize_post = (id) => {
-    console.log("call_POST_Summarize_post Reached")
     if (id !== null) {
-      console.log("call_POST_Summarize_post called")
+      console.log(baseURL + 'summarizer/post/' + id + ' POST Called')
       axios.post(baseURL + 'summarizer/post/' + id, {
       }).then((responseData) => {
+        console.log(baseURL + 'summarizer/post/' + id + ' POST Success')
         console.log(responseData)
         poll_call_GET_Summarize_get(id);
       }).catch(error => {
         setSummaryPostCalled(false);
+        console.log(baseURL + 'summarizer/post/' + id + ' POST Error')
         console.log(error)
-        setAlertMSG("Error when posting Summary data check console logs!")
+        setAlertMSG(baseURL + 'summarizer/post/' + id + ' POST Error')
         setAlert();
       });
     }
   }
 
   const poll_call_GET_Summarize_get = (id) => {
-    console.log("poll_call_GET_Summarize_get reached")
     const api_call_GET_summarizer_get = new Request(baseURL + 'summarizer/get/' + id);
+    console.log(baseURL + 'summarizer/get/' + id + ' GET poll Called')
     api_call_GET_summarizer_get.poll(7000).get((response) => {
-      console.log("poll_call_GET_Summarize_get started")
-      console.log(response);
       if (response.data.status === "Success") {
+        console.log(baseURL + 'summarizer/get/' + id + ' GET poll Success')
+        console.log(response)
         setSummaryFromAPI(response.data.summary)
         return false;
       }
     }).catch(error => {
+      console.log(baseURL + 'summarizer/get/' + id + ' GET poll Error')
       console.log(error);
-      setAlertMSG("Error when polling Summary data check console logs!")
+      setAlertMSG(baseURL + 'summarizer/get/' + id + ' GET poll Error')
       setAlert();
     });
   }
 
   const call_POST_mcq_generator_post = (id) => {
-    console.log("call_POST_mcq_generator_post Reached")
     if ((id !== null)) {
-      console.log("call_POST_mcq_generator_post called")
+      console.log(baseURL + 'mcq_generator/post/' + id + ' POST Called')
       axios.post(baseURL + 'mcq_generator/post/' + id, {
       }).then((responseData) => {
+        console.log(baseURL + 'mcq_generator/post/' + id + ' POST Success')
         console.log(responseData);
         poll_call_GET_Mcq_get(id)
       }).catch(error => {
         setMcqPostCalled(false);
+        console.log(baseURL + 'mcq_generator/post/' + id + ' POST Error')
         console.log(error)
-        setAlertMSG("Error when posting MCQ data check console logs!")
+        setAlertMSG(baseURL + 'mcq_generator/post/' + id + ' POST Error')
         setAlert();
       });
     }
   }
 
   const poll_call_GET_Mcq_get = (id) => {
-    console.log("poll_call_GET_Mcq_get reached")
     const api_call_GET_mcq_get = new Request(baseURL + 'mcq_generator/get/' + id);
+    console.log(baseURL + 'mcq_generator/get/' + id + ' GET poll Called')
     api_call_GET_mcq_get.poll(7000).get((response) => {
-      console.log("poll_call_GET_Mcq_get started")
-      console.log(response);
       if (response.data.status === "Success") {
+        console.log(baseURL + 'mcq_generator/get/' + id + ' GET poll Success')
+        console.log(response)
         tmpMcqs = response.data.mcqs
         tmpMcqs["correctAnswer"] = 0;
         tmpMcqs["clickedAnswer"] = 0;
@@ -326,24 +357,26 @@ function StartDeepRead() {
         return false;
       }
     }).catch(error => {
+      console.log(baseURL + 'mcq_generator/get/' + id + ' GET poll Error')
       console.log(error);
-      setAlertMSG("Error when polling MCQ data check console logs!")
+      setAlertMSG(baseURL + 'mcq_generator/get/' + id + ' GET poll Error')
       setAlert();
     });
   }
 
   const call_POST_Gallery_post = (id) => {
-    console.log("call_POST_Gallery_post Reached")
     if ((id !== null)) {
-      console.log("call_POST_Gallery_post called")
+      console.log(baseURL + 'gallery/post/' + id + ' POST Called')
       axios.post(baseURL + 'gallery/post/' + id, {
       }).then((responseData) => {
+        console.log(baseURL + 'gallery/post/' + id + ' POST Success')
         console.log(responseData);
         setGalleryDataFromAPI(responseData.data)
       }).catch(error => {
         setGalleryPostCalled(false);
+        console.log(baseURL + 'gallery/post/' + id + ' POST Error')
         console.log(error)
-        setAlertMSG("Error when posting Gallery data check console logs!")
+        setAlertMSG(baseURL + 'gallery/post/' + id + ' POST Error')
         setAlert();
       });
 
@@ -384,12 +417,14 @@ function StartDeepRead() {
     return (
       <Grid item xs>
         <Paper className={classes.paper} variant="outlined">
-          <div>
-            {displayMainLoading()}
-          </div>
-          <div>
-            <h1><strong>Start deep-read</strong></h1>
-          </div>
+          <Grid container spacing={1}>
+            <Grid item>
+              <div><h1><strong>Start deep-read</strong></h1></div>
+            </Grid>
+            <Grid item xs>
+              {displayMainLoading()}
+            </Grid>
+          </Grid>
           <Grid container spacing={2} className={classes.topSpacing20}>
             <Grid item xs={8}>
               <div>
@@ -412,7 +447,6 @@ function StartDeepRead() {
                     <MenuItem value={"model-generic"}>American English</MenuItem>
                     <MenuItem value={"model-indian"}>Indian English</MenuItem>
                   </Select>
-
                 </FormControl>
               </div>
             </Grid>
@@ -426,37 +460,92 @@ function StartDeepRead() {
       </Grid>)
   }
 
+
   const displayVideoInformation = () => {
     if (!videoInformationFlag) {
       return null;
     }
     else {
+      if(!irFlag){
       return (
-        <Accordion className={classes.accordian} variant="outlined" defaultExpanded>
+        <Accordion className={classes.accordian} variant="outlined">
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-          <div><h1><strong>Video</strong></h1></div>
+           <Grid container spacing={1}>
+            <Grid item>
+              <div><h1><strong>Video Information</strong></h1></div>
+            </Grid>
+            <Grid item>
+            </Grid>
+          </Grid>
           </AccordionSummary>
           <AccordionDetails className={classes.fullWidthElement}>
-            <div className={classes.fullWidthElement}>
-              <div className={classes.fontSize20}><b>Video Name:</b> {videoNameFromAPI}</div>
-              <div>
-              <div className={classes.fontSize20}><b>Video Size:</b> {videoSizeFromAPI}</div>
-              </div>
-              <div className={classes.topSpacing10}>
-              <div className={classes.fontSize20}>{displaySearchBoxForIR()}</div>
-              </div>
-              <div item className={classes.topSpacing10}>
-                <iframe title="Video" src={searchGDrive} width="1280" height="720"></iframe>
-              </div>
-            </div>
-
+            <Grid container spacing={2}>
+              <Grid item xs="8">
+                <div>
+                  <iframe title="Video" height="600px" width="100%" src={searchGDrive}></iframe>
+                </div>
+              </Grid>
+              <Grid item  xs="4">
+                <div> 
+                  <div className={classes.fontSize20}><b>Video Name:</b> {videoNameFromAPI}</div>
+                  <div>
+                  <div className={classes.topSpacing20}></div>
+                  <div className={classes.fontSize20}><b>Video Size:</b> {videoSizeFromAPI}</div>
+                  </div>
+                </div>               
+              </Grid>
+            </Grid>
           </AccordionDetails>
         </Accordion>
       )
+      }
+      else{
+        return(
+          <Paper className={classes.paper} variant="outlined">
+            <Grid container spacing={1}>
+              <Grid item>
+                <div><h1><strong>Search</strong></h1></div>
+              </Grid>
+              <Grid item>
+                {displayVideoInfoLoading()}
+              </Grid>
+            </Grid>
+            <div className={classes.topSpacing20}>
+            <Grid container spacing={2} className={classes.fullWidthElement}>
+              <Grid item xs="8">
+                <div>
+                  {displaySearchBoxForIR()}
+                  <iframe title="Video" height="600px" width="100%" src={searchGDrive}></iframe>
+                </div>
+              </Grid>
+              <Grid item  xs="4">
+                <div> 
+                  <div className={classes.fontSize20}><b>Video Name:</b> {videoNameFromAPI}</div>
+                  <div>
+                  <div className={classes.topSpacing20}></div>
+                  <div className={classes.fontSize20}><b>Video Size:</b> {videoSizeFromAPI}</div>
+                  </div>
+                </div>               
+              </Grid>
+            </Grid>
+            </div>
+          </Paper>
+        )
+      }
+    }
+  }
+
+  const displayVideoInfoLoading = () => {
+    if(irFlag){
+      if(transcriptTimeFromAPI === null){
+        return(
+          <CircularProgress></CircularProgress>
+        )
+      }
     }
   }
 
@@ -464,18 +553,16 @@ function StartDeepRead() {
   const displaySearchBoxForIR = () => {
     if (irFlag) {
       if (transcriptTimeFromAPI !== null) {
-        return (<Autocomplete
+        return (<div>
+          <Autocomplete
           id="combo-box-demo"
           options={transcriptTimeFromAPI}
           getOptionLabel={(option) => option.word}
           onChange={(event, value) => setSearchGDriveValue(value)}
           renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
-        />)
-      }
-      else {
-        return (
-          <LinearProgress />
-        )
+        />
+        <div className={classes.topSpacing20}></div>
+        </div>)
       }
     }
     else {
@@ -504,11 +591,17 @@ function StartDeepRead() {
       else {
         return (
           <Grid item xs>
-            <Paper className={classes.paper} variant="outlined">
-              <LinearProgress />
-              <div><h1><strong>Transcript</strong></h1></div>
-            </Paper>
-          </Grid>
+          <Paper className={classes.paper} variant="outlined">
+            <Grid container spacing={1}>
+              <Grid item>
+                <div><h1><strong>Transcript</strong></h1></div>
+              </Grid>
+              <Grid item>
+                <CircularProgress></CircularProgress>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
         )
       }
     }
@@ -533,8 +626,14 @@ function StartDeepRead() {
         return (
           <Grid item xs>
             <Paper className={classes.paper} variant="outlined">
-              <LinearProgress />
-              <div><h1><strong>Summary</strong></h1></div>
+              <Grid container spacing={1}>
+                <Grid item>
+                  <div><h1><strong>Summary</strong></h1></div>
+                </Grid>
+                <Grid item>
+                  <CircularProgress></CircularProgress>
+                </Grid>
+              </Grid>
             </Paper>
           </Grid>
         )
@@ -551,7 +650,7 @@ function StartDeepRead() {
       if (mcqDataFromAPI !== null) {
         return (<Grid item xs>
           <Paper className={classes.paper} variant="outlined">
-          <div><h1><strong>MCQs</strong></h1></div>
+          <div><h1><strong>Quiz</strong></h1></div>
             <div className={classes.topSpacing20}>
               <Quiz mcqData={mcqDataFromAPI} />
             </div>
@@ -561,11 +660,17 @@ function StartDeepRead() {
       else {
         return (
           <Grid item xs>
-            <Paper className={classes.paper} variant="outlined">
-              <LinearProgress />
-              <div><h1><strong>MCQs</strong></h1></div>
-            </Paper>
-          </Grid>
+          <Paper className={classes.paper} variant="outlined">
+            <Grid container spacing={1}>
+              <Grid item>
+                <div><h1><strong>MCQs</strong></h1></div>
+              </Grid>
+              <Grid item>
+                <CircularProgress></CircularProgress>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
         )
 
       }
@@ -586,12 +691,12 @@ function StartDeepRead() {
             <div className={classes.fullWidthElement}>
               <SimpleReactLightbox>
                 <SRLWrapper>
-                  <Grid container spacing={3}>
+                  <Grid container spacing={2}>
                     {
                       galleryDataFromAPI.map(
                         each_url => (
                           <Grid item>
-                            <img src={each_url} width="640" height="280" alt="Video screenshots"></img>
+                            <img src={each_url} width="300" height="250" alt="Video screenshots"></img>
                           </Grid>
                         ))
                     }
@@ -676,9 +781,13 @@ function StartDeepRead() {
     }
     else {
       return (
-        <div className={classes.bottom}>
-          {displayAlert()}
-        </div>
+        <Paper className={classes.paper1}>
+        <Grid container>
+          <Grid item xs>
+            {displayAlert()}
+          </Grid>
+        </Grid>
+        </Paper>
       )
     }
 
@@ -687,7 +796,7 @@ function StartDeepRead() {
   const displayMainLoading = () => {
     if (displayMainLoadingFlag) {
       return (
-        <LinearProgress></LinearProgress>
+        <CircularProgress></CircularProgress>
       )
     }
   }
@@ -799,7 +908,7 @@ function StartDeepRead() {
   }
 
   return (
-    <div>
+    <div className={classes.parentClass}>
       <div>
         <Grid container spacing={3}>
           {displayGDrivebox()}
