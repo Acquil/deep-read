@@ -8,7 +8,7 @@ from flask_restx import Resource, Namespace, fields  # https://flask-restx.readt
 
 from core import sentence_segmenter
 from core.speech import Recognizer
-from db import DRVideoNotFound, DRVideo
+from db import DRVideoNotFound
 from db.factory import create_repository
 from settings import REPOSITORY_NAME, REPOSITORY_SETTINGS, TRANSCRIPTION_WORKERS
 from settings import USE_SENTENCE_SEGMENTER
@@ -43,8 +43,9 @@ class SpeechTranscript(Resource):
         duration = len(f) // f.samplerate
         # Determine minutes per split //TODO
         minutes_per_split = ceil(duration / (TRANSCRIPTION_WORKERS * 60))
-        doc = DRVideo(id=id, transcript="", duration=duration, status='In Process')
-        repository.upload_one(doc)
+
+        # Update duration
+        repository.update(dr_key=id, field='duration', data=duration)
 
         Thread(target=self.transcribe_task, args=(file, minutes_per_split, model, id)).start()
         return {
