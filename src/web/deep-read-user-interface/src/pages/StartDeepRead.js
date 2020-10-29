@@ -1,8 +1,6 @@
 import { makeStyles, Paper, Grid, Button, TextField } from '@material-ui/core';
 import React from 'react';
 import ThreeSixtyIcon from '@material-ui/icons/ThreeSixty';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import ReceiptSharpIcon from '@material-ui/icons/ReceiptSharp';
 import QuestionAnswerSharpIcon from '@material-ui/icons/QuestionAnswerSharp';
 import SearchSharpIcon from '@material-ui/icons/SearchSharp';
@@ -13,10 +11,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import Request from 'axios-request-handler';
-import Alert from '@material-ui/lab/Alert';
-import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
-import Collapse from '@material-ui/core/Collapse';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox";
@@ -27,12 +21,27 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import config from '../config.json'
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import Skeleton from '@material-ui/lab/Skeleton';
+import Backdrop from '@material-ui/core/Backdrop';
+import SpeedDial from '@material-ui/lab/SpeedDial';
+import KeyboardArrowUpSharpIcon from '@material-ui/icons/KeyboardArrowUpSharp';
+import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
+import Tooltip from '@material-ui/core/Tooltip';
+import DehazeSharpIcon from '@material-ui/icons/DehazeSharp';
 
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexGrow: 1,
+    background:"black"
+
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
   },
   margin: {
     margin: theme.spacing(1),
@@ -49,15 +58,6 @@ const useStyles = makeStyles((theme) => ({
     margin: `${theme.spacing(1)}px auto`,
     padding: theme.spacing(2),
   },
-  paper1: {
-    position:"fixed",
-    bottom:0,
-    width:"100%",
-    background: '#f5f5f5',
-    borderColor: '#000000',
-    margin: `${theme.spacing(1)}px auto`,
-    padding: theme.spacing(2),
-  },
   accordian: {
     borderColor: '#000000',
     background: '#f5f5f5',
@@ -68,17 +68,14 @@ const useStyles = makeStyles((theme) => ({
   topSpacing10: {
     marginTop: '10px'
   },
+  topSpacing5: {
+    marginTop: '5px'
+  },
   topSpacing30: {
     marginTop: '30px',
   },
   fullWidthElement: {
     width: '100%'
-  },
-  bottom: {
-    position: "fixed",
-    bottom: "0",
-    left: "0",
-    width: "100%",
   },
   bottomPadding: {
     paddingBottom: "50px",
@@ -91,8 +88,23 @@ const useStyles = makeStyles((theme) => ({
     float:"right",
   },
   parentClass:{
-    height:"100%"
+    height:"100%",
+  },
+  speedDial: {
+    position: "fixed",
+    bottom: "0",
+    right: "10px",
+    margin: `${theme.spacing(1)}px auto`,
+    padding: theme.spacing(2),
+  },
+  scrollIcon:{
+    position: "fixed",
+    bottom: "0",
+    left: "0",
+    margin: `${theme.spacing(1)}px auto`,
+    padding: theme.spacing(2),
   }
+
 }));
 
 
@@ -101,7 +113,6 @@ function StartDeepRead() {
   const classes = useStyles();
   const [gDriveLinkVar, setGDriveLinkVar] = React.useState('');
   const [model, setModel] = React.useState('');
-  const [bottomNavValue, setBottomNavValue] = React.useState(false);
   const [videoInformationFlag, setVideoInformationFlag] = React.useState(false);
   const [transcriptFlag, setTranscriptFlag] = React.useState(false);
   const [summaryFlag, setSummaryFlag] = React.useState(false);
@@ -115,25 +126,32 @@ function StartDeepRead() {
   const [videoSizeFromAPI, setVideoSizeFromAPI] = React.useState(null);
   const [transcriptFromAPI, setTranscriptFromAPI] = React.useState(null);
   const [summaryFromAPI, setSummaryFromAPI] = React.useState(null);
-  const [alertFlag, setAlertFlag] = React.useState(false);
   const [alertMSG, setAlertMSG] = React.useState('');
-  const [openAlert, setOpenAlert] = React.useState(true);
   const [transcriptTimeFromAPI, setTranscriptTimeFromAPI] = React.useState(null);
-  const [processButtonClicked, setProcessButtonClicked] = React.useState(false);
   const [mcqDataFromAPI, setMcqDataFromAPI] = React.useState(null);
   const [galleryDataFromAPI, setGalleryDataFromAPI] = React.useState(null);
   const [s2tV2tDoneFlag, setS2tV2tDoneFlag] = React.useState(false);
   const [fileID, setFileID] = React.useState(null);
   const [searchGDrive, setSearchGDrive] = React.useState(null);
   const [disableProcessButton, setDisableProcessButton] = React.useState(false);
-  const [videoInfoShown, setVideoInfoShown] = React.useState(false);
   const [displayMainLoadingFlag, setDisplayMainLoadingFlag] = React.useState(false);
-  const notesClickRef = React.useRef(null);
   var tmpMcqs = {};
-
+  const [errorSnackBarOpen, setErrorSnackBarOpen] = React.useState(false);
+  const [searchLoadingFlag, setSearchLoadingFlag] = React.useState(false);
+  const [transcriptLoadingFlag, setTranscriptLoadingFlag] = React.useState(false);
+  const [summaryLoadingFlag, setSummaryLoadingFlag] = React.useState(false);
+  const [mcqLoadingFlag, setMcqLoadingFlag] = React.useState(false);
+  const [galleryLoadingFlag, setGalleryLoadingFlag] = React.useState(false);
+  const [successSnackBarOpen, setSuccessSnackBarOpen] = React.useState(false);
+  const [openSpeedDial, setOpenSpeedDial] = React.useState(false);
+  const [hiddenSpeedDial, setHiddenSpeedDial] = React.useState(true);
+  const [successAlertMSG, setSuccessAlertMSG] = React.useState('');
 
   const baseURL = config.baseURL;
 
+  const scrollToTop = () => {
+    document.documentElement.scrollTop = 0;
+  }
 
   const updateGDriveTextBox = (e) => {
     setGDriveLinkVar(e.target.value);
@@ -146,25 +164,27 @@ function StartDeepRead() {
   const sendGDriveLinkAPI = () => {
     setAllFalse(true)
     if (gDriveLinkVar === '') {
-      setAlertMSG("Please enter Google Drive Link!");
-      setAlert();
+      displayErrorSnackBar("Please enter Google Drive Link!");
       return;
     }
     var urlValid = gDriveLinkVar.match(/(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi);
     if (urlValid == null) {
-      setAlertMSG("Please enter a VALID Google Drive Link!");
-      setAlert();
+      displayErrorSnackBar("Please enter a VALID Google Drive Link!");
       return;
     }
     if (model === '') {
-      setAlertMSG("Please select a language!");
-      setAlert();
+      displayErrorSnackBar("Please select a language!");
       return;
     }
-    setProcessButtonClicked(true);
     setDisableProcessButton(true);
     setDisplayMainLoadingFlag(true);
+    setSearchLoadingFlag(true);
+    setTranscriptLoadingFlag(true);
+    setSummaryLoadingFlag(true);
+    setMcqLoadingFlag(true);
+    setGalleryLoadingFlag(true);
     call_POST_files_gdrive();
+
   }
 
   const call_POST_files_gdrive = () => {
@@ -175,13 +195,14 @@ function StartDeepRead() {
         console.log(baseURL + "files/gdrive/"+gDriveLinkVar+" POST Success");
         console.log(responseData)
         if ((responseData.data.filename !== null) && (responseData.data.id !== null)) {
+          displaySuccessSnackBar("Process Started");
+          setHiddenSpeedDial(false);
           setDisplayMainLoadingFlag(false);
           setSearchGDrive((gDriveLinkVar).replace("/view?usp=sharing", "/preview"));
           setVideoNameFromAPI(responseData.data.filename);
           setVideoSizeFromAPI(responseData.data.size);
           showVideoInformation();
-          showNavBar();
-          notesClickRef.current.click();
+          showNotes();
           setFileID(responseData.data.id);
           call_POST_speech_post(responseData.data.id);
           call_POST_v2t_post(responseData.data.id);
@@ -189,10 +210,14 @@ function StartDeepRead() {
       }).catch(error => {
         console.log(baseURL + "files/gdrive/"+gDriveLinkVar+" POST Error");
         console.log(error)
-        setAlertMSG(baseURL + "files/gdrive/"+gDriveLinkVar+" POST Error")
-        setAlert();
+        displayErrorSnackBar(baseURL + "files/gdrive/"+gDriveLinkVar+" POST Error")
         setDisplayMainLoadingFlag(false);
         setDisableProcessButton(false);
+        setSearchLoadingFlag(false);
+        setTranscriptLoadingFlag(false);
+        setSummaryLoadingFlag(false);
+        setMcqLoadingFlag(false);
+        setGalleryLoadingFlag(false);
       });
     }
   }
@@ -208,10 +233,13 @@ function StartDeepRead() {
       }).catch(error => {
         console.log(baseURL + 'speech/post/' + id + '&' + model + " POST Error");
         console.log(error)
-        setAlertMSG(baseURL + 'speech/post/' + id + '&' + model + " POST Error")
-        setAlert();
-        setDisplayMainLoadingFlag(false);
+        displayErrorSnackBar(baseURL + 'speech/post/' + id + '&' + model + " POST Error")
         setDisableProcessButton(false);
+        setSearchLoadingFlag(false);
+        setTranscriptLoadingFlag(false);
+        setSummaryLoadingFlag(false);
+        setMcqLoadingFlag(false);
+        setGalleryLoadingFlag(false);
       });
 
     }
@@ -222,20 +250,26 @@ function StartDeepRead() {
     console.log(baseURL + 'speech/get/' + id + ' GET poll Called')
     api_call_GET_speech_get.poll(7000).get((response) => {
       if (response.data.status === "Success") {
+        displaySuccessSnackBar("Transcript recieved!")
         console.log('speech/get/' + id + ' GET Success')
         console.log(response);
         setTranscriptFromAPI(response.data.transcript.transcript);
         setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
+        setSearchLoadingFlag(false);
+        setTranscriptLoadingFlag(false);
         poll_call_GET_v2t_get(id);
         return false;
       }
     }).catch(error => {
       console.log(baseURL + 'speech/get/' + id + ' GET Error')
       console.log(error);
-      setAlertMSG(baseURL + 'speech/get/' + id + ' GET Error')
-      setAlert();
-      setDisplayMainLoadingFlag(false);
+      displayErrorSnackBar(baseURL + 'speech/get/' + id + ' GET Error')
       setDisableProcessButton(false);
+      setSearchLoadingFlag(false);
+      setTranscriptLoadingFlag(false);
+      setSummaryLoadingFlag(false);
+      setMcqLoadingFlag(false);
+      setGalleryLoadingFlag(false);
     });
   }
 
@@ -249,10 +283,11 @@ function StartDeepRead() {
       }).catch(error => {
         console.log(baseURL + 'VideotoTextConverter/post/' + id + ' POST Error')
         console.log(error)
-        setAlertMSG(baseURL + 'VideotoTextConverter/post/' + id + ' POST Error')
-        setAlert();
-        setDisplayMainLoadingFlag(false);
+        displayErrorSnackBar(baseURL + 'VideotoTextConverter/post/' + id + ' POST Error')
         setDisableProcessButton(false);
+        setSummaryLoadingFlag(false);
+        setMcqLoadingFlag(false);
+        setGalleryLoadingFlag(false);
       });
 
     }
@@ -279,10 +314,11 @@ function StartDeepRead() {
     }).catch(error => {
       console.log(baseURL + 'VideotoTextConverter/get/' + id + ' GET poll Error')
       console.log(error);
-      setAlertMSG(baseURL + 'VideotoTextConverter/get/' + id + ' GET poll Error')
-      setAlert();
-      setDisplayMainLoadingFlag(false);
+      displayErrorSnackBar(baseURL + 'VideotoTextConverter/get/' + id + ' GET poll Error')
       setDisableProcessButton(false);
+      setSummaryLoadingFlag(false);
+      setMcqLoadingFlag(false);
+      setGalleryLoadingFlag(false);
     });
 
   }
@@ -299,8 +335,8 @@ function StartDeepRead() {
         setSummaryPostCalled(false);
         console.log(baseURL + 'summarizer/post/' + id + ' POST Error')
         console.log(error)
-        setAlertMSG(baseURL + 'summarizer/post/' + id + ' POST Error')
-        setAlert();
+        displayErrorSnackBar(baseURL + 'summarizer/post/' + id + ' POST Error')
+        setSummaryLoadingFlag(false);
       });
     }
   }
@@ -310,16 +346,18 @@ function StartDeepRead() {
     console.log(baseURL + 'summarizer/get/' + id + ' GET poll Called')
     api_call_GET_summarizer_get.poll(7000).get((response) => {
       if (response.data.status === "Success") {
+        displaySuccessSnackBar("Summary recieved!")
         console.log(baseURL + 'summarizer/get/' + id + ' GET poll Success')
         console.log(response)
         setSummaryFromAPI(response.data.summary)
+        setSummaryLoadingFlag(false);
         return false;
       }
     }).catch(error => {
       console.log(baseURL + 'summarizer/get/' + id + ' GET poll Error')
       console.log(error);
-      setAlertMSG(baseURL + 'summarizer/get/' + id + ' GET poll Error')
-      setAlert();
+      displayErrorSnackBar(baseURL + 'summarizer/get/' + id + ' GET poll Error')
+      setSummaryLoadingFlag(false);
     });
   }
 
@@ -335,8 +373,8 @@ function StartDeepRead() {
         setMcqPostCalled(false);
         console.log(baseURL + 'mcq_generator/post/' + id + ' POST Error')
         console.log(error)
-        setAlertMSG(baseURL + 'mcq_generator/post/' + id + ' POST Error')
-        setAlert();
+        displayErrorSnackBar(baseURL + 'mcq_generator/post/' + id + ' POST Error')
+        setMcqLoadingFlag(false);
       });
     }
   }
@@ -346,6 +384,7 @@ function StartDeepRead() {
     console.log(baseURL + 'mcq_generator/get/' + id + ' GET poll Called')
     api_call_GET_mcq_get.poll(7000).get((response) => {
       if (response.data.status === "Success") {
+        displaySuccessSnackBar("MCQs recieved!")
         console.log(baseURL + 'mcq_generator/get/' + id + ' GET poll Success')
         console.log(response)
         tmpMcqs = response.data.mcqs
@@ -354,13 +393,14 @@ function StartDeepRead() {
         tmpMcqs["step"] = 1;
         tmpMcqs["score"] = 0;
         setMcqDataFromAPI(tmpMcqs)
+        setMcqLoadingFlag(false);
         return false;
       }
     }).catch(error => {
       console.log(baseURL + 'mcq_generator/get/' + id + ' GET poll Error')
       console.log(error);
-      setAlertMSG(baseURL + 'mcq_generator/get/' + id + ' GET poll Error')
-      setAlert();
+      displayErrorSnackBar(baseURL + 'mcq_generator/get/' + id + ' GET poll Error')
+      setMcqLoadingFlag(false);
     });
   }
 
@@ -369,61 +409,58 @@ function StartDeepRead() {
       console.log(baseURL + 'gallery/post/' + id + ' POST Called')
       axios.post(baseURL + 'gallery/post/' + id, {
       }).then((responseData) => {
+        displaySuccessSnackBar("Screenshots recieved!")
         console.log(baseURL + 'gallery/post/' + id + ' POST Success')
         console.log(responseData);
         setGalleryDataFromAPI(responseData.data)
+        setGalleryLoadingFlag(false);
       }).catch(error => {
         setGalleryPostCalled(false);
         console.log(baseURL + 'gallery/post/' + id + ' POST Error')
         console.log(error)
-        setAlertMSG(baseURL + 'gallery/post/' + id + ' POST Error')
-        setAlert();
+        displayErrorSnackBar(baseURL + 'gallery/post/' + id + ' POST Error')
+        setGalleryLoadingFlag(false);
       });
 
     }
   }
 
-  const displayAlert = () => {
-    if (!alertFlag) {
-      return null
-    }
-    else {
-      return (
-        <Collapse in={openAlert}>
-          <Alert
-            severity="error"
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setOpenAlert(false);
-                  setAlertFlag(false);
-                }}
-              >
-                <CloseIcon fontSize="inherit" />
-              </IconButton>
-            }
-          >
-            {alertMSG}
-          </Alert>
-        </Collapse>
-      )
-    }
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
   }
+
+  const displayErrorSnackBar = (msg) => {
+    setAlertMSG(msg);
+    setErrorSnackBarOpen(true);
+  }
+
+  const displaySuccessSnackBar = (msg)=> {
+    setSuccessAlertMSG(msg);
+    setSuccessSnackBarOpen(true);
+  }
+
+  const closeErrorSnackBar= (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setErrorSnackBarOpen(false);
+  };
+
+  const closeSuccessSnackBar= (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSuccessSnackBarOpen(false);
+  };  
 
   const displayGDrivebox = () => {
     return (
       <Grid item xs>
-        <Paper className={classes.paper} variant="outlined">
-          <Grid container spacing={1}>
+          <Paper className={classes.paper} variant="outlined">
+          <Grid container spacing={1}> 
             <Grid item>
-              <div><h1><strong>Start deep-read</strong></h1></div>
-            </Grid>
-            <Grid item xs>
-              {displayMainLoading()}
-            </Grid>
+                <div><h1><strong>Start deep-read</strong></h1></div>
+              </Grid>
           </Grid>
           <Grid container spacing={2} className={classes.topSpacing20}>
             <Grid item xs={8}>
@@ -451,13 +488,34 @@ function StartDeepRead() {
               </div>
             </Grid>
           </Grid>
-          <div className={classes.topSpacing10}>
-            <Button variant="outlined" disabled={disableProcessButton} className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon />} label="Process" onClick={sendGDriveLinkAPI}>
-              Process
-          </Button>
-          </div>
+          {showToolTipForDisabledProcessButton()}
         </Paper>
       </Grid>)
+  }
+
+  const showToolTipForDisabledProcessButton = () =>{
+    if(disableProcessButton){
+      return(
+          <div className={classes.topSpacing10}>
+            <Tooltip title="Processing Video">
+              <span>
+                <Button variant="outlined" disabled="true" className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon color="primary"/>}  onClick={sendGDriveLinkAPI}>
+                  Start Process
+                </Button>
+              </span>
+            </Tooltip>               
+          </div>
+      )
+    }
+    else{
+      return(
+        <div className={classes.topSpacing10}>
+        <Button variant="outlined" className={classes.fullWidthElement} startIcon={<ThreeSixtyIcon color="primary"/>}  onClick={sendGDriveLinkAPI}>
+          Start Process
+        </Button>
+        </div>
+      )
+    }
   }
 
 
@@ -468,7 +526,7 @@ function StartDeepRead() {
     else {
       if(!irFlag){
       return (
-        <Accordion className={classes.accordian} variant="outlined">
+        <Accordion className={classes.accordian} variant="outlined" >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
@@ -511,15 +569,16 @@ function StartDeepRead() {
                 <div><h1><strong>Search</strong></h1></div>
               </Grid>
               <Grid item>
-                {displayVideoInfoLoading()}
+                {displaySearchLoading()}
               </Grid>
             </Grid>
+            {displaySkeletonForSearch()}
             <div className={classes.topSpacing20}>
-            <Grid container spacing={2} className={classes.fullWidthElement}>
+            <Grid container spacing={2}>
               <Grid item xs="8">
                 <div>
                   {displaySearchBoxForIR()}
-                  <iframe title="Video" height="600px" width="100%" src={searchGDrive}></iframe>
+                  <div className={classes.topSpacing5}></div><iframe title="Video" height="600px" width="100%" src={searchGDrive}></iframe>
                 </div>
               </Grid>
               <Grid item  xs="4">
@@ -539,9 +598,27 @@ function StartDeepRead() {
     }
   }
 
-  const displayVideoInfoLoading = () => {
+
+  const displaySkeletonForSearch = () => {
     if(irFlag){
-      if(transcriptTimeFromAPI === null){
+      if((transcriptTimeFromAPI === null) && (searchLoadingFlag)){
+        return(
+          <Grid container spacing={2}>
+            <Grid item xs="8">
+              <div>
+                <Skeleton></Skeleton>
+                <Skeleton></Skeleton>
+              </div>
+          </Grid>
+          </Grid>
+        )
+      }
+    }
+  }
+
+  const displaySearchLoading = () => {
+    if(irFlag){
+      if((transcriptTimeFromAPI === null) && (searchLoadingFlag)){
         return(
           <CircularProgress></CircularProgress>
         )
@@ -561,12 +638,8 @@ function StartDeepRead() {
           onChange={(event, value) => setSearchGDriveValue(value)}
           renderInput={(params) => <TextField {...params} label="Search" variant="outlined" />}
         />
-        <div className={classes.topSpacing20}></div>
         </div>)
       }
-    }
-    else {
-      return null;
     }
   }
 
@@ -597,9 +670,10 @@ function StartDeepRead() {
                 <div><h1><strong>Transcript</strong></h1></div>
               </Grid>
               <Grid item>
-                <CircularProgress></CircularProgress>
+                {displayTranscriptLoading()}
               </Grid>
             </Grid>
+            {displaySkeletonForTranscript()}
           </Paper>
         </Grid>
         )
@@ -607,6 +681,28 @@ function StartDeepRead() {
     }
     else {
       return null;
+    }
+  }
+
+  const displaySkeletonForTranscript = () =>{
+    if(transcriptLoadingFlag){
+      return(
+        <div className={classes.topSpacing20}>
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+        </div>
+      )
+    }
+  }
+
+  const displayTranscriptLoading = () =>{
+    if(transcriptLoadingFlag){
+      return(
+        <CircularProgress></CircularProgress>
+      )
     }
   }
 
@@ -631,9 +727,10 @@ function StartDeepRead() {
                   <div><h1><strong>Summary</strong></h1></div>
                 </Grid>
                 <Grid item>
-                  <CircularProgress></CircularProgress>
+                  {displaySummaryLoading()}
                 </Grid>
               </Grid>
+              {displaySkeletonForSummary()}
             </Paper>
           </Grid>
         )
@@ -642,6 +739,28 @@ function StartDeepRead() {
     }
     else {
       return null;
+    }
+  }
+
+  const displaySkeletonForSummary = () =>{
+    if(summaryLoadingFlag){
+      return(
+        <div className={classes.topSpacing20}>
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+        </div>
+      )
+    }
+  }
+
+  const displaySummaryLoading = () =>{
+    if(summaryLoadingFlag){
+      return(
+        <CircularProgress></CircularProgress>
+      )
     }
   }
 
@@ -663,20 +782,42 @@ function StartDeepRead() {
           <Paper className={classes.paper} variant="outlined">
             <Grid container spacing={1}>
               <Grid item>
-                <div><h1><strong>MCQs</strong></h1></div>
+                <div><h1><strong>Quiz</strong></h1></div>
               </Grid>
               <Grid item>
-                <CircularProgress></CircularProgress>
+              {displayMcqLoading()}
               </Grid>
             </Grid>
+            {displaySkeletonForMcqs()}
           </Paper>
         </Grid>
         )
-
       }
     }
     else {
       return null;
+    }
+  }
+
+  const displaySkeletonForMcqs= () =>{
+    if(mcqLoadingFlag){
+      return(
+        <div className={classes.topSpacing20}>
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+        </div>
+      )
+    }
+  }
+
+  const displayMcqLoading = () =>{
+    if(mcqLoadingFlag){
+      return(
+        <CircularProgress></CircularProgress>
+      )
     }
   }
 
@@ -686,7 +827,7 @@ function StartDeepRead() {
       if (galleryDataFromAPI !== null) {
         return (<Grid item xs>
           <Paper className={classes.paper} variant="outlined">
-          <div><h1><strong>Gallery</strong></h1></div>
+          <div><h1><strong>Screenshots</strong></h1></div>
             <div className={classes.topSpacing20}>
             <div className={classes.fullWidthElement}>
               <SimpleReactLightbox>
@@ -714,12 +855,13 @@ function StartDeepRead() {
             <Paper className={classes.paper} variant="outlined">
               <Grid container spacing={1}>
                 <Grid item>
-                  <div><h1><strong>Gallery</strong></h1></div>
+                  <div><h1><strong>Screenshots</strong></h1></div>
                 </Grid>
                 <Grid item>
-                  <CircularProgress></CircularProgress>
+                  {displayGalleryLoading()}
                 </Grid>
               </Grid>
+              {displaySkeletonForGallery()}
             </Paper>
           </Grid>
         )
@@ -730,82 +872,71 @@ function StartDeepRead() {
     }
   }
 
-  const displayNavBar = () => {
-    if (processButtonClicked) {
-      if (videoInfoShown) {
-        return (
-          <div >
-            <Grid
-              container
-              spacing={0}
-              direction="column"
-              alignItems="center"
-              justify="center"
-            >
-              <Grid item className={classes.bottom}>
-                <div>
-                  {displayAlert()}
-                </div>
-                <div>
-                  <BottomNavigation
-                    disabled={disableProcessButton}
-                    value={bottomNavValue}
-                    onChange={(event, newValue) => {
-                      setBottomNavValue(newValue);
-                    }}
-                    showLabels
-                    className={classes.root}
-                  >
-                    <BottomNavigationAction label="Notes" icon={<ReceiptSharpIcon />} ref={notesClickRef} onClick={showNotes} />
-                    <BottomNavigationAction label="MCQs" icon={<QuestionAnswerSharpIcon />} onClick={showMCQ} />
-                    <BottomNavigationAction label="Search" icon={<SearchSharpIcon />} onClick={showIR} />
-                    <BottomNavigationAction label="Gallery" icon={<PhotoLibrarySharpIcon />} onClick={showGallery} />
-                  </BottomNavigation>
-                </div>
-
-              </Grid>
-
-            </Grid>
-          </div>
-        )
-      }
-      else {
-        return (
-          <div className={classes.bottom}>
-            <div>
-              {displayAlert()}
-            </div>
-          </div>
-        )
-      }
-    }
-    else {
-      return (
-        <Paper className={classes.paper1}>
-        <Grid container>
-          <Grid item xs>
-            {displayAlert()}
+  const displaySkeletonForGallery = () =>{
+    if(galleryLoadingFlag){
+      return(<div className={classes.topSpacing20}>
+        <Grid container spacing={2}>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
+          </Grid>
+          <Grid item>
+            <Skeleton variant="rect" width={210} height={118}/>
           </Grid>
         </Grid>
-        </Paper>
+      </div>
       )
     }
-
   }
 
-  const displayMainLoading = () => {
-    if (displayMainLoadingFlag) {
-      return (
+  const displayGalleryLoading = () =>{
+    if(galleryLoadingFlag){
+      return(
         <CircularProgress></CircularProgress>
       )
     }
   }
 
 
+
   const setAllFalse = (reProcess = false) => {
     setVideoInformationFlag(true);
     if (reProcess === true) {
-      setBottomNavValue(false);
       setVideoInformationFlag(false);
       setTranscriptFlag(false);
       setSummaryFlag(false);
@@ -819,20 +950,24 @@ function StartDeepRead() {
       setVideoSizeFromAPI(null);
       setTranscriptFromAPI(null);
       setSummaryFromAPI(null);
-      setAlertFlag(false);
       setAlertMSG('');
-      setOpenAlert(false);
-      setTranscriptTimeFromAPI(null);
-      setProcessButtonClicked(false);
       setMcqDataFromAPI(null);
       setGalleryDataFromAPI(null);
       setS2tV2tDoneFlag(false);
       setFileID(null);
       setSearchGDrive(null);
       setDisableProcessButton(false);
-      setVideoInfoShown(false);
       setDisplayMainLoadingFlag(false);
       tmpMcqs = {};
+      setErrorSnackBarOpen(false);
+      setSearchLoadingFlag(false);
+      setTranscriptLoadingFlag(false);
+      setSummaryLoadingFlag(false);
+      setMcqLoadingFlag(false);
+      setGalleryLoadingFlag(false);
+      setOpenSpeedDial(false);
+      setHiddenSpeedDial(true);
+      setSuccessAlertMSG('');
     }
     setTranscriptFlag(false)
     setSummaryFlag(false);
@@ -847,13 +982,9 @@ function StartDeepRead() {
     setVideoInformationFlag(true);
   }
 
-  const showNavBar = () => {
-    setAllFalse();
-    setVideoInfoShown(true);
-  }
-
   const showNotes = () => {
     setAllFalse();
+    handleSpeedDialClose()
     setTranscriptFlag(true);
     setSummaryFlag(true);
     if ((s2tV2tDoneFlag) && (summaryFromAPI === null)) {
@@ -870,8 +1001,8 @@ function StartDeepRead() {
 
 
   const showMCQ = () => {
-
     setAllFalse();
+    handleSpeedDialClose()
     setMCQFlag(true);
     if ((s2tV2tDoneFlag) && (mcqDataFromAPI === null)) {
       if (mcqPostCalled === false) {
@@ -887,11 +1018,13 @@ function StartDeepRead() {
 
   const showIR = () => {
     setAllFalse();
+    handleSpeedDialClose()
     setIRFlag(true);
   }
 
   const showGallery = () => {
     setAllFalse();
+    handleSpeedDialClose()
     setGalleryFlag(true);
     if ((s2tV2tDoneFlag) && (galleryDataFromAPI === null)) {
       if (galleryPostCalled === false) {
@@ -902,13 +1035,32 @@ function StartDeepRead() {
 
   }
 
-  const setAlert = () => {
-    setAlertFlag(true);
-    setOpenAlert(true);
-  }
+  const handleSpeedDialOpen = () => {
+    setOpenSpeedDial(true);
+  };
+
+  const handleSpeedDialClose = () => {
+    setOpenSpeedDial(false);
+  };
+
+
+
+  const actions = [
+    { icon: <KeyboardArrowUpSharpIcon color="primary"/>, name: 'Up', actions: scrollToTop},
+    { icon: <ReceiptSharpIcon color="primary"/>, name: 'Notes', actions: showNotes },
+    { icon: <QuestionAnswerSharpIcon color="primary"/>, name: 'Quiz', actions: showMCQ },
+    { icon: <SearchSharpIcon color="primary"/>, name: 'Search', actions: showIR },
+    { icon: <PhotoLibrarySharpIcon color="primary"/>, name: 'Screenshots', actions: showGallery},
+  ];
+
 
   return (
     <div className={classes.parentClass}>
+      
+      <Backdrop className={classes.backdrop} open={displayMainLoadingFlag}>
+        <CircularProgress></CircularProgress>
+      </Backdrop>
+
       <div>
         <Grid container spacing={3}>
           {displayGDrivebox()}
@@ -930,9 +1082,42 @@ function StartDeepRead() {
       </div>
       </div>
 
-      {displayNavBar()}
+      {/* {displayNavBar()} */}
 
-    </div>
+      <Snackbar open={errorSnackBarOpen} autoHideDuration={6000} onClose={closeErrorSnackBar}>
+        <Alert onClose={closeErrorSnackBar} severity="error">
+          {alertMSG}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar open={successSnackBarOpen} autoHideDuration={3000} onClose={closeSuccessSnackBar}>
+        <Alert onClose={closeSuccessSnackBar} severity="success">
+          {successAlertMSG}
+        </Alert>
+      </Snackbar>
+      
+      <div className={classes.speedDial}>
+          <SpeedDial
+            ariaLabel="SpeedDial openIcon example"
+            hidden={hiddenSpeedDial}
+            icon={<DehazeSharpIcon color="secondary"/>}
+            onClose={handleSpeedDialClose}
+            onOpen={handleSpeedDialOpen}
+            open={openSpeedDial}
+          >
+            {actions.map((action) => (
+              <SpeedDialAction
+                key={action.name}
+                icon={action.icon}
+                tooltipTitle={action.name}
+                tooltipOpen
+                onClick={action.actions}
+              />
+            ))}
+          </SpeedDial>
+      </div>    
+    
+      </div>
   );
 }
 

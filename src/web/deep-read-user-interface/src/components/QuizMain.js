@@ -3,6 +3,7 @@ import Question from './question/Question';
 import Answer from './answer/Answer';
 import './QuizMain.css';
 import {  Button} from '@material-ui/core';
+import NavigateNextSharpIcon from '@material-ui/icons/NavigateNextSharp';
 
 
 export default class Quiz extends Component {
@@ -58,6 +59,7 @@ export default class Quiz extends Component {
                             clickedAnswer={clickedAnswer}
                         />
                         <Button variant="outlined" color="default"
+                        startIcon ={<NavigateNextSharpIcon color="primary"></NavigateNextSharpIcon>}
                         className="NextStep"
                         disabled={
                             clickedAnswer && Object.keys(questions).length >= step
