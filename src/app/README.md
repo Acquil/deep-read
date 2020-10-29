@@ -13,6 +13,9 @@
      export REPOSITORY_NAME="mongodb"
      export MONGODB_HOST="<connection_string>"
 
+## For using Azure Blob Storage  
+     export BLOB_CONNECTION_STR="<blob_connection_string>"
+     
 ## Directory Structure
 ```
 ├── apis                    - APIs in form of classes with get/post methods 
