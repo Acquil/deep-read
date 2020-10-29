@@ -6,6 +6,12 @@ from flask_restx import Namespace, Resource, fields
 
 # import gdown
 from core.gdown import download
+from db import DRVideo
+from db.factory import create_repository
+from settings import REPOSITORY_NAME, REPOSITORY_SETTINGS
+
+# DB
+repository = create_repository(REPOSITORY_NAME, REPOSITORY_SETTINGS)
 
 api = Namespace('files', description='Video/Audio file related operations')
 
@@ -34,22 +40,26 @@ class Url(Resource):
 
         # check filetype
         kind = filetype.guess(output).mime
-        
+
         if kind is not None and kind.split("/")[0] == 'video':
             # Rename
             video_output = f"{output}.{kind.split('/')[-1]}"
             audio_output = f"{output}.wav"
 
             os.rename(output, video_output)
-            
+
             os.system(f"ffmpeg -loglevel quiet -i {video_output} -vn {audio_output}")
-            size = os.stat(f"{video_output}").st_size/(1024*1024)
-            
+            size = os.stat(f"{video_output}").st_size / (1024 * 1024)
+
+            # Create document in DB
+            doc = DRVideo(id=id, transcript="", duration="", status='In Process')
+            repository.upload_one(doc)
+
             return {
-                'id'    :id, 
-                'gid'   :gid,
+                'id': id,
+                'gid': gid,
                 'filename': filename,
-                'size'  : f"{str(size)[:5]} MB"
-                }
-        
+                'size': f"{str(size)[:5]} MB"
+            }
+
         api.abort(404, 'No video found. Either the link does not exist or file is not a video.')
