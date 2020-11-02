@@ -38,11 +38,11 @@ class McqGenerator(object):
         return re.sub(r'[^\w\s]', '', self.text) 
 
     # Keyphrases are generated using text rank method
-    def generate_keyphrases(self, n=30):                
+    def generate_keyphrases(self, n=50):                
         with open(self.filename, "w") as f:
             f.write(self.remove_punctuations())
 
-        pos = {'NOUN', 'ADJ'}
+        pos = {'NOUN'}
         extractor = pke.unsupervised.TextRank()
         extractor.load_document(input=self.filename, language='en')
         extractor.candidate_weighting(window=2,
@@ -68,7 +68,8 @@ class McqGenerator(object):
         for keyphrase_index in range(len(self.keyphrases)):
             if len(self.keyphrases[keyphrase_index].split(' ')) > 2:
                 keyphrase_indices_to_be_removed.append(keyphrase_index)
-        for i in reversed(keyphrase_indices_to_be_removed):
+        keyphrase_indices_to_be_removed.sort(reverse=True)
+        for i in keyphrase_indices_to_be_removed:
             del self.keyphrases[i]
 
         #filter similar key phrases
@@ -78,11 +79,9 @@ class McqGenerator(object):
                 for keyphrase_index_2 in range(keyphrase_index+1, len(self.keyphrases)):
                     if fuzz.ratio(self.keyphrases[keyphrase_index],self.keyphrases[keyphrase_index_2]) > 80:
                         keyphrase_indices_to_be_removed.append(keyphrase_index_2)
-        for i in reversed(keyphrase_indices_to_be_removed):
-            try:
-                del self.keyphrases[i]
-            except:
-                print(i, len(self.keyphrases))
+        keyphrase_indices_to_be_removed.sort(reverse=True)
+        for i in keyphrase_indices_to_be_removed:
+            del self.keyphrases[i]
 
     def generate_distractors(self, answer, count):  # distractors are incorrect options
         # Extracting closest words for the answer.
@@ -125,7 +124,7 @@ class McqGenerator(object):
         self.questions = [0] * len(self.options)
         for sentence in self.sentences:
             for i in range(len(self.keyphrases)):
-                if self.questions[i] == 0 and self.keyphrases[i].lower() in sentence.lower():
+                if self.questions[i] == 0 and f' {self.keyphrases[i].lower()} ' in f' {sentence.lower()} ':
                     self.questions[i] = sentence.lower().replace(self.keyphrases[i].lower(), "___________", 1)
 
     def filter_redundant_questions(self):
@@ -133,10 +132,28 @@ class McqGenerator(object):
         for question_index in range(1, len(self.questions)):
             if process.extractOne(self.questions[question_index], self.questions[:question_index])[1] > 90:
                 question_indices_to_be_removed.append(question_index)
-        for i in reversed(question_indices_to_be_removed):
+            
+        question_indices_to_be_removed.sort(reverse=True)
+        for i in question_indices_to_be_removed:
             del self.keyphrases[i]
             del self.questions[i]
             del self.options[i]
+
+    def filter_questions(self):
+        # filter questions that contains less than 3 words in a sentence
+        question_indices_to_be_removed = []
+        for question_index in range(1, len(self.questions)):
+            if len(self.questions[question_index].split(' ')) < 5:
+                question_indices_to_be_removed.append(question_index)
+
+        question_indices_to_be_removed.sort(reverse=True)
+        for i in question_indices_to_be_removed:
+            del self.keyphrases[i]
+            del self.questions[i]
+            del self.options[i]
+
+        #filter redundant questions
+        self.filter_redundant_questions()
 
     # count defines the number of MCQs to be generated, default value is 5
     def generate_mcqs(self, count=5):
@@ -145,7 +162,7 @@ class McqGenerator(object):
         self.generate_options()
         self.shuffle_options()
         self.generate_questions()
-        self.filter_redundant_questions()
+        self.filter_questions()
         return self.questions[:count], self.options[:count], self.keyphrases[:count]
 
     def __del__(self):
