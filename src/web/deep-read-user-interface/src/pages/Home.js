@@ -1,5 +1,7 @@
 import React from 'react';
 import { makeStyles, Paper } from '@material-ui/core';
+import { ReactComponent as LogoSVG } from '../logo.svg';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,6 +32,11 @@ const useStyles = makeStyles((theme) => ({
   },
   parentClass:{
     height:"100"
+  },
+  Icon:{
+    position:"absolute",
+    top:"120px",
+    right:"47px"
   }
 }));
 
@@ -59,6 +66,10 @@ function Home() {
             <p><span className={classes.fontSize20}><em> &nbsp; &nbsp; &nbsp; &nbsp; This will help both the faculties and students to evaluate the understanding of the online lecture.</em></span></p>
             <p><span className={classes.fontSize20}>&nbsp; &nbsp; Supply reverse search capability to search for a term from the video</span></p>
             <p><em><span className={classes.fontSize20}> &nbsp; &nbsp; &nbsp; &nbsp; This will help students to easily find a particular clip in the video.</span></em></p>
+          </div>
+          <div className={classes.Icon}>
+            {/* <LogoSVG></LogoSVG> */}
+            <img src="../logo.svg" width="192px" height="192px"></img>
           </div>          
         </Paper>     
         <br/>
