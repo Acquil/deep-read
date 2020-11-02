@@ -1046,7 +1046,7 @@ function StartDeepRead() {
 
 
   const actions = [
-    { icon: <KeyboardArrowUpSharpIcon color="primary"/>, name: 'Up', actions: scrollToTop},
+    // { icon: <KeyboardArrowUpSharpIcon color="primary"/>, name: 'Up', actions: scrollToTop},
     { icon: <ReceiptSharpIcon color="primary"/>, name: 'Notes', actions: showNotes },
     { icon: <QuestionAnswerSharpIcon color="primary"/>, name: 'Quiz', actions: showMCQ },
     { icon: <SearchSharpIcon color="primary"/>, name: 'Search', actions: showIR },
