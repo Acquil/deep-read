@@ -26,7 +26,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import Skeleton from '@material-ui/lab/Skeleton';
 import Backdrop from '@material-ui/core/Backdrop';
 import SpeedDial from '@material-ui/lab/SpeedDial';
-import KeyboardArrowUpSharpIcon from '@material-ui/icons/KeyboardArrowUpSharp';
+// import KeyboardArrowUpSharpIcon from '@material-ui/icons/KeyboardArrowUpSharp';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 import Tooltip from '@material-ui/core/Tooltip';
 import DehazeSharpIcon from '@material-ui/icons/DehazeSharp';
@@ -149,9 +149,9 @@ function StartDeepRead() {
 
   const baseURL = config.baseURL;
 
-  const scrollToTop = () => {
-    document.documentElement.scrollTop = 0;
-  }
+  // const scrollToTop = () => {
+  //   document.documentElement.scrollTop = 0;
+  // }
 
   const updateGDriveTextBox = (e) => {
     setGDriveLinkVar(e.target.value);
@@ -305,8 +305,8 @@ function StartDeepRead() {
         setDisableProcessButton(false);
         call_POST_Summarize_post(id);
         setSummaryPostCalled(true);
-        call_POST_mcq_generator_post(id);
-        setMcqPostCalled(true);
+        // call_POST_mcq_generator_post(id);
+        // setMcqPostCalled(true);
         call_POST_Gallery_post(id);
         setGalleryPostCalled(true);
         return false;
@@ -317,7 +317,7 @@ function StartDeepRead() {
       displayErrorSnackBar(baseURL + 'VideotoTextConverter/get/' + id + ' GET poll Error')
       setDisableProcessButton(false);
       setSummaryLoadingFlag(false);
-      setMcqLoadingFlag(false);
+      // setMcqLoadingFlag(false);
       setGalleryLoadingFlag(false);
     });
 
@@ -351,9 +351,12 @@ function StartDeepRead() {
         console.log(response)
         setSummaryFromAPI(response.data.summary)
         setSummaryLoadingFlag(false);
+        call_POST_mcq_generator_post(id);
+        setMcqPostCalled(true);
         return false;
       }
     }).catch(error => {
+      setMcqLoadingFlag(false);
       console.log(baseURL + 'summarizer/get/' + id + ' GET poll Error')
       console.log(error);
       displayErrorSnackBar(baseURL + 'summarizer/get/' + id + ' GET poll Error')
@@ -465,7 +468,7 @@ function StartDeepRead() {
           <Grid container spacing={2} className={classes.topSpacing20}>
             <Grid item xs={8}>
               <div>
-                <TextField className={classes.fullWidthElement} id="outlined-basic" label="Google Drive Link" variant="outlined" onChange={updateGDriveTextBox} />
+                <TextField className={classes.fullWidthElement}  id="outlined-basic" label="Google Drive Link" variant="outlined" onChange={updateGDriveTextBox} />
               </div>
             </Grid>
             <Grid item xs={4}>
@@ -495,7 +498,7 @@ function StartDeepRead() {
 
   const showToolTipForDisabledProcessButton = () =>{
     if(disableProcessButton){
-      return(
+      return(          
           <div className={classes.topSpacing10}>
             <Tooltip title="Processing Video">
               <span>
@@ -951,6 +954,7 @@ function StartDeepRead() {
       setTranscriptFromAPI(null);
       setSummaryFromAPI(null);
       setAlertMSG('');
+      setTranscriptTimeFromAPI(null);
       setMcqDataFromAPI(null);
       setGalleryDataFromAPI(null);
       setS2tV2tDoneFlag(false);
@@ -965,6 +969,7 @@ function StartDeepRead() {
       setSummaryLoadingFlag(false);
       setMcqLoadingFlag(false);
       setGalleryLoadingFlag(false);
+      setSuccessSnackBarOpen(false);
       setOpenSpeedDial(false);
       setHiddenSpeedDial(true);
       setSuccessAlertMSG('');

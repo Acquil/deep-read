@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles, Paper } from '@material-ui/core';
-import { ReactComponent as LogoSVG } from '../logo.svg';
+// import { ReactComponent as LogoSVG } from '../logo.svg';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -69,7 +69,7 @@ function Home() {
           </div>
           <div className={classes.Icon}>
             {/* <LogoSVG></LogoSVG> */}
-            <img src="../logo.svg" width="192px" height="192px"></img>
+            <img src="../logo.svg" width="192px" alt="Logo" height="192px"></img>
           </div>          
         </Paper>     
         <br/>
