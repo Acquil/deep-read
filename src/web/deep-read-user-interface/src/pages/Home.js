@@ -69,7 +69,7 @@ function Home() {
           </div>
           <div className={classes.Icon}>
             {/* <LogoSVG></LogoSVG> */}
-            <img src="../logo.svg" width="192px" alt="Logo" height="192px"></img>
+            <img src="../logo.svg" width="125px" alt="Logo" height="125px"></img>
           </div>          
         </Paper>     
         <br/>
