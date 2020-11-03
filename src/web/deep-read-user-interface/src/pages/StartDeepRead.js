@@ -103,6 +103,10 @@ const useStyles = makeStyles((theme) => ({
     left: "0",
     margin: `${theme.spacing(1)}px auto`,
     padding: theme.spacing(2),
+  },
+  scrollable:{
+    maxHeight:"300px",
+    overflow:"auto"
   }
 
 }));
@@ -250,14 +254,26 @@ function StartDeepRead() {
     console.log(baseURL + 'speech/get/' + id + ' GET poll Called')
     api_call_GET_speech_get.poll(7000).get((response) => {
       if (response.data.status === "Success") {
-        displaySuccessSnackBar("Transcript recieved!")
-        console.log('speech/get/' + id + ' GET Success')
-        console.log(response);
-        setTranscriptFromAPI(response.data.transcript.transcript);
-        setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
-        setSearchLoadingFlag(false);
-        setTranscriptLoadingFlag(false);
-        poll_call_GET_v2t_get(id);
+        if(response.data.transcript.transcript === ""){
+          displayErrorSnackBar("Transcript not recieved! Video too small/irrelevant.")
+          console.log('speech/get/' + id + ' GET Success. But Transcript empty!')
+          console.log(response);
+          //setTranscriptFromAPI(response.data.transcript.transcript);
+          //setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
+          setSearchLoadingFlag(false);
+          setTranscriptLoadingFlag(false);
+          poll_call_GET_v2t_get(id);
+        }
+        else{
+          displaySuccessSnackBar("Transcript recieved!")
+          console.log('speech/get/' + id + ' GET Success')
+          console.log(response);
+          setTranscriptFromAPI(response.data.transcript.transcript);
+          setTranscriptTimeFromAPI(response.data.transcript.transcript_times);
+          setSearchLoadingFlag(false);
+          setTranscriptLoadingFlag(false);
+          poll_call_GET_v2t_get(id);
+        }
         return false;
       }
     }).catch(error => {
@@ -346,13 +362,24 @@ function StartDeepRead() {
     console.log(baseURL + 'summarizer/get/' + id + ' GET poll Called')
     api_call_GET_summarizer_get.poll(7000).get((response) => {
       if (response.data.status === "Success") {
-        displaySuccessSnackBar("Summary recieved!")
-        console.log(baseURL + 'summarizer/get/' + id + ' GET poll Success')
-        console.log(response)
-        setSummaryFromAPI(response.data.summary)
-        setSummaryLoadingFlag(false);
-        call_POST_mcq_generator_post(id);
-        setMcqPostCalled(true);
+        if(response.data.summary === ""){
+          displayErrorSnackBar("Summary not recieved! Video too small/irrelevant.")
+          console.log(baseURL + 'summarizer/get/' + id + ' GET poll Success. But Summary Empty!')
+          console.log(response)
+          //setSummaryFromAPI(response.data.summary)
+          setSummaryLoadingFlag(false);
+          call_POST_mcq_generator_post(id);
+          setMcqPostCalled(true);
+        }
+        else{
+          displaySuccessSnackBar("Summary recieved!")
+          console.log(baseURL + 'summarizer/get/' + id + ' GET poll Success')
+          console.log(response)
+          setSummaryFromAPI(response.data.summary)
+          setSummaryLoadingFlag(false);
+          call_POST_mcq_generator_post(id);
+          setMcqPostCalled(true);
+        }
         return false;
       }
     }).catch(error => {
@@ -387,16 +414,29 @@ function StartDeepRead() {
     console.log(baseURL + 'mcq_generator/get/' + id + ' GET poll Called')
     api_call_GET_mcq_get.poll(7000).get((response) => {
       if (response.data.status === "Success") {
-        displaySuccessSnackBar("MCQs recieved!")
-        console.log(baseURL + 'mcq_generator/get/' + id + ' GET poll Success')
-        console.log(response)
         tmpMcqs = response.data.mcqs
-        tmpMcqs["correctAnswer"] = 0;
-        tmpMcqs["clickedAnswer"] = 0;
-        tmpMcqs["step"] = 1;
-        tmpMcqs["score"] = 0;
-        setMcqDataFromAPI(tmpMcqs)
-        setMcqLoadingFlag(false);
+        if(Object.keys(tmpMcqs["answers"]).length === 0){
+          displayErrorSnackBar("Quiz data not recieved! Video too small/irrelevant.")
+          console.log(baseURL + 'mcq_generator/get/' + id + ' GET poll Success. But Quiz data empty!')
+          console.log(response)
+          // tmpMcqs["correctAnswer"] = 0;
+          // tmpMcqs["clickedAnswer"] = 0;
+          // tmpMcqs["step"] = 1;
+          // tmpMcqs["score"] = 0;
+          // setMcqDataFromAPI(tmpMcqs)
+          setMcqLoadingFlag(false);
+        }
+        else{
+          displaySuccessSnackBar("Quiz data recieved!")
+          console.log(baseURL + 'mcq_generator/get/' + id + ' GET poll Success')
+          console.log(response)
+          tmpMcqs["correctAnswer"] = 0;
+          tmpMcqs["clickedAnswer"] = 0;
+          tmpMcqs["step"] = 1;
+          tmpMcqs["score"] = 0;
+          setMcqDataFromAPI(tmpMcqs)
+          setMcqLoadingFlag(false);
+        }
         return false;
       }
     }).catch(error => {
@@ -412,11 +452,20 @@ function StartDeepRead() {
       console.log(baseURL + 'gallery/post/' + id + ' POST Called')
       axios.post(baseURL + 'gallery/post/' + id, {
       }).then((responseData) => {
-        displaySuccessSnackBar("Screenshots recieved!")
-        console.log(baseURL + 'gallery/post/' + id + ' POST Success')
-        console.log(responseData);
-        setGalleryDataFromAPI(responseData.data)
-        setGalleryLoadingFlag(false);
+        if(!responseData.data.length){
+          displayErrorSnackBar("Screenshots not recieved! Video too small/irrelevant.")
+          console.log(baseURL + 'gallery/post/' + id + ' POST Success. But Gallery empty!')
+          console.log(responseData);
+          //setGalleryDataFromAPI(responseData.data)
+          setGalleryLoadingFlag(false);
+        }
+        else{
+          displaySuccessSnackBar("Screenshots recieved!")
+          console.log(baseURL + 'gallery/post/' + id + ' POST Success')
+          console.log(responseData);
+          setGalleryDataFromAPI(responseData.data)
+          setGalleryLoadingFlag(false);
+        }
       }).catch(error => {
         setGalleryPostCalled(false);
         console.log(baseURL + 'gallery/post/' + id + ' POST Error')
@@ -547,7 +596,7 @@ function StartDeepRead() {
             <Grid container spacing={2}>
               <Grid item xs="8">
                 <div>
-                  <iframe title="Video" height="600px" width="100%" src={searchGDrive}></iframe>
+                  <iframe title="Video" height="400px" width="100%" src={searchGDrive}></iframe>
                 </div>
               </Grid>
               <Grid item  xs="4">
@@ -581,7 +630,7 @@ function StartDeepRead() {
               <Grid item xs="8">
                 <div>
                   {displaySearchBoxForIR()}
-                  <div className={classes.topSpacing5}></div><iframe title="Video" height="600px" width="100%" src={searchGDrive}></iframe>
+                  <div className={classes.topSpacing5}></div><iframe title="Video" height="400px" width="100%" src={searchGDrive}></iframe>
                 </div>
               </Grid>
               <Grid item  xs="4">
@@ -657,10 +706,16 @@ function StartDeepRead() {
       if (transcriptFromAPI !== null) {
         return (<Grid item xs>
           <Paper className={classes.paper} variant="outlined">
-          <div><h1><strong>Transcript</strong></h1></div>
-            <div className={classes.topSpacing20}>
-               <div className={classes.fontSize20}>{transcriptFromAPI}</div>
-            </div>
+            <div><h1><strong>Transcript</strong></h1></div>
+            <div className={classes.scrollable}>
+              <div className={classes.topSpacing20}>
+                <div className={classes.fontSize20}>
+                  <div >
+                  {transcriptFromAPI}
+                  </div>
+                  </div>
+              </div>
+            </div>            
           </Paper>
         </Grid>)
       }
@@ -668,15 +723,17 @@ function StartDeepRead() {
         return (
           <Grid item xs>
           <Paper className={classes.paper} variant="outlined">
-            <Grid container spacing={1}>
-              <Grid item>
-                <div><h1><strong>Transcript</strong></h1></div>
+            <div>
+              <Grid container spacing={1}>
+                <Grid item>
+                  <div><h1><strong>Transcript</strong></h1></div>
+                </Grid>
+                <Grid item>
+                  {displayTranscriptLoading()}
+                </Grid>
               </Grid>
-              <Grid item>
-                {displayTranscriptLoading()}
-              </Grid>
-            </Grid>
-            {displaySkeletonForTranscript()}
+              {displaySkeletonForTranscript()}
+            </div>
           </Paper>
         </Grid>
         )
@@ -715,8 +772,10 @@ function StartDeepRead() {
         return (<Grid item xs>
           <Paper className={classes.paper} variant="outlined">
             <div><h1><strong>Summary</strong></h1></div>
-            <div className={classes.topSpacing20}>
-            <div className={classes.fontSize20}>{summaryFromAPI}</div>
+            <div className={classes.scrollable}>
+              <div className={classes.topSpacing20}>
+              <div className={classes.fontSize20}>{summaryFromAPI}</div>
+            </div>
             </div>
           </Paper>
         </Grid>)
@@ -831,23 +890,25 @@ function StartDeepRead() {
         return (<Grid item xs>
           <Paper className={classes.paper} variant="outlined">
           <div><h1><strong>Screenshots</strong></h1></div>
-            <div className={classes.topSpacing20}>
-            <div className={classes.fullWidthElement}>
-              <SimpleReactLightbox>
-                <SRLWrapper>
-                  <Grid container spacing={2}>
-                    {
-                      galleryDataFromAPI.map(
-                        each_url => (
-                          <Grid item>
-                            <img src={each_url} width="300" height="250" alt="Video screenshots"></img>
-                          </Grid>
-                        ))
-                    }
-                  </Grid>
-                </SRLWrapper>
-              </SimpleReactLightbox>
-            </div>
+            <div>
+              <div className={classes.topSpacing20}>
+              <div className={classes.fullWidthElement}>
+                <SimpleReactLightbox>
+                  <SRLWrapper>
+                    <Grid container spacing={2}>
+                      {
+                        galleryDataFromAPI.map(
+                          each_url => (
+                            <Grid item>
+                              <img src={each_url} width="300" height="250" alt="Video screenshots"></img>
+                            </Grid>
+                          ))
+                      }
+                    </Grid>
+                  </SRLWrapper>
+                </SimpleReactLightbox>
+              </div>
+              </div>
             </div>
           </Paper>
         </Grid>)
@@ -1035,6 +1096,9 @@ function StartDeepRead() {
       if (galleryPostCalled === false) {
         call_POST_Gallery_post(fileID);
         setGalleryPostCalled(true);
+      }
+      else{
+        call_POST_Gallery_post(fileID);
       }
     }
 

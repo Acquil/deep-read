@@ -79,3 +79,12 @@
 .MuiDrawer-paper{
     background-color: brown;
 }
+
+::-webkit-scrollbar{
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb{
+    background-color: #FF6611;
+    border-radius: 25px;
+}
