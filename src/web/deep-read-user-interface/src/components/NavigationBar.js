@@ -103,6 +103,10 @@ const useStyles = makeStyles((theme) => ({
   linkWithoutStyle: {
     color: '#FF6611',
     textDecoration: 'inherit'
+  },
+  leftAlign:{
+    position: "absolute",
+    left: "35%"
   }
 }));
 
@@ -159,9 +163,12 @@ export default function NavigationBar(props) {
             }}
           >
             <div className={classes.drawerHeader}>
-              <div className={classes.textElementBig}>
+              {/* <div className={classes.textElementBig}>
                 Navigate
-                </div>
+                </div> */}
+              <div className={classes.leftAlign}>
+                <img src="../logo.svg" width="45px" alt="Logo" height="45px"></img>
+              </div>
               <IconButton onClick={handleDrawerClose}>
                 {theme.direction === 'ltr' ? <ChevronLeftIcon color="primary" /> : <ChevronRightIcon color="primary" />}
               </IconButton>
