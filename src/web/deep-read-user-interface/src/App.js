@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
 export default function App() {
   const classes = useStyles();
   const [showIntroFlag, setShowIntroFlag] = React.useState(true);
+  const [showNav, setShowNavFlag] = React.useState(false);
 
   // const disableScrolling = () => {
   //   setTimeout(function() { 
@@ -47,14 +48,20 @@ export default function App() {
 
 
   const delayIntro = () => {
-    setTimeout(() => { setShowIntroFlag(false); }, 3500);
-    return(<NavigationBar />)
+    setTimeout(() => { setShowIntroFlag(false); setShowNavFlag(true); }, 3500);
+  }
+
+  const showNavBar = () => {
+    if(showNav){
+      return(<NavigationBar />)
+    }
   }
 
   return (
     <div>
       {showIntro()}
-      {delayIntro()} 
+      {delayIntro()}
+      {showNavBar()} 
     </div>
   );
 }

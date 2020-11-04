@@ -596,7 +596,7 @@ function StartDeepRead() {
             <Grid container spacing={2}>
               <Grid item xs="8">
                 <div>
-                  <iframe title="Video" height="400px" width="100%" src={searchGDrive}></iframe>
+                  <iframe title="Video" height="500px" width="100%" src={searchGDrive}></iframe>
                 </div>
               </Grid>
               <Grid item  xs="4">
@@ -630,7 +630,7 @@ function StartDeepRead() {
               <Grid item xs="8">
                 <div>
                   {displaySearchBoxForIR()}
-                  <div className={classes.topSpacing5}></div><iframe title="Video" height="400px" width="100%" src={searchGDrive}></iframe>
+                  <div className={classes.topSpacing5}></div><iframe title="Video" height="500px" width="100%" src={searchGDrive}></iframe>
                 </div>
               </Grid>
               <Grid item  xs="4">
