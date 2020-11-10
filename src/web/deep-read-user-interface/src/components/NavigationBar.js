@@ -12,23 +12,19 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import DraftsSharpIcon from '@material-ui/icons/DraftsSharp';
 import PeopleAltSharpIcon from '@material-ui/icons/PeopleAltSharp';
 import HomeSharpIcon from '@material-ui/icons/HomeSharp';
 import KeyboardArrowRightSharpIcon from '@material-ui/icons/KeyboardArrowRightSharp';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Divider from '@material-ui/core/Divider';
 
-
-
-
-const drawerWidth = 240;
+const drawerWidth = 220;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+    backgroundColor:"white"
   },
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
@@ -65,7 +62,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
   },
@@ -87,25 +83,35 @@ const useStyles = makeStyles((theme) => ({
   },
   rightFloatElement: {
     position: "absolute",
-    right: "10px"
+    right: "10px",
+    color:"#e64a19"
   },
   textElementBig: {
     position: "absolute",
     left: "20px",
-    fontSize: "20px",
-    fontWeight: "bold"
+    fontSize: "23px",
+    fontWeight: "bold",
+  },
+  whiteText:{
+    color:"white"
   },
   textElementSmall: {
-    fontSize: "15px",
-    fontWeight: "bold"
+    fontSize: "17px",
+    fontWeight: "bold",
+    color:"black"
   },
   linkWithoutStyle: {
-    color: 'inherit',
+    color: '#FF6611',
     textDecoration: 'inherit'
+  },
+  leftAlign:{
+    position: "absolute",
+    left: "35%"
   }
 }));
 
-export default function NavigationBar() {
+
+export default function NavigationBar(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -123,18 +129,16 @@ export default function NavigationBar() {
       <Router>
         <div className={classes.root}>
           <CssBaseline />
-          <AppBar
-            color="primary"
+          <AppBar            
             position="fixed"
             className={clsx(classes.appBar, {
               [classes.appBarShift]: open,
             })}
           >
-
-            <Toolbar >
+            <Toolbar>
               <ClickAwayListener onClickAway={handleDrawerClose}>
                 <IconButton
-                  color="inherit"
+                  color="primary"
                   aria-label="open drawer"
                   onClick={handleDrawerOpen}
                   edge="start"
@@ -144,7 +148,7 @@ export default function NavigationBar() {
                 </IconButton>
               </ClickAwayListener>
               <div className={classes.rightFloatElement}>
-                <a href="/" className={classes.linkWithoutStyle}><h1>deep-read</h1></a>                
+                <a href="/" className={classes.linkWithoutStyle}><h1><strong>deep-read</strong></h1></a>
               </div>
             </Toolbar>
 
@@ -159,11 +163,14 @@ export default function NavigationBar() {
             }}
           >
             <div className={classes.drawerHeader}>
-              <div className={classes.textElementBig}>
-                Menu
-                </div>
+              {/* <div className={classes.textElementBig}>
+                Navigate
+                </div> */}
+              <div className={classes.leftAlign}>
+                <img src="../logo.svg" width="45px" alt="Logo" height="45px"></img>
+              </div>
               <IconButton onClick={handleDrawerClose}>
-                {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                {theme.direction === 'ltr' ? <ChevronLeftIcon color="primary" /> : <ChevronRightIcon color="primary" />}
               </IconButton>
             </div>
             <Divider />
@@ -171,7 +178,7 @@ export default function NavigationBar() {
               <Link to="/" className={classes.linkWithoutStyle} >
                 <ListItem button>
                   <ListItemIcon>
-                    <HomeSharpIcon />
+                    <HomeSharpIcon color="primary"></HomeSharpIcon>
                   </ListItemIcon>
                   <div className={classes.textElementSmall}>
                     Home
@@ -179,10 +186,10 @@ export default function NavigationBar() {
                 </ListItem>
               </Link>
               <Link to="/startdeepread" className={classes.linkWithoutStyle} >
-                <ListItem button>
-                  <ListItemIcon>
-                    <KeyboardArrowRightSharpIcon />
-                  </ListItemIcon>
+                <ListItem button className="whiteAll">
+                  <ListItemIcon >
+                    <KeyboardArrowRightSharpIcon color="primary"/>
+                  </ListItemIcon >
                   <div className={classes.textElementSmall}>
                     Start deep-read
                   </div>
@@ -191,7 +198,7 @@ export default function NavigationBar() {
               <Link to="/aboutus" className={classes.linkWithoutStyle} >
                 <ListItem button>
                   <ListItemIcon>
-                    <PeopleAltSharpIcon />
+                    <PeopleAltSharpIcon color="primary" />
                   </ListItemIcon>
                   <div className={classes.textElementSmall}>
                     About us
@@ -214,6 +221,7 @@ export default function NavigationBar() {
             </Switch>
           </main>
         </div>
+        
       </Router>
     </>
   );

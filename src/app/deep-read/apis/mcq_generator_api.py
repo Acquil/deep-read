@@ -24,18 +24,17 @@ class MCQGeneratorRequest(Resource):
 
         response = ""
         data = repository.get_one(id)
-        if data.status == "Success":
+        if data.summary['status'] == "Success":
             response = self.get_response_string(id, data)
             repository.update(dr_key=id, field='mcqs', data=response['mcqs'])
 
         else:
-            api.abort(404, 'Call this API after text has been extracted from video and audio')
+            api.abort(404, 'Call this API after summary has been generated')
         return response
 
     # Returns response dictionary for McqGenerator Post Request
     def get_response_string(self, id, data):
-        # TODO - concatenate video text with audio text and then pass it to MCQ Generator
-        mcq_generator = McqGenerator(text=data.transcript['transcript'])
+        mcq_generator = McqGenerator(data.summary['summary'])
         questions, options, correct_answers = mcq_generator.generate_mcqs(5)
 
         questions_dict = {str(k + 1): v for k, v in enumerate(questions)}
