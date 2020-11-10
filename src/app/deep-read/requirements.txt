@@ -1,3 +1,4 @@
+numpy==1.18.5
 vosk==0.3.14
 pydub==0.24.1
 soundfile==0.10.3.post1
