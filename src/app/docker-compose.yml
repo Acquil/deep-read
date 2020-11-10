@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  app:
+    container_name: app
+    env-file:
+      - docker.env
+    restart: always
+    build: ./deep-read
+    ports:
+      - "5000:5000"
+    command: gunicorn -w 2 -b 0.0.0.0:5000 run:app
+  
+  # nginx:
+  #   container_name: nginx
+  #   restart: always
+  #   build: ./nginx
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - app

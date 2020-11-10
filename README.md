@@ -33,6 +33,13 @@ Website
 [![made-with-docker](https://img.shields.io/static/v1?label=&message=Docker&style=for-the-badge&logo=docker&color=2496ed&logoColor=white)](https://www.docker.com/)
 
 
+## Running with Docker
+
+For removing all docker images
+	
+	$ docker rm -vf $(docker ps -a -q)
+	$ docker rmi -f $(docker images -a -q)
+	
 ## Contributors
 - <a href="https://github.com/Acquil/" target="_blank">Akhil</a>
 - <a href="https://github.com/NAshwinKumar/" target="_blank">Ashwin Kumar N</a>

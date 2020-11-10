@@ -8,7 +8,7 @@ import pandas as pd
 class ScreenClassifier:
 
     def __init__(self):
-        self.model = tf.keras.models.load_model("../../../data/training/model_v3_xception")
+        self.model = tf.keras.models.load_model("data/training/model_v3_xception")
         self.imagedatagen = ImageDataGenerator(rescale=1/255)
 
     def predict(self,directory):

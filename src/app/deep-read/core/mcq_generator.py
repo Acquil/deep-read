@@ -22,7 +22,7 @@ text : str
 
 class McqGenerator(object):
     print("loading GloVe model(McqGenerator module)")
-    word2vec_file = '../../../data/training/GloVe/word2vec-glove.6B.300d.txt'
+    word2vec_file = 'data/training/GloVe/word2vec-glove.6B.300d.txt'
     model = KeyedVectors.load_word2vec_format(word2vec_file)
     print("loaded GloVe model(McqGenerator module)")
 
