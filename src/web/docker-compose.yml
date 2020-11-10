@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  web:
+    container_name: web
+    restart: always
+    build: ./deep-read-user-interface
+    ports:
+      - "80:80"
