@@ -62,10 +62,4 @@ RUN python3 -m spacy download en
 # VAR2=value2
 # USER=denis
 
-# docker compose
-# web:
-#   env_file:
-#     - web-variables.env
-
-
 # CMD ["python3", "train_and_eval.py"]
