@@ -29,22 +29,47 @@ APIs and DB
 Website
 
 [![react-js](https://img.shields.io/static/v1?label=&message=React.js&style=for-the-badge&logo=react&color=black&logoColor=61dafb)](https://reactjs.org/)
-[![npm](https://img.shields.io/static/v1?label=&message=npm&color=white&style=for-the-badge&logo=npm)](https://npmjs.com)
+[![npm](https://img.shields.io/static/v1?label=&message=npm&color=gray&style=for-the-badge&logo=npm)](https://npmjs.com)
 [![made-with-docker](https://img.shields.io/static/v1?label=&message=Docker&style=for-the-badge&logo=docker&color=2496ed&logoColor=white)](https://www.docker.com/)
 
 
 ## Running with Docker
 
-For removing all docker images
-	
+App
+``` bash
+	$ cd src/app
+	$ cat docker.env # Set all environment variables
+	$ ./run_docker.sh
+```
+Web
+``` bash
+	$ cd src/web
+	$ ./run_docker.sh
+```
+
+For removing all docker images 
+
+```diff
+- Caution: this will remove all docker images and free up space, including those not of this project.
+```
+```bash
 	$ docker rm -vf $(docker ps -a -q)
 	$ docker rmi -f $(docker images -a -q)
-	
+```
+
+## Running without docker
+
+- App : go to `src/app/deep-read` and run `setup.sh`
+- Web : go to `src/web/deep-read-user-interface` and run with npm
+
 ## Contributors
 - <a href="https://github.com/Acquil/" target="_blank">Akhil</a>
 - <a href="https://github.com/NAshwinKumar/" target="_blank">Ashwin Kumar N</a>
 - <a href="https://github.com/harish-ganesh/" target="_blank">Harish G</a>
 - <a href="https://github.com/sreedeepack/" target="_blank">Sree Deepack R</a>
+
+
+<hr/>
 
 ![NPM](https://img.shields.io/npm/l/deep-read?style=for-the-badge)
 
