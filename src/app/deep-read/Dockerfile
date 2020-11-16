@@ -15,24 +15,24 @@ RUN apt-get update && apt-get -y install apt-utils\
     && apt-get -y install tesseract-ocr
 
 
-WORKDIR usr/src/app
+WORKDIR /usr/src/app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 # Copy all files to container
-COPY . .
+#COPY . .
 
 # Vosk models - replace from https://alphacephei.com/vosk/models
-RUN wget -q https://alphacephei.com/vosk/models/vosk-model-en-us-daanzu-20200905.zip \
+RUN wget  https://alphacephei.com/vosk/models/vosk-model-en-us-daanzu-20200905.zip \
     && unzip vosk-model-en-us-daanzu-20200905.zip \
     && mv vosk-model-en-us-daanzu-20200905 model-generic \
     && rm vosk-model-en-us-daanzu-20200905.zip 
 
-RUN wget -q https://alphacephei.com/vosk/models/vosk-model-en-in-0.4.zip \
+RUN wget  https://alphacephei.com/vosk/models/vosk-model-en-in-0.4.zip \
     && unzip vosk-model-en-in-0.4.zip \
     && mv vosk-model-en-in-0.4 model-indian \
     && rm vosk-model-en-in-0.4.zip 
 
-WORKDIR usr/src/app/data/training
+WORKDIR /usr/src/app/data/training
 # pip3 otherwise
 RUN pip install gdown \
     && mkdir -p GloVe \
@@ -47,10 +47,12 @@ RUN mkdir -p model_v3_xception/assets \
     && echo "Xception model downloaded"
 
 
-WORKDIR usr/src/app
+WORKDIR /usr/src/app
 
 RUN python3 -m spacy download en
 
+#COPY ALL FILES TO CONTAINER
+COPY . .
 # $ cat env.list
 # # This is a comment
 # VAR1=value1

@@ -2,3 +2,4 @@ setup.sh
 .venv
 cuda_installation_script.sh
 Dockerfile
+*.zip
