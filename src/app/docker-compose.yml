@@ -9,7 +9,7 @@ services:
     build: ./deep-read
     ports:
       - "5000:5000"
-    command: gunicorn -w 2 -b 0.0.0.0:5000 app
+    command: gunicorn -w 1 -b 0.0.0.0:5000 app:app --timeout 300
   
   nginx:
      container_name: nginx

@@ -9,7 +9,11 @@ text : str
 
 import re
 import nltk
-nltk.download('punkt')
+
+try:
+    nltk.download('punkt')
+except FileExistsError as e:
+    pass
 
 from nltk import sent_tokenize
 from nltk.tokenize import word_tokenize
