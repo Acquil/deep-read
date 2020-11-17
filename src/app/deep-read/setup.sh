@@ -4,8 +4,8 @@ REQUIRED_PKG="ffmpeg python3-venv tesseract-ocr"
 DIRECTORY_GENERIC="model-generic"
 DIRECTORY_INDIAN="model-indian"
 VENV_DIRECTORY=".venv"
-GloVe_MODEL_DIRECTORY="../../../data/training/GloVe"
-GloVe_MODEL_FILE="../../../data/training/GloVe/word2vec-glove.6B.300d.txt"
+GloVe_MODEL_DIRECTORY="data/training/GloVe"
+GloVe_MODEL_FILE="data/training/GloVe/word2vec-glove.6B.300d.txt"
 
 echo "Installing required packages..."
 
@@ -95,20 +95,20 @@ echo -e "\n---------------------------------------------------------------------
 
 # Download Xception Model
 echo -e "\n---------------------------------------------------------------------\n"
-XceptionModel=../../../data/training/model_v3_xception
+XceptionModel=data/training/model_v3_xception
 if [ ! -d "$XceptionModel" ]; then
    
     echo "Installing Xception Model..."
-    mkdir -p ../../../data/training/model_v3_xception/assets
-    mkdir -p ../../../data/training/model_v3_xception/variables
+    mkdir -p data/training/model_v3_xception/assets
+    mkdir -p data/training/model_v3_xception/variables
 
-    SavedModel=../../../data/training/model_v3_xception/saved_model.pb
+    SavedModel=data/training/model_v3_xception/saved_model.pb
     gdown "https://drive.google.com/uc?id=1--ZA0bBYvh507b4LKgAvY29HAb0LWzCp" -O $SavedModel
 
-    VariablesData=../../../data/training/model_v3_xception/variables/variables.data-00000-of-00001
+    VariablesData=data/training/model_v3_xception/variables/variables.data-00000-of-00001
     gdown "https://drive.google.com/uc?id=1-0w_iOTI8r5zoILvBqnRVnwDMdBCJWeu" -O $VariablesData
 
-    VariablesIndex=../../../data/training/model_v3_xception/variables/variables.index
+    VariablesIndex=data/training/model_v3_xception/variables/variables.index
     gdown "https://drive.google.com/uc?id=1-BWqWDb1sWUyyHKPM7Vrv6rwDNRbnta1" -O $VariablesIndex
 
     echo "Installed Xception Model"
